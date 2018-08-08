@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import com.facebook.login.widget.LoginButton;
 import com.start.neighbourfood.pages.LoginActivity;
 
 import java.util.HashMap;
@@ -27,11 +28,13 @@ public class SessionManager {
     // Shared pref mode
     int PRIVATE_MODE = 0;
 
+    private FacebookLoginManager facebookLoginManager;
     // Constructor
     public SessionManager(Context context) {
-        this._context = context;
+        this._context = context.getApplicationContext();
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+        facebookLoginManager = new FacebookLoginManager(context);
     }
 
     /**
@@ -108,6 +111,14 @@ public class SessionManager {
      **/
     // Get Login State
     public boolean isLoggedIn() {
-        return pref.getBoolean(IS_LOGIN, false);
+        return facebookLoginManager.getUser() != null;
+    }
+
+    public void startLoginAction(LoginButton loginButton) {
+        facebookLoginManager.loginActionButton(loginButton);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        facebookLoginManager.onActivityResult(requestCode, resultCode, data);
     }
 }

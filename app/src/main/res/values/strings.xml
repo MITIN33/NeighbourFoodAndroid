@@ -20,4 +20,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="title_activity_facebook_login">FacebookLoginActivity</string>
+    <string name="facebook_app_id">1190008231126611</string>
+    <string name="fb_login_protocol_scheme">fb1190008231126611</string>
+    <string name="loading">Loading…</string>
+    <string name="facebook_status_fmt">Facebook User: %s</string>
+    <string name="signed_in">Signed In</string>
+    <string name="signed_out">Signed Out</string>
+    <string name="facebook_title_text">Facebook</string>
+    <string name="desc_firebase_lockup">Firebase logo and name</string>
 </resources>

@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.facebook.login.widget.LoginButton;
 import com.neighbourfood.start.neighbourfood.R;
 import com.start.neighbourfood.auth.SessionManager;
 
@@ -68,7 +69,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this);
+        LoginButton loginButton = findViewById(R.id.button_facebook_login);
+        session.startLoginAction(loginButton);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -103,6 +106,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pass the activity result back to the Facebook SDK
+        session.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean mayRequestContacts() {

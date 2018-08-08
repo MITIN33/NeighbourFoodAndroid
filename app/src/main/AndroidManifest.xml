@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +15,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+
         <activity
             android:name="com.start.neighbourfood.pages.HomeActivity"
             android:label="@string/app_name"
@@ -26,7 +31,12 @@
         </activity>
         <activity
             android:name="com.start.neighbourfood.pages.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
+        <activity
+            android:name="com.start.neighbourfood.pages.FacebookLoginActivity"
+            android:label="@string/title_activity_facebook_login"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name="com.start.neighbourfood.pages.BaseActivity"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "793221328662",
+    "firebase_url": "https://neighbourfood-8bd99.firebaseio.com",
+    "project_id": "neighbourfood-8bd99",
+    "storage_bucket": "neighbourfood-8bd99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:793221328662:android:b9e99bac19feca2e",
+        "android_client_info": {
+          "package_name": "com.neighbourfood.start.neighbourfood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "793221328662-6kroofj9jv5i56m805eol46kuro93atf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.neighbourfood.start.neighbourfood",
+            "certificate_hash": "a951ca245c9258eace373bfd2b94d9906e455295"
+          }
+        },
+        {
+          "client_id": "793221328662-ehju0e8qprt35qvj1ioa80p8o1qrqcg3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUfoY6VnDW2Ba6wDRJxdYM39Dy3Fv0EJ8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "793221328662-ehju0e8qprt35qvj1ioa80p8o1qrqcg3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

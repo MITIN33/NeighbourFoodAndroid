@@ -12,6 +12,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -114,5 +115,12 @@ public class FacebookLoginManager {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void signOut() {
+        mAuth.signOut();
+        LoginManager.getInstance().logOut();
+
+        //updateUI(null);
     }
 }

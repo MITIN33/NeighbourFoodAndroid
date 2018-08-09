@@ -334,8 +334,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
                     if (pieces[1].equals(mPassword)) {
-                        session.createLoginSession("Android Hive", "anroidhive@gmail.com");
-
                         // Staring MainActivity
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(i);

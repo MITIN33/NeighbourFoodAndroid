@@ -93,6 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"
                 android:layout_marginBottom="7dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginTop="3dp"
                 android:background="#f1f1f1"
                 android:text="Send Code"
@@ -107,10 +108,9 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="30dp"
-            android:background="?attr/colorError"
+            android:background="#fd7c7c"
             android:text="Sign in/Sign Up"
-            android:textColor="?attr/colorBackgroundFloating"
-            android:textStyle="bold" />
+            android:textColor="?attr/colorBackgroundFloating" />
 
         <RelativeLayout
             android:layout_width="fill_parent"

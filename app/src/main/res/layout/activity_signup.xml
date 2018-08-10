@@ -1,177 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.start.neighbourfood.pages.SignupActivity">
-
-    <LinearLayout
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingTop="5dp">
+        android:layout_height="match_parent"
+        tools:context="com.start.neighbourfood.pages.SignupActivity">
 
-        <TextView
-            android:id="@+id/textView2"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sign up"
-            android:textAlignment="center"
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="30sp" />
+            android:layout_height="492dp"
+            android:orientation="vertical"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:paddingTop="10dp">
 
-        <!--  First Name Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="0dp">
+            <!-- Neighbor Food Logo-->
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/foodie" />
 
+            <!--Layout Header-->
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:fontFamily="serif"
+                android:text="@string/action_sign_up"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="24sp" />
+
+            <!--  First Name Label -->
             <EditText
-                android:id="@+id/input_name"
+                android:id="@+id/first_name"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/edit_text_border"
-                android:hint="First Name "
+                android:fontFamily="serif"
+                android:hint="First Name"
                 android:inputType="textCapWords"
                 android:paddingStart="5dp" />
-        </android.support.design.widget.TextInputLayout>
 
-        <!--  Last Name Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="0dp">
-
+            <!--  Last Name Label -->
             <EditText
+                android:id="@+id/last_name"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/edit_text_border"
-                android:hint="Last Name "
+                android:fontFamily="serif"
+                android:hint="Last Name"
                 android:inputType="textCapWords"
                 android:paddingStart="5dp" />
-        </android.support.design.widget.TextInputLayout>
 
-        <!-- Mobile Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="0dp">
 
+            <!-- Mobile Label : User can not edit here -->
+            <!-- This will be taken from the previous screen -->
             <EditText
                 android:id="@+id/mobile_number"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/edit_text_border"
+                android:fontFamily="serif"
                 android:inputType="none"
                 android:paddingStart="5dp"
                 android:textSize="16sp" />
-        </android.support.design.widget.TextInputLayout>
 
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/spinner_order_type"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_marginTop="10dp" />
-
-
-        <!-- Apartment Name Label -->
-        <!--<android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="2dp">
-
-            <EditText
+            <!--List of the apartments -->
+            <!-- Populated from the list fetched from the service -->
+            <Spinner
+                android:id="@+id/apartment_dropdown_list"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
-                android:paddingStart="5dp"
-                android:background="@drawable/edit_text_border"
-                android:hint="Apartment"
-                android:inputType="textEmailAddress" />
-        </android.support.design.widget.TextInputLayout>-->
-
-        <!-- Mobile Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp">
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="38dp"
-                android:background="@drawable/edit_text_border"
-                android:hint="Flat No."
-                android:inputType="textEmailAddress"
-                android:paddingStart="5dp" />
-        </android.support.design.widget.TextInputLayout>
-
-        <!-- OTP Label -->
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp">
-
-            <EditText
-                android:id="@+id/editText2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:layout_marginRight="100dp"
-                android:layout_weight="1"
-                android:fontFamily="casual"
-                android:hint="         OTP"
-                android:inputType="numberSigned"
-                android:textAlignment="center"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:layout_marginBottom="2dp"
-                android:layout_marginLeft="100dp"
-                android:layout_marginRight="125dp"
-                android:layout_marginTop="0dp"
-                android:fontFamily="casual"
-                android:gravity="right"
-                android:text="Resend OTP"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12dip"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/spinner_background" />
+
+            <!-- Flat Number Label -->
+            <EditText
+                android:id="@+id/flat_number"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edit_text_border"
+                android:fontFamily="serif"
+                android:hint="Flat No."
+                android:maxLength="1024"
+                android:paddingStart="5dp" />
+
+            <!-- Signup Button -->
+            <Button
+                android:id="@+id/btn_signup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="#fd7c7c"
+                android:fontFamily="serif"
+                android:padding="0dp"
+                android:text="@string/action_sign_up"
+                android:textColor="#ffffff"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <!-- Signup Button -->
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_signup"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp"
-            android:backgroundTint="#42000000"
-            android:fontFamily="casual"
-            android:padding="0dp"
-            android:text="Create Account"
-            android:textColor="#dd000000"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/link_login"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:gravity="center"
-            android:text="Already a member? Login"
-            android:textColor="@color/design_default_color_primary_dark"
-            android:textSize="16dip" />
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>

@@ -207,7 +207,7 @@ public class LoginActivity extends BaseActivity {
         }
 
         if (!phone.startsWith("+")) {
-            phone = "+" + phone;
+            phone = "+91" + phone;
         }
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(

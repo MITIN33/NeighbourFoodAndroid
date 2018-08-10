@@ -32,11 +32,7 @@
         <activity
             android:name="com.start.neighbourfood.pages.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity
-            android:name="com.start.neighbourfood.pages.FacebookLoginActivity"
-            android:label="@string/title_activity_facebook_login"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name="com.start.neighbourfood.pages.BaseActivity"></activity>
+        <activity android:name="com.start.neighbourfood.pages.BaseActivity" />
     </application>
 
 </manifest>

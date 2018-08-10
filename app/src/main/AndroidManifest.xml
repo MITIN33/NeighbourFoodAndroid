@@ -33,6 +33,7 @@
             android:name="com.start.neighbourfood.pages.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity android:name="com.start.neighbourfood.pages.BaseActivity" />
+        <activity android:name="com.start.neighbourfood.pages.SignupActivity"></activity>
     </application>
 
 </manifest>

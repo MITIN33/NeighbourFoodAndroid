@@ -19,6 +19,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -42,31 +43,6 @@ public class LoginActivity extends BaseActivity {
     private static final String TAG = "FacebookLogin";
     EditText editTextPhone, editTextCode;
     private String codeSent;
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-
-            Toast.makeText(getApplicationContext(),
-                    "Verification success ", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            Log.e("ANDROID_LOGS", e.getMessage());
-            Toast.makeText(getApplicationContext(),
-                    "Verification failed ", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            Toast.makeText(getApplicationContext(),
-                    "Code Sent ", Toast.LENGTH_LONG).show();
-            codeSent = s;
-            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
-        }
-    };
     private CallbackManager mCallbackManager;
 
     /**
@@ -145,28 +121,40 @@ public class LoginActivity extends BaseActivity {
 
     //region Phone Authentication
 
-    private void handleFacebookAccessToken(AccessToken token) {
-        Log.d(TAG, "handleFacebookAccessToken:" + token);
-        showProgressDialog();
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            hideProgressDialog();
-                            Log.d(TAG, "signInWithCredential:success");
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+            Toast.makeText(getApplicationContext(),
+                    "Verification success ", Toast.LENGTH_LONG).show();
+            signInWithPhoneAuthCredential(phoneAuthCredential);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+            Log.w(TAG, "onVerificationFailed", e);
+
+            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                // ...
+            } else if (e instanceof FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                // ...
+            }
+        }
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            Toast.makeText(getApplicationContext(),
+                    "Code Sent ", Toast.LENGTH_LONG).show();
+            codeSent = s;
+            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
+        }
+    };
 
     private void verifySignInCode() {
         try {
@@ -237,6 +225,29 @@ public class LoginActivity extends BaseActivity {
         hideProgressDialog();
     }
 
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+        showProgressDialog();
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            hideProgressDialog();
+                            NavigateToHome();
+                            Log.d(TAG, "signInWithCredential:success");
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
     //end region
 
 }

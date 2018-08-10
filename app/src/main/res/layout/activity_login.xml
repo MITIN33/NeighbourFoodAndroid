@@ -88,7 +88,7 @@
                 android:singleLine="true"
                 android:textAlignment="center" />
 
-            <android.support.design.button.MaterialButton
+            <Button
                 android:id="@+id/buttonGetVerificationCode"
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"

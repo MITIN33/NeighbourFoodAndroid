@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign up"
+                android:textAlignment="center"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="30sp" />
+
+            <!--  First Name Label -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="5dp">
+
+                <EditText
+                    android:id="@+id/input_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:background="@drawable/edit_text_border"
+                    android:paddingStart="5dp"
+                    android:hint="First Name "
+                    android:inputType="textCapWords"
+                    />
+            </android.support.design.widget.TextInputLayout>
+
+            <!--  Last Name Label -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="5dp">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:paddingStart="5dp"
+                    android:background="@drawable/edit_text_border"
+                    android:hint="Last Name "
+                    android:inputType="textCapWords"
+                     />
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Mobile Label -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="5dp">
+
+                <EditText
+                    android:id="@+id/mobile_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:paddingStart="5dp"
+                    android:background="@drawable/edit_text_border"
+                    android:inputType="none"
+                    android:textSize="16sp" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/spinner_order_type"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                />
+
+
+            <!-- Apartment Name Label -->
+            <!--<android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="2dp">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:paddingStart="5dp"
+                    android:background="@drawable/edit_text_border"
+                    android:hint="Apartment"
+                    android:inputType="textEmailAddress" />
+            </android.support.design.widget.TextInputLayout>-->
+
+            <!-- Mobile Label -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="38dp"
+                    android:paddingStart="5dp"
+                    android:background="@drawable/edit_text_border"
+                    android:hint="Flat No."
+                    android:inputType="textEmailAddress" />
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- OTP Label -->
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginTop="0dp">
+
+                <EditText
+                    android:id="@+id/editText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="100dp"
+                    android:layout_marginRight="100dp"
+                    android:fontFamily="casual"
+                    android:hint="         OTP"
+                    android:inputType="numberSigned"
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="125dp"
+                    android:layout_marginLeft="100dp"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="casual"
+                    android:gravity="right"
+                    android:text="Resend OTP"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12dip"
+                    android:textStyle="bold" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <!-- Signup Button -->
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/btn_signup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:layout_marginTop="0dp"
+                android:backgroundTint="#42000000"
+                android:fontFamily="casual"
+                android:padding="0dp"
+                android:text="Create Account"
+                android:textColor="#dd000000"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView android:id="@+id/link_login"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:text="Already a member? Login"
+                android:textColor="@color/design_default_color_primary_dark"
+                android:gravity="center"
+                android:textSize="16dip"/>
+
+        </LinearLayout>
+    </ScrollView>
+

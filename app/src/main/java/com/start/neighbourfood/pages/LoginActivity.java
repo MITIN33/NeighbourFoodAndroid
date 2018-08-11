@@ -25,6 +25,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.neighbourfood.start.neighbourfood.R;
@@ -179,7 +180,10 @@ public class LoginActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             hideProgressDialog();
-                            NavigateToHome();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            //if(user.getUid() == null)
+                            NavigateToSignUpPage();
+                            //NavigateToHome();
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 Toast.makeText(LoginActivity.this,
@@ -220,6 +224,14 @@ public class LoginActivity extends BaseActivity {
 
     private void NavigateToHome() {
         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        hideProgressDialog();
+    }
+
+    private void NavigateToSignUpPage() {
+        Intent i = new Intent(getApplicationContext(), SignupActivity.class);
+        // Closes all the current activities
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         hideProgressDialog();

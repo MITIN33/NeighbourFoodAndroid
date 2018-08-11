@@ -31,4 +31,6 @@
     <string name="facebook_title_text">Facebook</string>
     <string name="desc_firebase_lockup">Firebase logo and name</string>
     <string name="title_activity_signup">SignupActivity</string>
+
+    <string name="action_sign_up">Sign up</string>
 </resources>

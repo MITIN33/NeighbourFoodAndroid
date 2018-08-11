@@ -22,4 +22,11 @@
         app:headerLayout="@layout/nav_header_home"
         app:menu="@menu/activity_home_drawer" />
 
+
+    <FrameLayout
+        android:id="@+id/food_content_fragment"
+        android:layout_weight="2"
+        android:layout_width="match_parent"
+        android:layout_height="0px" />
+
 </android.support.v4.widget.DrawerLayout>

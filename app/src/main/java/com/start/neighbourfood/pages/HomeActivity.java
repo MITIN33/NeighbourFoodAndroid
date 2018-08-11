@@ -17,6 +17,7 @@ import android.view.View;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.services.ServiceManager;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +37,7 @@ public class HomeActivity extends AppCompatActivity
             // Staring Login Activity
             startActivity(i);
         }
+        ServiceManager.getInstance(HomeActivity.this).makePostRequest();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

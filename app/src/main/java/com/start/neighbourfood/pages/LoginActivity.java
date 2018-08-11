@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.services.ServiceManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -59,36 +60,41 @@ public class LoginActivity extends BaseActivity {
     private View mLoginFormView;
     private FirebaseAuth mAuth;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        mCallbackManager = CallbackManager.Factory.create();
-        mAuth = FirebaseAuth.getInstance();
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-        LoginButton loginButton = findViewById(R.id.button_facebook_login);
-        bindLoginActionButton(loginButton);
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
 
-        editTextCode = findViewById(R.id.editTextCode);
-        editTextPhone = findViewById(R.id.editTextPhone);
+            Toast.makeText(getApplicationContext(),
+                    "Verification success ", Toast.LENGTH_LONG).show();
+            signInWithCredential(phoneAuthCredential);
+        }
 
-        findViewById(R.id.buttonGetVerificationCode).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendVerificationCode();
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+            Log.w(TAG, "onVerificationFailed", e);
+
+            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                // ...
+            } else if (e instanceof FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                // ...
             }
-        });
+        }
 
-
-        findViewById(R.id.buttonSignIn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verifySignInCode();
-            }
-        });
-        // Set up the login form.
-
-    }
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            Toast.makeText(getApplicationContext(),
+                    "Code Sent ", Toast.LENGTH_LONG).show();
+            codeSent = s;
+            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
+        }
+    };
+    private ServiceManager serviceManager;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -121,46 +127,43 @@ public class LoginActivity extends BaseActivity {
 
     //region Phone Authentication
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        serviceManager = ServiceManager.getInstance(this);
+        mCallbackManager = CallbackManager.Factory.create();
+        mAuth = FirebaseAuth.getInstance();
 
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+        LoginButton loginButton = findViewById(R.id.button_facebook_login);
+        bindLoginActionButton(loginButton);
 
-            Toast.makeText(getApplicationContext(),
-                    "Verification success ", Toast.LENGTH_LONG).show();
-            signInWithPhoneAuthCredential(phoneAuthCredential);
-        }
+        editTextCode = findViewById(R.id.editTextCode);
+        editTextPhone = findViewById(R.id.editTextPhone);
 
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            Log.w(TAG, "onVerificationFailed", e);
-
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                // ...
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                // ...
+        findViewById(R.id.buttonGetVerificationCode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendVerificationCode();
             }
-        }
+        });
 
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            Toast.makeText(getApplicationContext(),
-                    "Code Sent ", Toast.LENGTH_LONG).show();
-            codeSent = s;
-            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
-        }
-    };
+
+        findViewById(R.id.buttonSignIn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                verifySignInCode();
+            }
+        });
+        // Set up the login form.
+
+    }
 
     private void verifySignInCode() {
         try {
             String code = editTextCode.getText().toString();
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(codeSent, code);
-            signInWithPhoneAuthCredential(credential);
+            signInWithCredential(credential);
         } catch (Exception e) {
             Log.e("ANDROID_LOGS", e.getMessage());
             Toast.makeText(getApplicationContext(),
@@ -168,21 +171,18 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+    private void signInWithCredential(AuthCredential credential) {
         showProgressDialog();
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //here you can open new activity
-                            Toast.makeText(getApplicationContext(),
-                                    "Login Successfull", Toast.LENGTH_LONG).show();
                             hideProgressDialog();
                             NavigateToHome();
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(getApplicationContext(),
+                                Toast.makeText(LoginActivity.this,
                                         "Incorrect Verification Code ", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -229,24 +229,7 @@ public class LoginActivity extends BaseActivity {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         showProgressDialog();
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            hideProgressDialog();
-                            NavigateToHome();
-                            Log.d(TAG, "signInWithCredential:success");
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        signInWithCredential(credential);
     }
     //end region
 

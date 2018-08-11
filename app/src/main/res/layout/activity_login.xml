@@ -45,6 +45,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="20dp"
                 android:background="@drawable/edit_text_border"
+                android:fontFamily="serif"
                 android:freezesText="true"
                 android:gravity="center_vertical|center_horizontal"
                 android:text="+91"
@@ -57,9 +58,11 @@
                 android:layout_marginLeft="54dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/edit_mobile_border"
+                android:fontFamily="serif"
                 android:hint=" Mobile Number "
                 android:inputType="phone"
                 android:maxLines="1"
+                android:maxLength="13"
                 android:paddingLeft="5dp"
                 android:singleLine="true" />
 
@@ -80,6 +83,7 @@
                 android:layout_marginTop="5dp"
                 android:background="@drawable/edit_text_border"
                 android:cursorVisible="true"
+                android:fontFamily="serif"
                 android:hint=" OTP "
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
@@ -96,6 +100,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="3dp"
                 android:background="#f1f1f1"
+                android:fontFamily="serif"
                 android:text="Send Code"
                 android:textColor="@android:color/holo_green_dark" />
 
@@ -109,6 +114,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="30dp"
             android:background="#fd7c7c"
+            android:fontFamily="serif"
             android:text="Sign in/Sign Up"
             android:textColor="?attr/colorBackgroundFloating" />
 
@@ -125,6 +131,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
                 android:layout_centerInParent="true"
+                android:fontFamily="serif"
                 android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>

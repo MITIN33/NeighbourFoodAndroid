@@ -177,13 +177,11 @@ public class LoginActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //here you can open new activity
-                            Toast.makeText(getApplicationContext(),
-                                    "Login Successfull", Toast.LENGTH_LONG).show();
                             hideProgressDialog();
                             FirebaseUser user = mAuth.getCurrentUser();
                             //if(user.getUid() == null)
-                            NavigateToSignUpPage();
-                            //NavigateToHome();
+                            //NavigateToSignUpPage();
+                            NavigateToHome();
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 Toast.makeText(getApplicationContext(),

@@ -75,10 +75,10 @@ public class ServiceManager {
         return mImageLoader;
     }
 
-    public void makePostRequest(String url, String body) {
+    public void makePostRequest() {
         try {
             RequestQueue requestQueue = getRequestQueue();
-
+            String url = "http://nfservice.azurewebsites.net/api/flat";
             ObjectMapper objectMapper = new ObjectMapper();
 
             Items items = new Items();

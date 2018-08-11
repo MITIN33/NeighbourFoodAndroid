@@ -9,10 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.SearchView;
-
-import static android.graphics.drawable.ClipDrawable.HORIZONTAL;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
@@ -24,16 +21,8 @@ public class FoodItemsFragment extends Fragment {
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 2;
     private static final int DATASET_COUNT = 60;
-
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
-
     protected LayoutManagerType mCurrentLayoutManagerType;
-
     protected SearchView mGridLayoutSearchView;
-
     protected RecyclerView mRecyclerView;
     protected FoodItemsRecyclerViewAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
@@ -75,7 +64,7 @@ public class FoodItemsFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)
 
-        DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(),1);
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(), 1);
         mRecyclerView.addItemDecoration(itemDecor);
         mGridLayoutSearchView = (SearchView) rootView.findViewById(R.id.search_food);
         mGridLayoutSearchView.setOnClickListener(new View.OnClickListener() {
@@ -89,10 +78,10 @@ public class FoodItemsFragment extends Fragment {
     }
 
     //*//**
-     //* Set RecyclerView's LayoutManager to the one given.
-     //*
-     ///* @param layoutManagerType Type of layout manager to switch to.
-     ///*//*
+    //* Set RecyclerView's LayoutManager to the one given.
+    //*
+    ///* @param layoutManagerType Type of layout manager to switch to.
+    ///*//*
     public void setRecyclerViewLayoutManager(LayoutManagerType layoutManagerType) {
         int scrollPosition = 0;
 
@@ -116,13 +105,18 @@ public class FoodItemsFragment extends Fragment {
     }
 
     //*//**
-     //* Generates Strings for RecyclerView's adapter. This data would usually come
-     //* from a local content provider or remote server.
-     //*//*
+    //* Generates Strings for RecyclerView's adapter. This data would usually come
+    //* from a local content provider or remote server.
+    //*//*
     private void initDataset() {
         mDataset = new String[DATASET_COUNT];
         for (int i = 0; i < DATASET_COUNT; i++) {
             mDataset[i] = "This is element #" + i;
         }
+    }
+
+    private enum LayoutManagerType {
+        GRID_LAYOUT_MANAGER,
+        LINEAR_LAYOUT_MANAGER
     }
 }

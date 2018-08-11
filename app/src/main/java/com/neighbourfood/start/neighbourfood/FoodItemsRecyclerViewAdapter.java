@@ -15,6 +15,51 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItems
     private String[] mDataSet;
 
     // BEGIN_INCLUDE(recyclerViewSampleViewHolder)
+
+    /**
+     * Initialize the dataset of the Adapter.
+     *
+     * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
+     */
+    public FoodItemsRecyclerViewAdapter(String[] dataSet) {
+        // For now, giving the dummy food items
+        dataSet = new String[]{"Aaloo Parantha", "Gobhi Parantha", "Pav Bhaji", "Veg Grilled Sandwich",
+                "Chocolate Shake", "Ginger Tea", "Cold Coffee", "Hot Coffee"};
+        mDataSet = dataSet;
+    }
+    // END_INCLUDE(recyclerViewSampleViewHolder)
+
+    // BEGIN_INCLUDE(recyclerViewOnCreateViewHolder)
+    // Create new views (invoked by the layout manager)
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        // Create a new view.
+        View v = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.fragment_food_items, viewGroup, false);
+
+        return new ViewHolder(v);
+    }
+
+    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
+    // Replace the contents of a view (invoked by the layout manager)
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
+        Log.d(TAG, "Element " + position + " set.");
+
+        // Get element from your dataset at this position and replace the contents of the view
+        // with that element
+        viewHolder.getTextView().setText(mDataSet[position]);
+        viewHolder.getImageView().setImageResource(R.drawable.food_icon);
+    }
+    // END_INCLUDE(recyclerViewOnCreateViewHolder)
+
+    // Return the size of your dataset (invoked by the layout manager)
+    @Override
+    public int getItemCount() {
+        return mDataSet.length;
+    }
+    // END_INCLUDE(recyclerViewOnBindViewHolder)
+
     /**
      * Provide a reference to the type of views that you are using (custom ViewHolder)
      */
@@ -42,50 +87,6 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItems
         public ImageView getImageView() {
             return imageView;
         }
-    }
-    // END_INCLUDE(recyclerViewSampleViewHolder)
-
-    /**
-     * Initialize the dataset of the Adapter.
-     *
-     * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
-     */
-    public FoodItemsRecyclerViewAdapter(String[] dataSet) {
-        // For now, giving the dummy food items
-        dataSet = new String[]{"Aaloo Parantha","Gobhi Parantha","Pav Bhaji","Veg Grilled Sandwich",
-                                "Chocolate Shake","Ginger Tea","Cold Coffee","Hot Coffee"};
-        mDataSet = dataSet;
-    }
-
-    // BEGIN_INCLUDE(recyclerViewOnCreateViewHolder)
-    // Create new views (invoked by the layout manager)
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // Create a new view.
-        View v = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.fragment_food_items, viewGroup, false);
-
-        return new ViewHolder(v);
-    }
-    // END_INCLUDE(recyclerViewOnCreateViewHolder)
-
-    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
-    // Replace the contents of a view (invoked by the layout manager)
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
-
-        // Get element from your dataset at this position and replace the contents of the view
-        // with that element
-        viewHolder.getTextView().setText(mDataSet[position]);
-        viewHolder.getImageView().setImageResource(R.drawable.food_icon);
-    }
-    // END_INCLUDE(recyclerViewOnBindViewHolder)
-
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return mDataSet.length;
     }
 
 }

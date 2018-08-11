@@ -11,24 +11,22 @@
 
     <SearchView
         android:id="@+id/search_food"
-        android:layout_height="38dp"
         android:layout_width="match_parent"
-        android:layout_marginTop="60dp"
+        android:layout_height="38dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:background="@drawable/edit_text_border"
-        />
+        android:layout_marginTop="60dp"
+        android:background="@drawable/edit_text_border" />
 
-    <android.support.v7.widget.RecyclerView
+    <android.support.v7.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/recyclerView"
-        xmlns:tools="http://schemas.android.com/tools"
         android:name="com.neighbourfood.start.neighbourfood.ApartmentsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
         tools:context=".FoodItemsFragment"
-        tools:listitem="@layout/fragment_food_items"/>
+        tools:listitem="@layout/fragment_food_items" />
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.neighbourfood.start.neighbourfood;
+package com.start.neighbourfood.pages;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.neighbourfood.start.neighbourfood.R;
 
 
 public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItemsRecyclerViewAdapter.ViewHolder> {
@@ -23,8 +25,8 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItems
      */
     public FoodItemsRecyclerViewAdapter(String[] dataSet) {
         // For now, giving the dummy food items
-        dataSet = new String[]{"Aaloo Parantha", "Gobhi Parantha", "Pav Bhaji", "Veg Grilled Sandwich",
-                "Chocolate Shake", "Ginger Tea", "Cold Coffee", "Hot Coffee"};
+        //dataSet = new String[]{"Aaloo Parantha", "Gobhi Parantha", "Pav Bhaji", "Veg Grilled Sandwich",
+        //        "Chocolate Shake", "Ginger Tea", "Cold Coffee", "Hot Coffee"};
         mDataSet = dataSet;
     }
     // END_INCLUDE(recyclerViewSampleViewHolder)

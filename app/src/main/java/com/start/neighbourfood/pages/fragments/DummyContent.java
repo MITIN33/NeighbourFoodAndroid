@@ -1,4 +1,4 @@
-package com.neighbourfood.start.neighbourfood.fragments;
+package com.start.neighbourfood.pages.fragments;
 
 import java.util.ArrayList;
 import java.util.HashMap;

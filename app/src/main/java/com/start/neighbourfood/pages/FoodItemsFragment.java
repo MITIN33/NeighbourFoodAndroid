@@ -1,4 +1,4 @@
-package com.neighbourfood.start.neighbourfood;
+package com.start.neighbourfood.pages;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+
+import com.neighbourfood.start.neighbourfood.R;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
@@ -109,6 +111,7 @@ public class FoodItemsFragment extends Fragment {
     //* from a local content provider or remote server.
     //*//*
     private void initDataset() {
+        //ServiceManager.getInstance(getActivity()).makeGetRequest("http://nfservice.azurewebsites.net/api/fooditem");
         mDataset = new String[DATASET_COUNT];
         for (int i = 0; i < DATASET_COUNT; i++) {
             mDataset[i] = "This is element #" + i;

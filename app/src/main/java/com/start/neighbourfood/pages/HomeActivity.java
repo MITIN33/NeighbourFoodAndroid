@@ -1,57 +1,37 @@
 package com.start.neighbourfood.pages;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.neighbourfood.start.neighbourfood.FoodItemsFragment;
 import com.neighbourfood.start.neighbourfood.R;
-import com.start.neighbourfood.services.ServiceManager;
+import com.start.neighbourfood.models.ServiceConstants;
 
-public class HomeActivity extends AppCompatActivity
+public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final static String TAG = "HOME_ACTIVITY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        //setContentView(R.layout.recycler_view_fragment);
         // Check for login
-
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Intent i = new Intent(this, LoginActivity.class);
-            // Closing all the Activities
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            // Staring Login Activity
-            startActivity(i);
+        if (FirebaseAuth.getInstance().getCurrentUser() == null || getFromSharedPreference(ServiceConstants.signedInKey) == null) {
+            navigateToLoginPage();
         }
-        ServiceManager.getInstance(HomeActivity.this).makePostRequest();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -126,14 +106,4 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
-    public void signOut() {
-        FirebaseAuth.getInstance().signOut();
-        LoginManager.getInstance().logOut();
-        Intent i = new Intent(this, LoginActivity.class);
-        // Closing all the Activities
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        // Staring Login Activity
-        startActivity(i);
-    }
 }

@@ -3,6 +3,7 @@ package com.start.neighbourfood.pages;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -10,6 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -29,8 +36,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.services.ServiceManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,19 +60,13 @@ public class LoginActivity extends BaseActivity {
     private String codeSent;
     private CallbackManager mCallbackManager;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
+
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -76,7 +83,7 @@ public class LoginActivity extends BaseActivity {
             // This callback is invoked in an invalid request for verification is made,
             // for instance if the the phone number format is not valid.
             Log.w(TAG, "onVerificationFailed", e);
-
+            hideProgressDialog();
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
                 // Invalid request
                 // ...
@@ -84,49 +91,35 @@ public class LoginActivity extends BaseActivity {
                 // The SMS quota for the project has been exceeded
                 // ...
             }
+            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
         }
 
         @Override
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
+            findViewById(R.id.buttonGetVerificationCode).setEnabled(false);
+            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Wait (60s)");
             Toast.makeText(getApplicationContext(),
                     "Code Sent ", Toast.LENGTH_LONG).show();
             codeSent = s;
-            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
+            Timer buttonTimer = new Timer();
+            buttonTimer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
+                            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
+                        }
+                    });
+                }
+            }, 60000);
         }
     };
     private ServiceManager serviceManager;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // Pass the activity result back to the Facebook SDK
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public void bindLoginActionButton(LoginButton loginButton) {
-
-        loginButton.setReadPermissions("email", "public_profile");
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
-            }
-        });
-    }
-
-    //region Phone Authentication
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +138,11 @@ public class LoginActivity extends BaseActivity {
         findViewById(R.id.buttonGetVerificationCode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendVerificationCode();
+                if (TextUtils.isEmpty(editTextPhone.getText()) || editTextPhone.length() != 10) {
+                    return;
+                } else {
+                    sendVerificationCode();
+                }
             }
         });
 
@@ -153,45 +150,15 @@ public class LoginActivity extends BaseActivity {
         findViewById(R.id.buttonSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verifySignInCode();
+                if (TextUtils.isEmpty(editTextCode.getText())) {
+                    return;
+                } else {
+                    verifySignInCode();
+                }
             }
         });
         // Set up the login form.
 
-    }
-
-    private void verifySignInCode() {
-        try {
-            String code = editTextCode.getText().toString();
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(codeSent, code);
-            signInWithCredential(credential);
-        } catch (Exception e) {
-            Log.e("ANDROID_LOGS", e.getMessage());
-            Toast.makeText(getApplicationContext(),
-                    "Something did not go right !", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void signInWithCredential(AuthCredential credential) {
-        showProgressDialog();
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            hideProgressDialog();
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            //if(user.getUid() == null)
-                            NavigateToSignUpPage();
-                            //NavigateToHome();
-                        } else {
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(LoginActivity.this,
-                                        "Incorrect Verification Code ", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    }
-                });
     }
 
     private void sendVerificationCode() {
@@ -222,28 +189,120 @@ public class LoginActivity extends BaseActivity {
                 mCallbacks);        // OnVerificationStateChangedCallbacks
     }
 
-    private void NavigateToHome() {
-        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        hideProgressDialog();
-    }
-
-    private void NavigateToSignUpPage() {
-        Intent i = new Intent(getApplicationContext(), SignupActivity.class);
-        // Closes all the current activities
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(i);
-        hideProgressDialog();
-    }
-
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         showProgressDialog();
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         signInWithCredential(credential);
     }
-    //end region
 
+    private void verifySignInCode() {
+        try {
+            String code = editTextCode.getText().toString();
+            PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(codeSent, code);
+            signInWithCredential(phoneAuthCredential);
+        } catch (Exception e) {
+            Log.e("ANDROID_LOGS", e.getMessage());
+            Toast.makeText(getApplicationContext(),
+                    "Something did not go right !", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void signInWithCredential(AuthCredential credential) {
+        showProgressDialog();
+        final String url = "http://nfservice.azurewebsites.net/api/user/";
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            ServiceManager.getInstance(getApplicationContext()).addToRequestQueue(new JsonObjectRequest(Request.Method.GET, url + user.getUid(), null, onSucess(), onError()) {
+                                @Override
+                                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                                    //if (response.statusCode == 200){
+                                    try {
+                                        return Response.success(new JSONObject(new String(response.data)), HttpHeaderParser.parseCacheHeaders(response));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        return null;
+                                    }
+                                    //}
+                                }
+                            });
+
+                        } else {
+                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
+                                Toast.makeText(LoginActivity.this,
+                                        "Incorrect Information Provided.", Toast.LENGTH_LONG).show();
+                            }
+                            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
+                        }
+                    }
+                });
+    }
+
+    private Response.Listener<JSONObject> onSucess() {
+        return new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.i("VOLLEY", response.toString());
+                try {
+                    if (response.get("userUid").toString() != null) {
+                        saveInSharedPreference(ServiceConstants.signedInKey, response.getString("userUid"));
+                        navigateToHome();
+                    } else {
+                        navigateToSignUpPage();
+                    }
+                    hideProgressDialog();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+    private Response.ErrorListener onError() {
+        return new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // TODO: Handle error
+                hideProgressDialog();
+                Log.i("VOLLEY", error.toString());
+                navigateToSignUpPage();
+            }
+        };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pass the activity result back to the Facebook SDK
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void bindLoginActionButton(LoginButton loginButton) {
+
+        loginButton.setReadPermissions("email", "public_profile");
+        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+            }
+        });
+    }
 }
 

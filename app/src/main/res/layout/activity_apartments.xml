@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:fitsSystemWindows="true"
+        tools:context="com.start.neighbourfood.pages.ApartmentsActivity"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto">
+        <Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:text="Flat #102"
+                android:textColor="@android:color/holo_green_dark"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </Toolbar>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/available_cards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="3dp"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="3dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/food_photo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:id="@+id/food_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/food_photo"
+                android:text="Aaloo Parantha"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/person_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/food_item_name"
+                android:layout_toRightOf="@+id/food_photo"
+                android:text="(serves 1)"
+                android:textSize="18sp" />
+
+            <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
+                android:id="@+id/quantity_button"
+                app:initialNumber="0"
+                android:layout_width="100dp"
+                app:backGroundColor="@color/colorPrimary"
+                android:gravity="end"
+                android:layout_marginStart="80dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/food_item_name"
+                app:textSize="8sp"
+                android:layout_height="36dp" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+        <!--<android.support.v7.widget.RecyclerView
+            android:id="@+id/detail_picklist_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/detail_picklist_cv"
+            android:layout_marginTop="15dp"/>-->
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_anchor="@id/available_cards"
+        app:layout_anchorGravity="bottom|end|right"
+        app:srcCompat="@android:drawable/stat_sys_headset" />
+    </LinearLayout>
+
+
+<!--
+<LinearLayout
+android:layout_width="105dp"
+android:layout_height="37dp"
+android:layout_gravity="end"
+android:layout_marginStart="80dp"
+android:layout_marginTop="8dp"
+android:layout_toEndOf="@+id/food_item_name"
+android:orientation="horizontal">
+
+<Button
+    android:id="@+id/decrease"
+    android:layout_width="34dp"
+    android:layout_height="34dp"
+    android:gravity="center"
+    android:onClick="decreaseInteger"
+    android:text="-" />
+
+<TextView
+    android:id="@+id/integer_number"
+    android:layout_width="34dp"
+    android:layout_height="34dp"
+    android:gravity="center"
+    android:text="0"
+    android:textAlignment="center"
+    android:textSize="20sp"
+    android:textStyle="bold" />
+
+<Button
+    android:id="@+id/increase"
+    android:layout_width="34dp"
+    android:layout_height="34dp"
+    android:gravity="center"
+    android:onClick="increaseInteger"
+    android:text="+" />
+</LinearLayout>
+-->

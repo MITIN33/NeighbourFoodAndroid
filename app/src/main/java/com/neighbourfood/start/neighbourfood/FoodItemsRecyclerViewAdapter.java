@@ -1,18 +1,30 @@
 package com.neighbourfood.start.neighbourfood;
 
+
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import com.neighbourfood.start.neighbourfood.fragments.RecyclerViewClickListener;
+import com.neighbourfood.start.neighbourfood.fragments.RowViewHolder;
+import com.start.neighbourfood.pages.ApartmentsActivity;
 
-public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItemsRecyclerViewAdapter.ViewHolder> {
+
+public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
     private String[] mDataSet;
+    private RecyclerViewClickListener mListener;
+    //private Context mContext;
 
     // BEGIN_INCLUDE(recyclerViewSampleViewHolder)
 
@@ -21,37 +33,40 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItems
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FoodItemsRecyclerViewAdapter(String[] dataSet) {
+    public FoodItemsRecyclerViewAdapter(RecyclerViewClickListener listener ,String[] dataSet) {
         // For now, giving the dummy food items
-        dataSet = new String[]{"Aaloo Parantha", "Gobhi Parantha", "Pav Bhaji", "Veg Grilled Sandwich",
-                "Chocolate Shake", "Ginger Tea", "Cold Coffee", "Hot Coffee"};
+        dataSet = new String[]{"Flat #101","Flat #102","Flat #103"};
         mDataSet = dataSet;
+        //mContext = context;
+        mListener = listener;
+
     }
     // END_INCLUDE(recyclerViewSampleViewHolder)
 
     // BEGIN_INCLUDE(recyclerViewOnCreateViewHolder)
     // Create new views (invoked by the layout manager)
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public RowViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        Context context = viewGroup.getContext();
         // Create a new view.
-        View v = LayoutInflater.from(viewGroup.getContext())
+        View v = LayoutInflater.from(context)
                 .inflate(R.layout.fragment_food_items, viewGroup, false);
 
-        return new ViewHolder(v);
+        return new RowViewHolder(v, mListener);
     }
 
-    // BEGIN_INCLUDE(recyclerViewOnBindViewHolder)
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        Log.d(TAG, "Element " + position + " set.");
-
-        // Get element from your dataset at this position and replace the contents of the view
-        // with that element
-        viewHolder.getTextView().setText(mDataSet[position]);
-        viewHolder.getImageView().setImageResource(R.drawable.food_icon);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof RowViewHolder) {
+            RowViewHolder rowHolder = (RowViewHolder) holder;
+            //set values of data here
+            // Get element from your dataset at this position and replace the contents of the view
+            // with that element
+            rowHolder.getTextView().setText(mDataSet[position]);
+            rowHolder.getImageView().setImageResource(R.drawable.food_icon);
+            rowHolder.getListView().setText("Aaloo Parantha, Gobi Parantha, Pav Bhaji");
+        }
     }
-    // END_INCLUDE(recyclerViewOnCreateViewHolder)
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
@@ -59,34 +74,5 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<FoodItems
         return mDataSet.length;
     }
     // END_INCLUDE(recyclerViewOnBindViewHolder)
-
-    /**
-     * Provide a reference to the type of views that you are using (custom ViewHolder)
-     */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView textView;
-        private final ImageView imageView;
-
-        public ViewHolder(View v) {
-            super(v);
-            // Define click listener for the ViewHolder's View.
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d(TAG, "Element " + getAdapterPosition() + " clicked.");
-                }
-            });
-            textView = (TextView) v.findViewById(R.id.food_name);
-            imageView = (ImageView) v.findViewById(R.id.food_image);
-        }
-
-        public TextView getTextView() {
-            return textView;
-        }
-
-        public ImageView getImageView() {
-            return imageView;
-        }
-    }
 
 }

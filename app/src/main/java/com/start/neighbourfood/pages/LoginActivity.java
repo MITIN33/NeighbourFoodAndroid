@@ -21,6 +21,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -161,6 +162,12 @@ public class LoginActivity extends BaseActivity {
 
     }
 
+    protected void onPostResume() {
+        super.onPostResume();
+        LoginManager.getInstance().logOut();
+        FirebaseAuth.getInstance().signOut();
+    }
+
     private void sendVerificationCode() {
 
         String phone = editTextPhone.getText().toString();
@@ -249,15 +256,19 @@ public class LoginActivity extends BaseActivity {
             public void onResponse(JSONObject response) {
                 Log.i("VOLLEY", response.toString());
                 try {
-                    if (response.get("userUid").toString() != null) {
-                        saveInSharedPreference(ServiceConstants.signedInKey, response.getString("userUid"));
+                    if ("200".equals(response.getString("statusCode"))) {
+                        saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
                         navigateToHome();
                     } else {
-                        navigateToSignUpPage();
+                        navigateToSignUpPage(editTextPhone.getText().toString());
                     }
                     hideProgressDialog();
                 } catch (JSONException e) {
                     e.printStackTrace();
+
+                    // logout if logged in facebook
+                    LoginManager.getInstance().logOut();
+                    hideProgressDialog();
                 }
             }
         };
@@ -271,7 +282,6 @@ public class LoginActivity extends BaseActivity {
                 // TODO: Handle error
                 hideProgressDialog();
                 Log.i("VOLLEY", error.toString());
-                navigateToSignUpPage();
             }
         };
     }

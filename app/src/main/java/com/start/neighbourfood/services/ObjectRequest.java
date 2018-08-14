@@ -32,15 +32,12 @@ public class ObjectRequest<T> extends JsonRequest<T> {
     private Map<String, String> mHeaders;
     private Map<String, Object> mParams;
 
-    public ObjectRequest(int method, String url, Map<String, Object> params, Class clazz,
+    public ObjectRequest(int method, String url, String jsonObject, Class clazz,
                          Response.Listener<T> listener, Response.ErrorListener errorListener) {
-        super(method, url, gson.toJson(params), listener, errorListener);
+        super(method, url, jsonObject, listener, errorListener);
         this.clazz = clazz;
         this.listener = listener;
-        if (params != null) {
-            mParams = params;
-            mRequestBody = gson.toJson(params);
-        }
+        mRequestBody = jsonObject;
         this.mMethod = method;
         this.mUrl = url;
     }

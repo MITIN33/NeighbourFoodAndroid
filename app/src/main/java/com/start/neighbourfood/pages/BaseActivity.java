@@ -58,8 +58,9 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
-    public void navigateToSignUpPage() {
+    public void navigateToSignUpPage(String phone) {
         Intent i = new Intent(this, SignupActivity.class);
+        i.putExtra("phoneNumber", phone);
         startActivity(i);
         hideProgressDialog();
     }

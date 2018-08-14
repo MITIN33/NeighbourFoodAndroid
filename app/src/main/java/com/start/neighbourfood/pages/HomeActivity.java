@@ -1,5 +1,6 @@
 package com.start.neighbourfood.pages;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -11,8 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
+
+import org.json.JSONObject;
 
 public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -23,8 +28,9 @@ public class HomeActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Check for login
-        if (FirebaseAuth.getInstance().getCurrentUser() == null || getFromSharedPreference(ServiceConstants.signedInKey) == null) {
+        if (user == null || getFromSharedPreference(ServiceConstants.signedInKey) == null) {
             navigateToLoginPage();
         }
 
@@ -45,6 +51,30 @@ public class HomeActivity extends BaseActivity
         FoodItemsFragment fragment = new FoodItemsFragment();
         transaction.replace(R.id.food_content_fragment, fragment);
         transaction.commit();
+        //showProgressDialog();
+        //addUserToDB();
+    }
+
+    private void addUserToDB() {
+        HttpCallTask httpCallTask = new HttpCallTask(new SignupTaskHandler(this));
+        httpCallTask.execute();
+    }
+
+    private class SignupTaskHandler extends TaskHandler {
+
+        public SignupTaskHandler(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            hideProgressDialog();
+        }
+
+        @Override
+        public void onError() {
+            hideProgressDialog();
+        }
     }
 
     @Override

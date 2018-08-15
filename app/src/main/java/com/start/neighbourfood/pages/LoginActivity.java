@@ -11,12 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -37,6 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -126,7 +122,7 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        serviceManager = ServiceManager.getInstance(this);
+        serviceManager = ServiceManager.getInstance(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
 
@@ -217,27 +213,13 @@ public class LoginActivity extends BaseActivity {
 
     private void signInWithCredential(AuthCredential credential) {
         showProgressDialog();
-        final String url = "http://nfservice.azurewebsites.net/api/user/";
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServiceManager.getInstance(getApplicationContext()).addToRequestQueue(new JsonObjectRequest(Request.Method.GET, url + user.getUid(), null, onSucess(), onError()) {
-                                @Override
-                                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                                    //if (response.statusCode == 200){
-                                    try {
-                                        return Response.success(new JSONObject(new String(response.data)), HttpHeaderParser.parseCacheHeaders(response));
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        return null;
-                                    }
-                                    //}
-                                }
-                            });
-
+                            serviceManager.fetchUserfromUid(user.getUid(), new LoginTaskHandler());
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 Toast.makeText(LoginActivity.this,
@@ -249,41 +231,26 @@ public class LoginActivity extends BaseActivity {
                 });
     }
 
-    private Response.Listener<JSONObject> onSucess() {
-        return new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.i("VOLLEY", response.toString());
-                try {
-                    if ("200".equals(response.getString("statusCode"))) {
-                        saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        navigateToHome();
-                    } else {
-                        navigateToSignUpPage(editTextPhone.getText().toString());
-                    }
-                    hideProgressDialog();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
-                    // logout if logged in facebook
-                    LoginManager.getInstance().logOut();
-                    hideProgressDialog();
+    private class LoginTaskHandler implements TaskHandler {
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+            try {
+                if ("200".equals(result.getString("statusCode"))) {
+                    saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    navigateToHome();
+                } else {
+                    navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());
                 }
+            } catch (JSONException e) {
+                LoginManager.getInstance().logOut();
             }
-        };
-    }
+            hideProgressDialog();
+        }
 
-    private Response.ErrorListener onError() {
-        return new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // TODO: Handle error
-                hideProgressDialog();
-                Log.i("VOLLEY", error.toString());
-            }
-        };
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            hideProgressDialog();
+        }
     }
 
     @Override

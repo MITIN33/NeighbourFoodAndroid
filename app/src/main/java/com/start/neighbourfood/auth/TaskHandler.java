@@ -1,19 +1,14 @@
 package com.start.neighbourfood.auth;
 
-import android.content.Context;
+import com.android.volley.VolleyError;
 
 import org.json.JSONObject;
 
-public abstract class TaskHandler {
-    public Context context;
-
-    public TaskHandler(Context context) {
-        this.context = context;
-    }
+public interface TaskHandler {
 
     public abstract void onTaskCompleted(JSONObject result);
 
-    public void onError() {
-    }
+    public abstract void onErrorResponse(VolleyError error);
+
 
 }

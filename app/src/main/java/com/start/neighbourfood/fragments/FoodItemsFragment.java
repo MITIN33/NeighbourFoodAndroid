@@ -1,5 +1,6 @@
 package com.start.neighbourfood.pages;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -10,6 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.Toast;
+
+import com.neighbourfood.start.neighbourfood.fragments.RecyclerViewClickListener;
+import com.start.neighbourfood.pages.ApartmentsActivity;
+import com.start.neighbourfood.pages.HomeActivity;
 
 import com.neighbourfood.start.neighbourfood.R;
 
@@ -61,7 +67,17 @@ public class FoodItemsFragment extends Fragment {
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
 
-        mAdapter = new FoodItemsRecyclerViewAdapter(mDataset);
+        RecyclerViewClickListener listener = new RecyclerViewClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                Toast.makeText(getActivity(), "Position " + position, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getActivity(), ApartmentsActivity.class);
+                startActivity(i);
+
+            }
+        };
+
+        mAdapter = new FoodItemsRecyclerViewAdapter(listener,mDataset);
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)
@@ -97,6 +113,7 @@ public class FoodItemsFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
+
     }
 
     @Override

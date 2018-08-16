@@ -1,4 +1,4 @@
-package com.neighbourfood.start.neighbourfood.fragments;
+package com.start.neighbourfood.fragments;
 
 import android.view.View;
 

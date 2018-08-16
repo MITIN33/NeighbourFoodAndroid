@@ -1,22 +1,13 @@
-package com.neighbourfood.start.neighbourfood;
+package com.start.neighbourfood.fragments;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
-import com.neighbourfood.start.neighbourfood.fragments.RecyclerViewClickListener;
-import com.neighbourfood.start.neighbourfood.fragments.RowViewHolder;
-import com.start.neighbourfood.pages.ApartmentsActivity;
+import com.neighbourfood.start.neighbourfood.R;
 
 
 public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -33,9 +24,9 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FoodItemsRecyclerViewAdapter(RecyclerViewClickListener listener ,String[] dataSet) {
+    public FoodItemsRecyclerViewAdapter(RecyclerViewClickListener listener, String[] dataSet) {
         // For now, giving the dummy food items
-        dataSet = new String[]{"Flat #101","Flat #102","Flat #103"};
+        dataSet = new String[]{"Flat #101", "Flat #102", "Flat #103"};
         mDataSet = dataSet;
         //mContext = context;
         mListener = listener;

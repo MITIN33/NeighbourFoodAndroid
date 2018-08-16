@@ -1,4 +1,4 @@
-package com.start.neighbourfood.pages;
+package com.start.neighbourfood.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,11 +13,8 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.neighbourfood.start.neighbourfood.fragments.RecyclerViewClickListener;
-import com.start.neighbourfood.pages.ApartmentsActivity;
-import com.start.neighbourfood.pages.HomeActivity;
-
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.pages.ApartmentsActivity;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
@@ -77,7 +74,7 @@ public class FoodItemsFragment extends Fragment {
             }
         };
 
-        mAdapter = new FoodItemsRecyclerViewAdapter(listener,mDataset);
+        mAdapter = new FoodItemsRecyclerViewAdapter(listener, mDataset);
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         // END_INCLUDE(initializeRecyclerView)

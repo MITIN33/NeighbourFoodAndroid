@@ -1,7 +1,6 @@
-package com.neighbourfood.start.neighbourfood.fragments;
+package com.start.neighbourfood.fragments;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,12 +10,12 @@ import com.neighbourfood.start.neighbourfood.R;
 
 public class RowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private RecyclerViewClickListener mListener;
     private final TextView textView;
     private final ImageView imageView;
     private final TextView foodListView;
+    private RecyclerViewClickListener mListener;
 
-     public RowViewHolder(View v, RecyclerViewClickListener listener) {
+    public RowViewHolder(View v, RecyclerViewClickListener listener) {
         super(v);
         mListener = listener;
         v.setOnClickListener(this);

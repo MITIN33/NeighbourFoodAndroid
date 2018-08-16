@@ -14,20 +14,20 @@
         android:id="@+id/flat_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/food_image"
-        android:textSize="20sp"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/food_items_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:textSize="16sp"
-        android:layout_toRightOf="@+id/food_image"
         android:layout_below="@+id/flat_name"
+        android:layout_gravity="bottom"
+        android:layout_toRightOf="@+id/food_image"
+        android:textSize="16sp"
         android:textAppearance="?attr/textAppearanceListItem" />
 
 

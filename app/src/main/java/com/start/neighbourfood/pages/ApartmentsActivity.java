@@ -4,9 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.TextView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.neighbourfood.start.neighbourfood.R;
@@ -38,6 +36,6 @@ public class ApartmentsActivity extends AppCompatActivity {
         // set the initial and the final Number for the quantity_button
         Integer minQty = 0;
         Integer maxQty = 10;        // Read thid from the DB later
-        button.setRange(minQty , maxQty);
+        button.setRange(minQty, maxQty);
     }
 }

@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.fragments.FoodItemsFragment;
 import com.start.neighbourfood.models.ServiceConstants;
 
 public class HomeActivity extends BaseActivity

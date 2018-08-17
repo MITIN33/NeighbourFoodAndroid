@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.FlatsInfo;
 
 import java.util.List;

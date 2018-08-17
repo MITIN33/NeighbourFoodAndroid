@@ -12,7 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
 
 public class BaseActivity extends AppCompatActivity {

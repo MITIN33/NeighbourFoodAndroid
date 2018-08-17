@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 
 
 public class RowViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.pages.ApartmentsActivity;
 

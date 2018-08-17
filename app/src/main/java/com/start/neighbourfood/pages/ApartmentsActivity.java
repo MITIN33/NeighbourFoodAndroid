@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 
 public class ApartmentsActivity extends AppCompatActivity {
 

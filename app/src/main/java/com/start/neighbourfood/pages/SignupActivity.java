@@ -12,7 +12,7 @@ import com.android.volley.VolleyError;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.R;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.UserBaseInfo;

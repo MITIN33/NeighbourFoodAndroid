@@ -36,7 +36,7 @@
         <activity android:name="com.start.neighbourfood.pages.BaseActivity" />
         <activity android:name="com.start.neighbourfood.pages.SignupActivity" />
         <activity
-            android:name="com.start.neighbourfood.pages.ApartmentsActivity"
+            android:name="com.start.neighbourfood.pages.FoodItemsActivity"
             android:label="@string/title_activity_apartments"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

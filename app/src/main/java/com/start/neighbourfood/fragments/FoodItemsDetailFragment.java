@@ -11,12 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.neighbourfood.start.neighbourfood.R;
 import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.pages.ApartmentsActivity;
+import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.pages.FoodItemsActivity;
 
 import java.util.List;
 
@@ -24,24 +24,23 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FoodItemsFragment extends Fragment {
+public class FoodItemsDetailFragment extends Fragment {
 
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 2;
     private static final int DATASET_COUNT = 60;
     protected LayoutManagerType mCurrentLayoutManagerType;
-    protected SearchView mGridLayoutSearchView;
     protected RecyclerView mRecyclerView;
     protected FoodItemsRecyclerViewAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected List<FlatsInfo> mDataset;
+    protected List<FoodItemDetails> mDataset;
 
-    public FoodItemsFragment() {
+    public FoodItemsDetailFragment() {
     }
 
     @SuppressLint("ValidFragment")
-    public FoodItemsFragment(List<FlatsInfo> dataSet) {
+    public FoodItemsDetailFragment(List<FoodItemDetails> dataSet) {
         mDataset = dataSet;
     }
 
@@ -56,11 +55,11 @@ public class FoodItemsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.content_home, container, false);
+        View rootView = inflater.inflate(R.layout.content_food_items, container, false);
         rootView.setTag(TAG);
 
         // BEGIN_INCLUDE(initializeRecyclerView)
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_food_items_recycleView);
 
         // LinearLayoutManager is used here, this will layout the elements in a similar fashion
         // to the way ListView would layout elements. The RecyclerView.LayoutManager defines how
@@ -80,7 +79,7 @@ public class FoodItemsFragment extends Fragment {
             @Override
             public void onClick(View view, int position) {
                 Toast.makeText(getActivity(), "Position " + position, Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getActivity(), ApartmentsActivity.class);
+                Intent i = new Intent(getActivity(), FoodItemsActivity.class);
                 startActivity(i);
 
             }
@@ -93,13 +92,6 @@ public class FoodItemsFragment extends Fragment {
 
         DividerItemDecoration itemDecor = new DividerItemDecoration(getActivity(), 1);
         mRecyclerView.addItemDecoration(itemDecor);
-        mGridLayoutSearchView = (SearchView) rootView.findViewById(R.id.search_food);
-        mGridLayoutSearchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setRecyclerViewLayoutManager(LayoutManagerType.LINEAR_LAYOUT_MANAGER);
-            }
-        });
 
         return rootView;
     }

@@ -92,14 +92,11 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void signOut() {
+        showProgressDialog();
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
         saveInSharedPreference(ServiceConstants.signedInKey, null);
-        Intent i = new Intent(this, LoginActivity.class);
-        // Closing all the Activities
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        // Staring Login Activity
-        startActivity(i);
+        hideProgressDialog();
+        navigateToLoginPage();
     }
 }

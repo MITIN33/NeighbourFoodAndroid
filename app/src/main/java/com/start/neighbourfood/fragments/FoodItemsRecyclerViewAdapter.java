@@ -8,12 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.models.FlatsInfo;
+
+import java.util.List;
 
 
 public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "CustomAdapter";
 
-    private String[] mDataSet;
+    private List<FlatsInfo> mDataSet;
     private RecyclerViewClickListener mListener;
     //private Context mContext;
 
@@ -24,9 +27,8 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FoodItemsRecyclerViewAdapter(RecyclerViewClickListener listener, String[] dataSet) {
+    public FoodItemsRecyclerViewAdapter(RecyclerViewClickListener listener, List<FlatsInfo> dataSet) {
         // For now, giving the dummy food items
-        dataSet = new String[]{"Flat #101", "Flat #102", "Flat #103"};
         mDataSet = dataSet;
         //mContext = context;
         mListener = listener;
@@ -53,7 +55,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             //set values of data here
             // Get element from your dataset at this position and replace the contents of the view
             // with that element
-            rowHolder.getTextView().setText(mDataSet[position]);
+            rowHolder.getTextView().setText(mDataSet.get(position).getItemName());
             rowHolder.getImageView().setImageResource(R.drawable.food_icon);
             rowHolder.getListView().setText("Aaloo Parantha, Gobi Parantha, Pav Bhaji");
         }
@@ -62,7 +64,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        return mDataSet.size();
     }
     // END_INCLUDE(recyclerViewOnBindViewHolder)
 

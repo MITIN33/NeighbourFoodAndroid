@@ -7,14 +7,26 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.fragments.FoodItemsFragment;
+import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.services.ServiceManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
 
 public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -39,14 +51,11 @@ public class HomeActivity extends BaseActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        showProgressDialog();
+        ServiceManager.getInstance(this).fetchAvailableHoods(new PopulateHoodTaskHandler());
 
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        FoodItemsFragment fragment = new FoodItemsFragment();
-        transaction.replace(R.id.food_content_fragment, fragment);
-        transaction.commit();
     }
 
     @Override
@@ -60,52 +69,52 @@ public class HomeActivity extends BaseActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_logout) {
-            signOut();
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_settings) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_trackOrder) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_previousOrders) {
 
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_logout) {
+            signOut();
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private class PopulateHoodTaskHandler implements TaskHandler {
+
+        @Override
+        public void onTaskCompleted(JSONObject result) {
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                List<FlatsInfo> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
+                });
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                FoodItemsFragment fragment = new FoodItemsFragment(flatsInfos);
+                transaction.replace(R.id.food_content_fragment, fragment);
+                transaction.commit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            hideProgressDialog();
+        }
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Log.e(TAG, "onErrorResponse: Unable to load", error);
+        }
     }
 
 }

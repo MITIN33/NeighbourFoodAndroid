@@ -36,7 +36,6 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.services.ServiceManager;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Timer;
@@ -235,13 +234,9 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onTaskCompleted(JSONObject result) {
             try {
-                if ("200".equals(result.getString("statusCode"))) {
-                    saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    navigateToHome();
-                } else {
-                    navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());
-                }
-            } catch (JSONException e) {
+                saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                navigateToHome();
+            } catch (Exception e) {
                 LoginManager.getInstance().logOut();
             }
             hideProgressDialog();
@@ -250,6 +245,9 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onErrorResponse(VolleyError error) {
             hideProgressDialog();
+            if (error.networkResponse.statusCode == 404) {
+                navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());
+            }
         }
     }
 

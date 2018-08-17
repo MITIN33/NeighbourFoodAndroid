@@ -1,5 +1,6 @@
 package com.start.neighbourfood.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,7 +15,10 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.neighbourfood.start.neighbourfood.R;
+import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.pages.ApartmentsActivity;
+
+import java.util.List;
 
 /**
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
@@ -31,14 +35,22 @@ public class FoodItemsFragment extends Fragment {
     protected RecyclerView mRecyclerView;
     protected FoodItemsRecyclerViewAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    protected String[] mDataset;
+    protected List<FlatsInfo> mDataset;
+
+    public FoodItemsFragment() {
+    }
+
+    @SuppressLint("ValidFragment")
+    public FoodItemsFragment(List<FlatsInfo> dataSet) {
+        mDataset = dataSet;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize dataset, this data would usually come from a local content provider or
         // remote server.
-        initDataset();
+        //initDataset();
     }
 
     @Override
@@ -124,13 +136,13 @@ public class FoodItemsFragment extends Fragment {
     //* Generates Strings for RecyclerView's adapter. This data would usually come
     //* from a local content provider or remote server.
     //*//*
-    private void initDataset() {
+    /*private void initDataset() {
         //ServiceManager.getInstance(getActivity()).makeGetRequest("http://nfservice.azurewebsites.net/api/fooditem");
         mDataset = new String[DATASET_COUNT];
         for (int i = 0; i < DATASET_COUNT; i++) {
             mDataset[i] = "This is element #" + i;
         }
-    }
+    }*/
 
     private enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,

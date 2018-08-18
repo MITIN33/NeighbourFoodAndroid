@@ -1,34 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<RelativeLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/food_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_margin="@dimen/text_margin" />
-
-    <TextView
-        android:id="@+id/flat_name"
+    <!--<ImageView
+        android:id="@+id/food_photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:layout_toRightOf="@+id/food_image"
-        android:textAppearance="?attr/textAppearanceListItem"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="16dp" />-->
+
+    <TextView
+        android:id="@+id/food_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textColor="#000000"
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/food_items_list"
+        android:id="@+id/serving_string"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/flat_name"
-        android:layout_gravity="bottom"
-        android:layout_toRightOf="@+id/food_image"
-        android:textSize="16sp"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:layout_below="@+id/food_item_name"
+        android:textSize="16sp" />
 
+    <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
+        android:id="@+id/quantity_button"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/food_item_price"
+        android:layout_marginEnd="32dp"
+        android:gravity="end"
+        app:backGroundColor="@color/colorPrimary"
+        app:initialNumber="0"
+        app:textSize="8sp" />
 
+    <TextView
+        android:id="@+id/food_item_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/food_item_name"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="148dp"
+        android:text="TextView" />
 </RelativeLayout>

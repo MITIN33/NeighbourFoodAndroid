@@ -98,7 +98,23 @@ public class ServiceManager {
 
 
     public void fetchAvailableHoods(final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.foodApiPAth);
+        String url = getFullUrl(ServiceConstants.flatApiPAth);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                taskHandler.onTaskCompleted(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                taskHandler.onErrorResponse(error);
+            }
+        });
+        addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void fetchFoodItemForFlat(String flatId,final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.foodApiPAth)  + "/" + flatId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {

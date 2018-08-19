@@ -3,11 +3,13 @@ package com.start.neighbourfood.models;
 public class UserBaseInfo {
 
     private String userUid;
-    private String firstName;
-    private String lastName;
-    private String apartmentId;
-    private String phoneNumber;
-    private String flatNumber;
+    private String fName;
+    private String lName;
+    private String apartmentID;
+    private String phoneNo;
+    private String flatID;
+    private String rating;
+    private String userName;
 
     public String getUserUid() {
         return userUid;
@@ -17,43 +19,59 @@ public class UserBaseInfo {
         this.userUid = userUid;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getfName() {
+        return fName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setfName(String fName) {
+        this.fName = fName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getlName() {
+        return lName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setlName(String lName) {
+        this.lName = lName;
     }
 
-    public String getApartmentId() {
-        return apartmentId;
+    public String getApartmentID() {
+        return apartmentID;
     }
 
-    public void setApartmentId(String apartmentId) {
-        this.apartmentId = apartmentId;
+    public void setApartmentID(String apartmentID) {
+        this.apartmentID = apartmentID;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhoneNo() {
+        return phoneNo;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 
-    public String getFlatNumber() {
-        return flatNumber;
+    public String getFlatID() {
+        return flatID;
     }
 
-    public void setFlatNumber(String flatNumber) {
-        this.flatNumber = flatNumber;
+    public void setFlatID(String flatID) {
+        this.flatID = flatID;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

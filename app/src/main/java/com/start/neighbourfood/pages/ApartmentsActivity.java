@@ -1,22 +1,16 @@
 package com.start.neighbourfood.pages;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-
-import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
-import com.start.neighbourfood.R;
 
 public class ApartmentsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_apartments);
+        //setContentView(R.layout.activity_apartments);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,6 +30,6 @@ public class ApartmentsActivity extends AppCompatActivity {
         // set the initial and the final Number for the quantity_button
         Integer minQty = 0;
         Integer maxQty = 10;        // Read thid from the DB later
-        button.setRange(minQty, maxQty);
+        button.setRange(minQty, maxQty);*/
     }
 }

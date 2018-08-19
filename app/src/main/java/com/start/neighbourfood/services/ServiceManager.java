@@ -11,9 +11,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.start.neighbourfood.BuildConfig;
+import com.start.neighbourfood.Utils.SharedPreferenceUtils;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.UserBaseInfo;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ServiceManager {
@@ -97,8 +100,8 @@ public class ServiceManager {
     }
 
 
-    public void fetchAvailableHoods(final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.flatApiPAth);
+    public void fetchAvailableHoods(JSONObject userBaseInfo,final TaskHandler taskHandler) throws IllegalAccessException {
+        String url = getFullUrl(ServiceConstants.apartmentApiPath) +"/" + getValue(userBaseInfo,"apartmentID") + "/user/" + getValue(userBaseInfo,"userUid");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -129,4 +132,12 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
+    private String getValue(JSONObject object, String key){
+        try {
+            return object.getString(key);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -93,7 +93,7 @@
 
             <!-- Flat Number Label -->
             <EditText
-                android:id="@+id/flat_number"
+                android:id="@+id/flat_number_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
                 android:layout_marginLeft="20dp"

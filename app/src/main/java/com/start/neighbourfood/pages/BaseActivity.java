@@ -14,6 +14,7 @@ import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.UserBaseInfo;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -81,7 +82,12 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void saveInSharedPreference(String key, String value) {
+    protected void navigateToPage(Class<SellerItemInfo> sellerItemInfoClass) {
+        Intent i = new Intent(this, sellerItemInfoClass);
+        startActivity(i);
+    }
+
+    public void saveStringInSharedPreference(String key, String value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
@@ -95,7 +101,7 @@ public class BaseActivity extends AppCompatActivity {
         showProgressDialog();
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
-        saveInSharedPreference(ServiceConstants.signedInKey, null);
+        saveStringInSharedPreference(ServiceConstants.signedInKey, null);
         hideProgressDialog();
         navigateToLoginPage();
     }

@@ -5,8 +5,8 @@ import java.util.Date;
 public class SellerItemInfo {
 
     private String sellerItemID;
-    private String itemID;
-    private String sellerID;
+    private String foodName;
+    private String userName;
     private int quantity;
     private int servedFor;
     private Date startTime;
@@ -45,19 +45,19 @@ public class SellerItemInfo {
     }
 
     public String getSellerID() {
-        return sellerID;
+        return userName;
     }
 
     public void setSellerID(String sellerID) {
-        this.sellerID = sellerID;
+        this.userName = sellerID;
     }
 
-    public String getItemID() {
-        return itemID;
+    public String getFoodName() {
+        return foodName;
     }
 
-    public void setItemID(String itemID) {
-        this.itemID = itemID;
+    public void setFoodName(String foodName) {
+        this.foodName = foodName;
     }
 
     public String getSellerItemID() {

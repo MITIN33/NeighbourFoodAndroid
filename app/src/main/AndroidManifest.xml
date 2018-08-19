@@ -26,19 +26,16 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.SEARCH" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.start.neighbourfood.pages.LoginActivity"
+            android:name=".pages.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name="com.start.neighbourfood.pages.BaseActivity" />
-        <activity android:name="com.start.neighbourfood.pages.SignupActivity" />
-        <activity
-            android:name="com.start.neighbourfood.pages.FoodItemsActivity"
-            android:label="@string/title_activity_apartments"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".pages.BaseActivity" />
+        <activity android:name=".pages.SignupActivity" />
+        <activity android:name=".pages.SellerItemInfo"></activity>
     </application>
 
 </manifest>

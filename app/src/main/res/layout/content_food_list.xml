@@ -5,22 +5,23 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="com.start.neighbourfood.pages.FoodItemsActivity">
+    tools:context="com.start.neighbourfood.pages.HomeActivity">
 
     <ImageView
-        android:fitsSystemWindows="true"
+        android:id="@+id/food_items_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="5dp"
-        android:src="@drawable/flat_details"
-        android:id="@+id/food_items_image"
-        android:scaleType="fitXY"/>
+        android:layout_marginTop="55dp"
+        android:fitsSystemWindows="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/flat_details" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginStart="10dp"
-        android:text="Flat #102"/>
+        android:text="Flat #102" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -28,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/food_items_image"
-        tools:context="com.start.neighbourfood.fragments.FlatsInfoFragment"
+        tools:context="com.start.neighbourfood.fragments.FlatListFragment"
         tools:listitem="@layout/fragment_food_items" />
 
 </LinearLayout>

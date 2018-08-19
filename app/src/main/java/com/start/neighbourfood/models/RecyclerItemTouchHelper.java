@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
-import com.start.neighbourfood.fragments.SellerItemAdapter;
+import com.start.neighbourfood.adapters.SellerItemAdapter;
 
 /**
  * Created by ravi on 29/09/17.

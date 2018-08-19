@@ -1,6 +1,5 @@
-package com.start.neighbourfood.fragments;
+package com.start.neighbourfood.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,33 +9,31 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.SellerItemInfo;
+import com.start.neighbourfood.models.FlatsInfo;
 
 import java.util.List;
 
 public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.SellerItemHolder> {
-    private Context context;
-    private List<SellerItemInfo> cartList;
+    private List<FlatsInfo> cartList;
 
-    public SellerItemAdapter(Context context, List<SellerItemInfo> cartList) {
-        this.context = context;
+    public SellerItemAdapter(List<FlatsInfo> cartList) {
         this.cartList = cartList;
     }
 
     @Override
     public SellerItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.seller_item, parent, false);
+                .inflate(R.layout.fragment_seller_item, parent, false);
 
         return new SellerItemHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(SellerItemHolder holder, final int position) {
-        final SellerItemInfo item = cartList.get(position);
-        holder.name.setText(item.getItemID());
-        holder.description.setText(item.getServedFor());
-        holder.price.setText("₹" + item.getSellerItemID());
+        final FlatsInfo item = cartList.get(position);
+        /*holder.name.setText(item.getItemName());
+        holder.description.setText(item.getItemName());
+        holder.price.setText("₹" + item.getItemID());*/
 
         /*Glide.with(context)
                 .load(item.getThumbnail())
@@ -56,7 +53,7 @@ public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.Se
         notifyItemRemoved(position);
     }
 
-    public void restoreItem(SellerItemInfo item, int position) {
+    public void restoreItem(FlatsInfo item, int position) {
         cartList.add(position, item);
         // notify item added by position
         notifyItemInserted(position);

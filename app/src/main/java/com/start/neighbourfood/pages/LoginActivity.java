@@ -234,7 +234,8 @@ public class LoginActivity extends BaseActivity {
         @Override
         public void onTaskCompleted(JSONObject result) {
             try {
-                saveInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                saveStringInSharedPreference(ServiceConstants.userDetail,result.getJSONObject("Result").toString());
                 navigateToHome();
             } catch (Exception e) {
                 LoginManager.getInstance().logOut();

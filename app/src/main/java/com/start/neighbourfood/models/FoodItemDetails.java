@@ -11,6 +11,11 @@ public class FoodItemDetails {
 
     }
 
+    public FoodItemDetails(String itemName, String itemPrice) {
+        this.itemName = itemName;
+        this.itemPrice = itemPrice;
+    }
+
     public String getItemName() {
         return itemName;
     }

@@ -16,6 +16,10 @@
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
+        <item
+            android:id="@+id/seller_page"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Selling Items" />
     </group>
 
     <item android:title="Communicate">

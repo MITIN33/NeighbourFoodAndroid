@@ -6,17 +6,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.start.neighbourfood.pages.HomeActivity"
-    >
+    tools:context="com.start.neighbourfood.pages.HomeActivity">
 
     <android.support.v7.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/recyclerView"
-        android:name="com.neighbourfood.start.neighbourfood.ApartmentsFragment"
-        android:fitsSystemWindows="true"
+        android:layout_marginTop="60dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="110dp"
-        tools:context="com.start.neighbourfood.fragments.FlatsInfoFragment"
+        android:fitsSystemWindows="true"
+        tools:context="com.start.neighbourfood.fragments.FlatListFragment"
         tools:listitem="@layout/fragment_flat_info" />
 
 </LinearLayout>

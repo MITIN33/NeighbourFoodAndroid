@@ -98,6 +98,11 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return flatlistfiltered.size();
     }
 
+    public void setDataSet(List<FlatsInfo> dataset){
+        mDataSet = dataset;
+        flatlistfiltered = dataset;
+    }
+
     public class RowViewHolder extends RecyclerView.ViewHolder {
 
         public TextView userName, flatNumber, rating;
@@ -128,7 +133,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (item.getSellerName().toLowerCase().contains(charString.toLowerCase())) {// || item.getItemName().toLowerCase().contains(charString.toLowerCase())) {
+                        if (item.getSellerName().toLowerCase().contains(charString.toLowerCase())) {
                             filteredList.add(item);
                         }
                     }

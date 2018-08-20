@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +27,13 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences("nfService", MODE_PRIVATE);
+    }
+
+    private SharedPreferences getLocalSharedPreference() {
+        if (sharedPreferences == null) {
+            sharedPreferences = getSharedPreferences("nfService", MODE_PRIVATE);
+        }
+        return sharedPreferences;
     }
 
     public void showProgressDialog() {
@@ -88,13 +96,13 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void saveStringInSharedPreference(String key, String value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = getLocalSharedPreference().edit();
         editor.putString(key, value);
         editor.commit();
     }
 
     public String getFromSharedPreference(String key) {
-        return sharedPreferences.getString(key, null);
+        return getLocalSharedPreference().getString(key, null);
     }
 
     public void signOut() {
@@ -104,5 +112,11 @@ public class BaseActivity extends AppCompatActivity {
         saveStringInSharedPreference(ServiceConstants.signedInKey, null);
         hideProgressDialog();
         navigateToLoginPage();
+    }
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 }

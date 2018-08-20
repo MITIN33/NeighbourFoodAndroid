@@ -64,57 +64,6 @@ public class LoginActivity extends BaseActivity {
     private FirebaseAuth mAuth;
 
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-
-        @Override
-        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-
-            Toast.makeText(getApplicationContext(),
-                    "Verification success ", Toast.LENGTH_LONG).show();
-            signInWithCredential(phoneAuthCredential);
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            Log.w(TAG, "onVerificationFailed", e);
-            hideProgressDialog();
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-                // ...
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-                // ...
-            }
-            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
-        }
-
-        @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-            super.onCodeSent(s, forceResendingToken);
-            findViewById(R.id.buttonGetVerificationCode).setEnabled(false);
-            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Wait (60s)");
-            Toast.makeText(getApplicationContext(),
-                    "Code Sent ", Toast.LENGTH_LONG).show();
-            codeSent = s;
-            Timer buttonTimer = new Timer();
-            buttonTimer.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
-                            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
-                        }
-                    });
-                }
-            }, 60000);
-        }
-    };
     private ServiceManager serviceManager;
 
     @Override
@@ -134,7 +83,11 @@ public class LoginActivity extends BaseActivity {
         findViewById(R.id.buttonGetVerificationCode).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(editTextPhone.getText()) || editTextPhone.length() != 10) {
+                if (!isNetworkConnected()) {
+                    Toast.makeText(LoginActivity.this, "No internet connection!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(editTextPhone.getText()) || editTextPhone.length() != 10 || !isNetworkConnected()) {
                     return;
                 } else {
                     sendVerificationCode();
@@ -146,7 +99,10 @@ public class LoginActivity extends BaseActivity {
         findViewById(R.id.buttonSignIn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(editTextCode.getText())) {
+                if (!isNetworkConnected()) {
+                    Toast.makeText(LoginActivity.this, "No internet connection!", Toast.LENGTH_LONG).show();
+                    return;
+                }if (TextUtils.isEmpty(editTextCode.getText())) {
                     return;
                 } else {
                     verifySignInCode();
@@ -235,7 +191,7 @@ public class LoginActivity extends BaseActivity {
         public void onTaskCompleted(JSONObject result) {
             try {
                 saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                saveStringInSharedPreference(ServiceConstants.userDetail,result.getJSONObject("Result").toString());
+                saveStringInSharedPreference(ServiceConstants.userDetail, result.getJSONObject("Result").toString());
                 navigateToHome();
             } catch (Exception e) {
                 LoginManager.getInstance().logOut();
@@ -256,12 +212,20 @@ public class LoginActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Pass the activity result back to the Facebook SDK
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        try {
+            // Pass the activity result back to the Facebook SDK
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        } catch (Exception ex) {
+            Toast.makeText(this, "Something went wrong. Please check internet connectivity.", Toast.LENGTH_LONG);
+        }
     }
 
     public void bindLoginActionButton(LoginButton loginButton) {
 
+        if (!isNetworkConnected()) {
+            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
+            return;
+        }
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -280,5 +244,57 @@ public class LoginActivity extends BaseActivity {
             }
         });
     }
+
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+
+            Toast.makeText(getApplicationContext(),
+                    "Verification success ", Toast.LENGTH_LONG).show();
+            signInWithCredential(phoneAuthCredential);
+        }
+
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            // This callback is invoked in an invalid request for verification is made,
+            // for instance if the the phone number format is not valid.
+            Log.w(TAG, "onVerificationFailed", e);
+            hideProgressDialog();
+            if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                // ...
+            } else if (e instanceof FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                // ...
+            }
+            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
+        }
+
+        @Override
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            findViewById(R.id.buttonGetVerificationCode).setEnabled(false);
+            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Wait (60s)");
+            Toast.makeText(getApplicationContext(),
+                    "Code Sent ", Toast.LENGTH_LONG).show();
+            codeSent = s;
+            Timer buttonTimer = new Timer();
+            buttonTimer.schedule(new TimerTask() {
+
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
+                            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
+                        }
+                    });
+                }
+            }, 60000);
+        }
+    };
 }
 

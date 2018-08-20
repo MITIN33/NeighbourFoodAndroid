@@ -4,9 +4,11 @@ package com.start.neighbourfood.services;
 import android.app.ProgressDialog;
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -47,6 +49,11 @@ public class ServiceManager {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        if (req != null){
+            int socketTimeout = 10000;//10 seconds
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+            req.setRetryPolicy(policy);
+        }
         getRequestQueue().add(req);
     }
 

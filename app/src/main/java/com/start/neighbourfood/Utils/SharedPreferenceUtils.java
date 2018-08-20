@@ -13,12 +13,10 @@ import java.io.IOException;
 
 public class SharedPreferenceUtils {
     private static SharedPreferenceUtils mSharedPreferenceUtils;
-    protected Context mContext;
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mSharedPreferencesEditor;
 
     private SharedPreferenceUtils(Context context) {
-        mContext = context;
         mSharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         mSharedPreferencesEditor = mSharedPreferences.edit();
     }

@@ -28,7 +28,6 @@ import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FlatsInfoRecyclerViewAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.pages.BaseActivity;
 import com.start.neighbourfood.services.ServiceManager;
@@ -98,7 +97,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
             @Override
             public void onClick(View view, int position) {
                 FlatsInfo flats = mDataset.get(position);
-                loadFoodItemsForFlat(flats);
+                loadFoodItemsForFlat(flats.getSellerId());
             }
 
             @Override
@@ -120,17 +119,20 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     }
 
 
-    private void loadFoodItemsForFlat(FlatsInfo flatsInfo) {
+    private void loadFoodItemsForFlat(String sellerId) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        FoodListFragment fragment = new FoodListFragment();
         Slide exitSlide = new Slide(){{setSlideEdge(Gravity.LEFT);}};
         Slide enterSlide = new Slide(){{setSlideEdge(Gravity.RIGHT);}};
-        List<FoodItemDetails> mDataset = new ArrayList<>();
-        mDataset.add(new FoodItemDetails("Samosa", "430"));
-        FoodListFragment fragment = new FoodListFragment(mDataset);
-        fragmentTransaction.replace(R.id.content_frame, fragment);
         fragment.setEnterTransition(enterSlide);
         fragment.setExitTransition(exitSlide);
+        Bundle args = new Bundle();
+        args.putString("sellerId", sellerId);
+        fragment.setArguments(args);
+
+        fragmentTransaction.replace(R.id.content_frame, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

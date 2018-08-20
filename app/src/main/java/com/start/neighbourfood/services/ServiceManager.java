@@ -13,10 +13,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.start.neighbourfood.BuildConfig;
-import com.start.neighbourfood.Utils.SharedPreferenceUtils;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -123,8 +121,8 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void fetchFoodItemForFlat(String flatId,final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.foodApiPAth)  + "/" + flatId;
+    public void fetchFoodItemsForFlat(String flatId, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -138,6 +136,7 @@ public class ServiceManager {
         });
         addToRequestQueue(jsonObjectRequest);
     }
+
 
     private String getValue(JSONObject object, String key){
         try {

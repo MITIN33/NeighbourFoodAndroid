@@ -12,6 +12,7 @@ import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.FoodItemDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,9 +29,9 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FoodItemsRecyclerViewAdapter(List<FoodItemDetails> dataSet) {
+    public FoodItemsRecyclerViewAdapter() {
         // For now, giving the dummy food items
-        mDataSet = dataSet;
+        mDataSet = new ArrayList<>();
         //mContext = context;
         //mListener = listener;
 
@@ -53,8 +54,8 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         FoodItemRowViewHolder rowHolder = (FoodItemRowViewHolder) holder;
         rowHolder.getFoodNameView().setText(mDataSet.get(position).getItemName());
-        rowHolder.getServingView().setText(mDataSet.get(position).getItemServing());
-        rowHolder.getPriceView().setText(mDataSet.get(position).getItemPrice());
+        rowHolder.getServingView().setText("2 delicious samosa served with green chatni.");//mDataSet.get(position).getItemServing());
+        rowHolder.getPriceView().setText(String.format("\u20B9 %s", mDataSet.get(position).getPrice()));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -62,6 +63,11 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public int getItemCount() {
         return mDataSet.size();
     }
+
+    public void setmDataSet(List<FoodItemDetails> dataSet) {
+        mDataSet = dataSet;
+    }
+
     // END_INCLUDE(recyclerViewOnBindViewHolder)
 
     public class FoodItemRowViewHolder extends RecyclerView.ViewHolder {

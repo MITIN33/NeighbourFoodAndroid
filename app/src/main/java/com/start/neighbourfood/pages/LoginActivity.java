@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements TaskHandler {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -102,7 +102,8 @@ public class LoginActivity extends BaseActivity {
                 if (!isNetworkConnected()) {
                     Toast.makeText(LoginActivity.this, "No internet connection!", Toast.LENGTH_LONG).show();
                     return;
-                }if (TextUtils.isEmpty(editTextCode.getText())) {
+                }
+                if (TextUtils.isEmpty(editTextCode.getText())) {
                     return;
                 } else {
                     verifySignInCode();
@@ -174,7 +175,7 @@ public class LoginActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
-                            serviceManager.fetchUserfromUid(user.getUid(), new LoginTaskHandler());
+                            serviceManager.fetchUserfromUid(user.getUid(), LoginActivity.this);
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 Toast.makeText(LoginActivity.this,
@@ -186,46 +187,36 @@ public class LoginActivity extends BaseActivity {
                 });
     }
 
-    private class LoginTaskHandler implements TaskHandler {
-        @Override
-        public void onTaskCompleted(JSONObject result) {
-            try {
-                saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                saveStringInSharedPreference(ServiceConstants.userDetail, result.getJSONObject("Result").toString());
-                navigateToHome();
-            } catch (Exception e) {
-                LoginManager.getInstance().logOut();
-            }
-            hideProgressDialog();
+    @Override
+    public void onTaskCompleted(JSONObject result) {
+        try {
+            saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
+            saveStringInSharedPreference(ServiceConstants.userDetail, result.getJSONObject("Result").toString());
+            navigateToHome();
+        } catch (Exception e) {
+            LoginManager.getInstance().logOut();
         }
+        hideProgressDialog();
+    }
 
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            hideProgressDialog();
-            if (error.networkResponse.statusCode == 404) {
-                navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());
-            }
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        hideProgressDialog();
+        if (error.networkResponse.statusCode == 404) {
+            navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        try {
-            // Pass the activity result back to the Facebook SDK
-            mCallbackManager.onActivityResult(requestCode, resultCode, data);
-        } catch (Exception ex) {
-            Toast.makeText(this, "Something went wrong. Please check internet connectivity.", Toast.LENGTH_LONG);
-        }
+        // Pass the activity result back to the Facebook SDK
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     public void bindLoginActionButton(LoginButton loginButton) {
 
-        if (!isNetworkConnected()) {
-            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
-            return;
-        }
+
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override

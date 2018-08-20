@@ -1,10 +1,8 @@
 package com.start.neighbourfood.fragments;
 
-import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,20 +18,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FlatsInfoRecyclerViewAdapter;
-import com.start.neighbourfood.R;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.pages.BaseActivity;
-import com.start.neighbourfood.pages.HomeActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -47,7 +43,7 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FlatListFragment extends BaseFragment {
+public class FlatListFragment extends BaseFragment implements TaskHandler {
 
     private static final String TAG = FlatListFragment.class.getSimpleName();
     private List<FlatsInfo> mDataset;
@@ -63,6 +59,7 @@ public class FlatListFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        fetchFlatinfo();
     }
 
     @Override
@@ -94,7 +91,7 @@ public class FlatListFragment extends BaseFragment {
         showProgressDialog();
         try {
             JSONObject userBaseInfo = new JSONObject(((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail));
-            ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, new PopulateHoodTaskHandler());
+            ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
         } catch (IllegalAccessException | JSONException e) {
             e.printStackTrace();
         }
@@ -143,29 +140,26 @@ public class FlatListFragment extends BaseFragment {
         });
     }
 
-    private class PopulateHoodTaskHandler implements TaskHandler {
-
-        @Override
-        public void onTaskCompleted(JSONObject result) {
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                List<FlatsInfo> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
-                });
-                mDataset = flatsInfos;
-                mAdapter.setDataSet(flatsInfos);
-                mAdapter.notifyDataSetChanged();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            hideProgressDialog();
+    @Override
+    public void onTaskCompleted(JSONObject result) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<FlatsInfo> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
+            });
+            mDataset = flatsInfos;
+            mAdapter.setDataSet(flatsInfos);
+            mAdapter.notifyDataSetChanged();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            Log.e(TAG, "onErrorResponse: Unable to load", error);
-        }
+        hideProgressDialog();
     }
+
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        Log.e(TAG, "onErrorResponse: Unable to load", error);
+    }
+
 }

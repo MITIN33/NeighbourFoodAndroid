@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.start.neighbourfood.pages.HomeActivity">
 
-    <android.support.v7.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/recyclerView"
-        android:layout_marginTop="60dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        tools:context="com.start.neighbourfood.fragments.FlatListFragment"
-        tools:listitem="@layout/fragment_flat_info" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <android.support.v7.widget.RecyclerView xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="60dp"
+            android:fitsSystemWindows="true"
+            tools:context="com.start.neighbourfood.fragments.FlatListFragment"
+            tools:listitem="@layout/fragment_flat_info" />
+
+    </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
 
     <!--tools:showIn="@layout/activity_home"-->

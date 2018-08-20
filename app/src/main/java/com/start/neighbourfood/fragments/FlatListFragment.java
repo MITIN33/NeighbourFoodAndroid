@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -43,12 +44,13 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FlatListFragment extends BaseFragment implements TaskHandler {
+public class FlatListFragment extends BaseFragment implements TaskHandler, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = FlatListFragment.class.getSimpleName();
     private List<FlatsInfo> mDataset;
     public FlatsInfoRecyclerViewAdapter mAdapter;
     private SearchView searchView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     public FlatListFragment() {
@@ -68,6 +70,26 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
         View rootView = getLayoutInflater().inflate(R.layout.content_flat_list, null);
         RecyclerView mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new FlatsInfoRecyclerViewAdapter(getActivity(), mDataset);
+        mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container);
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        /**
+         * Showing Swipe Refresh animation on activity create
+         * As animation won't start on onCreate, post runnable is used
+         */
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchFlatinfo();
+            }
+        });
+
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
@@ -88,7 +110,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
     }
 
     private void fetchFlatinfo() {
-        showProgressDialog();
+        //showProgressDialog();
         try {
             JSONObject userBaseInfo = new JSONObject(((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail));
             ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
@@ -96,6 +118,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
             e.printStackTrace();
         }
     }
+
 
     private void loadFoodItemsForFlat(FlatsInfo flatsInfo) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
@@ -154,12 +177,19 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        hideProgressDialog();
+        //hideProgressDialog();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
         Log.e(TAG, "onErrorResponse: Unable to load", error);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void onRefresh() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        fetchFlatinfo();
+    }
 }

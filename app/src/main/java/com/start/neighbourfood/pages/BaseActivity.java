@@ -93,7 +93,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public void signOut() {
         showProgressDialog();
-        FirebaseAuth.getInstance().signOut();
+       // FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
         saveInSharedPreference(ServiceConstants.signedInKey, null);
         hideProgressDialog();

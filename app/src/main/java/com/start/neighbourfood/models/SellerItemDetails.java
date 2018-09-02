@@ -1,6 +1,6 @@
 package com.start.neighbourfood.models;
 
-public class SelletItemDetails {
+public class SellerItemDetails {
 
     private String flatID;
 
@@ -14,7 +14,7 @@ public class SelletItemDetails {
 
     private String userName;
 
-    public SelletItemDetails() {
+    public SellerItemDetails() {
     }
 
     public String getItemId() {

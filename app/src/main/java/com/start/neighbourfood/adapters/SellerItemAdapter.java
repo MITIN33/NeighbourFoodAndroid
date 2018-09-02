@@ -9,15 +9,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.FlatsInfo;
+import com.start.neighbourfood.models.FoodItemDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.SellerItemHolder> {
-    private List<FlatsInfo> cartList;
+    private List<FoodItemDetails> mDataset;
 
-    public SellerItemAdapter(List<FlatsInfo> cartList) {
-        this.cartList = cartList;
+    public SellerItemAdapter() {
+        this.mDataset = new ArrayList<>();
     }
 
     @Override
@@ -30,31 +31,31 @@ public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.Se
 
     @Override
     public void onBindViewHolder(SellerItemHolder holder, final int position) {
-        final FlatsInfo item = cartList.get(position);
-        /*holder.name.setText(item.getItemName());
+        final FoodItemDetails item = mDataset.get(position);
+        holder.name.setText(item.getItemName());
         holder.description.setText(item.getItemName());
-        holder.price.setText("₹" + item.getItemID());*/
-
-        /*Glide.with(context)
-                .load(item.getThumbnail())
-                .into(holder.thumbnail);*/
+        holder.price.setText("₹" + item.getPrice());
     }
 
     @Override
     public int getItemCount() {
-        return cartList.size();
+        return mDataset.size();
+    }
+
+    public void setDataset(List<FoodItemDetails> sellerItemInfos) {
+        mDataset = sellerItemInfos;
     }
 
     public void removeItem(int position) {
-        cartList.remove(position);
+        mDataset.remove(position);
         // notify the item removed by position
         // to perform recycler view delete animations
         // NOTE: don't call notifyDataSetChanged()
         notifyItemRemoved(position);
     }
 
-    public void restoreItem(FlatsInfo item, int position) {
-        cartList.add(position, item);
+    public void restoreItem(FoodItemDetails item, int position) {
+        mDataset.add(position, item);
         // notify item added by position
         notifyItemInserted(position);
     }

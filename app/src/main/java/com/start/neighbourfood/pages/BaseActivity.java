@@ -89,11 +89,6 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    protected void navigateToPage(Class<SellerItemInfo> sellerItemInfoClass) {
-        Intent i = new Intent(this, sellerItemInfoClass);
-        startActivity(i);
-    }
-
     public boolean saveStringInSharedPreference(String key, String value) {
         try {
             SharedPreferences.Editor editor = getLocalSharedPreference().edit();

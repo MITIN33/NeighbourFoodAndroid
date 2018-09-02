@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:id="@+id/popup"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@android:drawable/ic_popup_sync"
+    android:padding="10dp"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/seller_food_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_border"
+        android:fontFamily="serif"
+        android:hint="Food Item Name"
+        android:inputType="textCapWords"
+        android:paddingStart="5dp" />
+    <requestFocus />
+
+    <EditText
+        android:id="@+id/seller_food_item_served_for"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_border"
+        android:fontFamily="serif"
+        android:hint="Served for"
+        android:inputType="textCapWords"
+        android:paddingStart="5dp" />
+
+    <EditText
+        android:id="@+id/seller_food_item_desc"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_border"
+        android:fontFamily="serif"
+        android:hint="Veg/Non-Veg/With Egg"
+        android:ems="10"
+        android:gravity="start"
+        android:inputType="textMultiLine"
+        android:paddingStart="5dp" />
+    <EditText
+        android:id="@+id/seller_food_item_price"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_text_border"
+        android:fontFamily="serif"
+        android:hint="Price per Unit"
+        android:inputType="textCapWords"
+        android:paddingStart="5dp" />
+
+</LinearLayout>

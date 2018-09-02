@@ -1,11 +1,10 @@
 package com.start.neighbourfood.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.pages.BaseActivity;
 
 public class BaseFragment extends Fragment {
 
@@ -27,5 +26,19 @@ public class BaseFragment extends Fragment {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+    }
+
+    public String getFromSharedPreference(String key) {
+        if (getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).getFromSharedPreference(key);
+        }
+        return null;
+    }
+
+    public boolean saveFromSharedPreference(String key, String object) {
+        if (getActivity() instanceof BaseActivity) {
+            return ((BaseActivity) getActivity()).saveStringInSharedPreference(key, object);
+        }
+        return false;
     }
 }

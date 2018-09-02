@@ -15,7 +15,6 @@ import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -95,10 +94,15 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void saveStringInSharedPreference(String key, String value) {
-        SharedPreferences.Editor editor = getLocalSharedPreference().edit();
-        editor.putString(key, value);
-        editor.commit();
+    public boolean saveStringInSharedPreference(String key, String value) {
+        try {
+            SharedPreferences.Editor editor = getLocalSharedPreference().edit();
+            editor.putString(key, value);
+            editor.commit();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public String getFromSharedPreference(String key) {

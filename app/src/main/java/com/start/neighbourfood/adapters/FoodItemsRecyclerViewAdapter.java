@@ -20,20 +20,19 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     private static final String TAG = "FoodItemsRecyclerViewAdapter";
 
     private List<FoodItemDetails> mDataSet;
-    //private RecyclerViewClickListener mListener;
+    private ElegantNumberButton.OnValueChangeListener mListener;
 
     // BEGIN_INCLUDE(recyclerViewSampleViewHolder)
 
     /**
      * Initialize the dataset of the Adapter.
      *
-     * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FoodItemsRecyclerViewAdapter() {
+    public FoodItemsRecyclerViewAdapter(ElegantNumberButton.OnValueChangeListener listener) {
         // For now, giving the dummy food items
         mDataSet = new ArrayList<>();
         //mContext = context;
-        //mListener = listener;
+        mListener = listener;
 
     }
     // END_INCLUDE(recyclerViewSampleViewHolder)
@@ -56,6 +55,12 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         rowHolder.getFoodNameView().setText(mDataSet.get(position).getItemName());
         rowHolder.getServingView().setText("2 delicious samosa served with green chatni.");//mDataSet.get(position).getItemServing());
         rowHolder.getPriceView().setText(String.format("\u20B9 %s", mDataSet.get(position).getPrice()));
+        rowHolder.getQtyButton().setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
+            @Override
+            public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
+                mListener.onValueChange(view, oldValue, newValue);
+            }
+        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -76,21 +81,13 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         private final TextView servingView;
         private final TextView priceView;
         private final ElegantNumberButton qtyButton;
-        //private RecyclerViewClickListener mListener;
 
         public FoodItemRowViewHolder(View v) {
             super(v);
-            //mListener = listener;
-            foodNameView = (TextView) v.findViewById(R.id.food_item_name);
-            servingView = (TextView) v.findViewById(R.id.serving_string);
-            priceView = (TextView) v.findViewById(R.id.food_item_price);
-            qtyButton = (ElegantNumberButton) v.findViewById(R.id.quantity_button);
-            qtyButton.setOnClickListener(new ElegantNumberButton.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String quantitySelected = qtyButton.getNumber();
-                }
-            });
+            foodNameView = v.findViewById(R.id.food_item_name);
+            servingView = v.findViewById(R.id.serving_string);
+            priceView = v.findViewById(R.id.food_item_price);
+            qtyButton = v.findViewById(R.id.quantity_button);
 
             // set the initial and the final Number for the quantity_button
             Integer minQty = 0;
@@ -110,5 +107,8 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             return priceView;
         }
 
+        public ElegantNumberButton getQtyButton() {
+            return qtyButton;
+        }
     }
 }

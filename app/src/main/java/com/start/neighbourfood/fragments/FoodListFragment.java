@@ -1,7 +1,6 @@
 package com.start.neighbourfood.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +30,7 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FoodListFragment extends Fragment implements TaskHandler {
+public class FoodListFragment extends BaseFragment implements TaskHandler {
 
     protected List<FoodItemDetails> mDataset;
     private FoodItemsRecyclerViewAdapter mAdapter;
@@ -55,7 +54,12 @@ public class FoodListFragment extends Fragment implements TaskHandler {
             mRecyclerView.setAdapter(mAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
-            loadFoodItems();
+            mRecyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    loadFoodItems();
+                }
+            });
             //Set On Click listner
             mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
                 @Override
@@ -78,7 +82,7 @@ public class FoodListFragment extends Fragment implements TaskHandler {
     }
 
     private void loadFoodItems() {
-
+        showProgressDialog();
         String sellerId = getArguments().getString("sellerId");
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
     }
@@ -95,10 +99,11 @@ public class FoodListFragment extends Fragment implements TaskHandler {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
+        hideProgressDialog();
     }
 
     @Override
     public void onErrorResponse(VolleyError error) {
-
+        hideProgressDialog();
     }
 }

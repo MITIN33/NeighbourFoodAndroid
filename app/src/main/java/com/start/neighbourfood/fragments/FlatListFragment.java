@@ -65,8 +65,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.content_flat_list, null);
+        View rootView = inflater.inflate(R.layout.content_flat_list, container, false);
         RecyclerView mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new FlatsInfoRecyclerViewAdapter(getActivity(), mDataset);
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container);
@@ -81,13 +80,13 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
          * Showing Swipe Refresh animation on activity create
          * As animation won't start on onCreate, post runnable is used
          */
-        mSwipeRefreshLayout.post(new Runnable() {
+        /*mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
                 fetchFlatinfo();
             }
-        });
+        });*/
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -109,7 +108,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     }
 
     private void fetchFlatinfo() {
-        //showProgressDialog();
+        showProgressDialog();
         try {
             JSONObject userBaseInfo = new JSONObject(((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail));
             ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
@@ -179,7 +178,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //hideProgressDialog();
+        hideProgressDialog();
         mSwipeRefreshLayout.setRefreshing(false);
     }
 

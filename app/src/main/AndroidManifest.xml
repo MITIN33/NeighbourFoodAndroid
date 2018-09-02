@@ -34,7 +34,9 @@
             android:name=".pages.LoginActivity"
             android:label="@string/title_activity_login" />
         <activity android:name=".pages.BaseActivity" />
-        <activity android:name=".pages.SignupActivity" />
+        <activity
+            android:name=".pages.SignupActivity"
+            android:label="Sign Up" />
         <activity android:name=".pages.SellerItemInfo"></activity>
     </application>
 

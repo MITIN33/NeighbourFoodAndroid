@@ -88,6 +88,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     return;
                 }
                 if (TextUtils.isEmpty(editTextPhone.getText()) || editTextPhone.length() != 10 || !isNetworkConnected()) {
+                    Toast.makeText(LoginActivity.this, "Incorrect Number!", Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     sendVerificationCode();
@@ -104,6 +105,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     return;
                 }
                 if (TextUtils.isEmpty(editTextCode.getText())) {
+                    Toast.makeText(LoginActivity.this, "Incorrect code !", Toast.LENGTH_LONG).show();
                     return;
                 } else {
                     verifySignInCode();

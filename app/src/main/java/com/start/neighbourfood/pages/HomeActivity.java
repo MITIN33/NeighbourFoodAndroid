@@ -1,7 +1,5 @@
 package com.start.neighbourfood.pages;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,36 +9,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.auth.TaskHandler;
+import com.start.neighbourfood.fragments.AddSellerItemDialogFragment;
 import com.start.neighbourfood.fragments.FlatListFragment;
 import com.start.neighbourfood.fragments.SellerFoodFragment;
-import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.models.FoodItem;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
-import com.start.neighbourfood.services.ServiceManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends BaseActivity
@@ -101,6 +80,7 @@ public class HomeActivity extends BaseActivity
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
         } else {
             if (id == R.id.nav_settings) {
+                loadFragment(new AddSellerItemDialogFragment());
 
             } else if (id == R.id.nav_trackOrder) {
 

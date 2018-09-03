@@ -6,12 +6,13 @@
 
     <ImageView
         android:id="@+id/food_image"
-        android:layout_width="54dp"
-        android:layout_height="51dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:scaleType="centerCrop"
         android:layout_marginTop="15dp"
-        android:src="@drawable/foodie" />
+        android:src="@drawable/food_icon" />
 
     <RelativeLayout
         android:id="@+id/rel_layout_1"

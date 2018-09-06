@@ -3,7 +3,6 @@ package com.start.neighbourfood.fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
@@ -11,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Toast;
 
 import com.start.neighbourfood.R;
@@ -91,8 +91,8 @@ public class AddSellerItemDialogFragment extends DialogFragment {
 
                     final EditText foodItemName = (EditText) promptsView
                             .findViewById(R.id.seller_food_item_name);
-                    final EditText foodItemServedFor = (EditText) promptsView
-                        .findViewById(R.id.seller_food_item_served_for);
+                final NumberPicker foodItemServedFor = (NumberPicker) promptsView
+                        .findViewById(R.id.numberPicker);
                     final EditText foodItemDesc = (EditText) promptsView
                         .findViewById(R.id.seller_food_item_desc);
                     final EditText foodItemPrice = (EditText) promptsView

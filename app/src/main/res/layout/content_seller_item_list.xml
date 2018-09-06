@@ -4,15 +4,47 @@
     android:name="@+id/coordinateLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="55dp"
     tools:context="com.start.neighbourfood.pages.HomeActivity">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:background="@color/grey_100">
+
+        <Switch
+            android:id="@+id/switch_one"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:checked="true"
+            android:fontFamily="@font/capriola"
+            android:gravity="start"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="Available"
+            android:textColor="@color/green_dark"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_marginTop="55dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
         tools:context="com.start.neighbourfood.fragments.SellerFoodFragment"
         tools:listitem="@layout/fragment_seller_item"
         android:scrollbars="vertical" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_food_item_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </android.support.design.widget.CoordinatorLayout>

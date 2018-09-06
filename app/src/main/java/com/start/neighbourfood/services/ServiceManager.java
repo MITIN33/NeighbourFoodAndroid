@@ -47,7 +47,7 @@ public class ServiceManager {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
-        if (req != null){
+        if (req != null) {
             int socketTimeout = 10000;//10 seconds
             RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
             req.setRetryPolicy(policy);
@@ -105,8 +105,8 @@ public class ServiceManager {
     }
 
 
-    public void fetchAvailableHoods(JSONObject userBaseInfo,final TaskHandler taskHandler) throws IllegalAccessException {
-        String url = getFullUrl(ServiceConstants.apartmentApiPath) +"/" + getValue(userBaseInfo,"apartmentID") + "/user/" + getValue(userBaseInfo,"userUid");
+    public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
+        String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -138,7 +138,39 @@ public class ServiceManager {
     }
 
 
-    private String getValue(JSONObject object, String key){
+    public void fetchAllFoodItem(final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.foodApiPAth);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                taskHandler.onTaskCompleted(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                taskHandler.onErrorResponse(error);
+            }
+        });
+        addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void addSellerItem(JSONObject jsonObject, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.selleritemApiPath);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                taskHandler.onTaskCompleted(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                taskHandler.onErrorResponse(error);
+            }
+        });
+        addToRequestQueue(jsonObjectRequest);
+    }
+
+    private String getValue(JSONObject object, String key) {
         try {
             return object.getString(key);
         } catch (JSONException e) {

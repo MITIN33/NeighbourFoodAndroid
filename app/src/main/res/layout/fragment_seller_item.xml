@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/thumbnail"
             android:ellipsize="end"
+            android:text="Chaat"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"
             android:textColor="@color/transparentBlack"
@@ -64,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/name"
             android:layout_marginTop="5dp"
+            android:text="Served with 2 green chatni"
             android:layout_toRightOf="@id/thumbnail"
             android:textColor="@color/grey_500"
             android:textSize="12dp" />
@@ -75,7 +77,24 @@
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@id/thumbnail"
             android:textColor="@color/colorAccent"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="40" />
+
+        <Button
+            android:id="@+id/editButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:alpha="0.3"
+            android:background="@drawable/ic_edit_24" />
+
+        <TextView
+            android:id="@+id/servedForText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:text="Served for 2" />
 
     </RelativeLayout>
 

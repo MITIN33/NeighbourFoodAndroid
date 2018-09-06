@@ -1,39 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:id="@+id/popup"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:background="@android:drawable/ic_popup_sync"
     android:padding="10dp"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/seller_food_item_name"
-        android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/edit_text_border"
-        android:fontFamily="serif"
-        android:hint="Food Item Name"
-        android:inputType="textCapWords"
-        android:paddingStart="5dp" />
-    <requestFocus />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/seller_food_item_served_for"
-        android:layout_width="match_parent"
+        <AutoCompleteTextView
+        android:id="@+id/seller_food_item_name"
         android:layout_height="38dp"
+            android:layout_width="match_parent"
+        android:layout_marginLeft="20dp"
+            android:ems="10"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/edit_text_border"
+            android:hint="Food name"
+            android:paddingLeft="5dp"
+            android:text="">
+    <requestFocus />
+        </AutoCompleteTextView>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/edit_text_border"
-        android:fontFamily="serif"
-        android:hint="Served for"
-        android:inputType="textCapWords"
-        android:paddingStart="5dp" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/seller_food_item_price"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:background="@drawable/edit_text_border"
+            android:fontFamily="sans-serif"
+            android:hint="Rs/item"
+            android:inputType="number"
+            android:paddingStart="5dp" />
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_pirates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Veg" />
+
+            <RadioButton
+                android:id="@+id/radio_ninjas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Non Veg" />
+        </RadioGroup>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="40dp"
+            android:text="SERVED FOR"
+            android:textSize="15sp" />
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="80dp"
+            android:layout_height="60dp" />
+    </LinearLayout>
 
     <EditText
         android:id="@+id/seller_food_item_desc"
@@ -43,23 +96,12 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/edit_text_border"
-        android:fontFamily="serif"
-        android:hint="Veg/Non-Veg/With Egg"
+        android:fontFamily="sans-serif"
+        android:hint="@string/foodDescription"
         android:ems="10"
         android:gravity="start"
         android:inputType="textMultiLine"
         android:paddingStart="5dp" />
-    <EditText
-        android:id="@+id/seller_food_item_price"
-        android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/edit_text_border"
-        android:fontFamily="serif"
-        android:hint="Price per Unit"
-        android:inputType="textCapWords"
-        android:paddingStart="5dp" />
+
 
 </LinearLayout>

@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.fragments.AddSellerItemDialogFragment;
 import com.start.neighbourfood.fragments.FlatListFragment;
 import com.start.neighbourfood.fragments.SellerFoodFragment;
 import com.start.neighbourfood.models.ServiceConstants;
@@ -80,7 +79,6 @@ public class HomeActivity extends BaseActivity
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
         } else {
             if (id == R.id.nav_settings) {
-                loadFragment(new AddSellerItemDialogFragment());
 
             } else if (id == R.id.nav_trackOrder) {
 

@@ -9,6 +9,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +25,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -40,7 +40,8 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.FoodItem;
 import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.RecyclerItemTouchHelper;
-import com.start.neighbourfood.models.SellerItemInfo;
+import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.pages.BaseActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -57,6 +58,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     private CoordinatorLayout coordinatorLayout;
     private FloatingActionButton mPlusOneButton;
     private FoodItemDetails selectedItem;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public SellerFoodFragment() {
     }
@@ -79,7 +81,19 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             View rootView = inflater.inflate(R.layout.content_seller_item_list, container, false);
             RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
             final Switch switchOne = (Switch) rootView.findViewById(R.id.switch_one);
+            mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container_seller);
 
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    loadFoodItems();
+                }
+            });
+            mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                    android.R.color.holo_green_dark,
+                    android.R.color.holo_orange_dark,
+                    android.R.color.holo_blue_dark);
             switchOne.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener() {
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -184,13 +198,15 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof SellerItemAdapter.SellerItemHolder) {
             // get the removed item name to display it in snack bar
-            String name = mDataset.get(viewHolder.getAdapterPosition()).getSellerID();
+            final String id = mDataset.get(viewHolder.getAdapterPosition()).getSellerItemID();
+            final String name = mDataset.get(viewHolder.getAdapterPosition()).getItemName();
 
             // backup of removed item for undo purpose
             final FoodItemDetails deletedItem = mDataset.get(viewHolder.getAdapterPosition());
@@ -199,19 +215,30 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             // remove the item from recycler view
             mAdapter.removeItem(viewHolder.getAdapterPosition());
 
-            // showing snack bar with Undo option
-            Snackbar snackbar = Snackbar
-                    .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
-            snackbar.setAction("UNDO", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    // undo is selected, restore the deleted item
-                    mAdapter.restoreItem(deletedItem, deletedIndex);
+            ServiceManager.getInstance(getActivity()).removeSellerItem(id, new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject result) {
+                    // showing snack bar with Undo option
+                    Snackbar snackbar = Snackbar
+                            .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            // undo is selected, restore the deleted item
+                            mAdapter.restoreItem(deletedItem, deletedIndex);
+                        }
+                    });
+                    snackbar.setActionTextColor(Color.YELLOW);
+                    snackbar.show();
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
                 }
             });
-            snackbar.setActionTextColor(Color.YELLOW);
-            snackbar.show();
         }
     }
 
@@ -254,19 +281,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                 .findViewById(R.id.seller_food_item_desc);
         final EditText foodItemPrice = (EditText) promptsView
                 .findViewById(R.id.seller_food_item_price);
-        RadioGroup radioGroup = promptsView.findViewById(R.id.radioGroup);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = group.findViewById(checkedId);
-                // This puts the value (true/false) into the variable
-                boolean isChecked = checkedRadioButton.isChecked();
-                // If the radiobutton that has changed in check state is now checked...
-                if (isChecked) {
-
-                }
-            }
-        });
+        final RadioButton radioGroup = promptsView.findViewById(R.id.radio_veg);
 
         if (numberPicker != null) {
             numberPicker.setMinValue(0);
@@ -294,25 +309,47 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 // edit text
                                 // Save the data to the database from here
 
+                                UserBaseInfo userBaseInfo = ((BaseActivity) getActivity()).getUserBaseInfo();
                                 Gson gson = new Gson();
-                                SellerItemInfo sellerItemInfo = new SellerItemInfo();
-                                sellerItemInfo.setFoodName(String.valueOf(foodItemName.getText()));
-                                sellerItemInfo.setServedFor(numberPicker.getValue());
-                                sellerItemInfo.setSellerID(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                sellerItemInfo.setPrice(String.valueOf(foodItemPrice.getText()));
-                                sellerItemInfo.setAvailable(true);
+                                final FoodItemDetails foodItemDetails = new FoodItemDetails();
+                                foodItemDetails.setItemName(String.valueOf(foodItemName.getText()));
+                                foodItemDetails.setServedFor(String.valueOf(numberPicker.getValue()));
+                                foodItemDetails.setSellerID(userBaseInfo.getUserUid());
+                                foodItemDetails.setPrice(String.valueOf(foodItemPrice.getText()));
+                                foodItemDetails.setFlatID(userBaseInfo.getFlatID());
+                                foodItemDetails.setItemDesc(String.valueOf(foodItemDesc.getText()));
+                                foodItemDetails.setVeg(radioGroup.isChecked());
+                                foodItemDetails.setAvailable(true);
                                 try {
-                                    ServiceManager.getInstance(getActivity()).addSellerItem(new JSONObject(gson.toJson(sellerItemInfo)), new TaskHandler() {
-                                        @Override
-                                        public void onTaskCompleted(JSONObject result) {
-                                            Toast.makeText(getContext(), foodItemName.getText() + " is added!", Toast.LENGTH_SHORT).show();
-                                        }
 
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            Log.e("ADD_SELLER_ITEM", error.getMessage());
-                                        }
-                                    });
+                                    if (selectedItem == null) {
+                                        ServiceManager.getInstance(getActivity()).addSellerItem(new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
+                                            @Override
+                                            public void onTaskCompleted(JSONObject result) {
+                                                mDataset.add(foodItemDetails);
+                                                mAdapter.notifyDataSetChanged();
+                                                Toast.makeText(getContext(), foodItemName.getText() + " is added!", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("ADD_SELLER_ITEM", error.getMessage());
+                                            }
+                                        });
+                                    } else {
+                                        ServiceManager.getInstance(getActivity()).updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
+                                            @Override
+                                            public void onTaskCompleted(JSONObject result) {
+                                                Toast.makeText(getContext(), foodItemName.getText() + " is updated!", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                Log.e("ADD_SELLER_ITEM", error.getMessage());
+                                            }
+                                        });
+                                    }
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

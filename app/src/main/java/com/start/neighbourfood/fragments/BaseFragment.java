@@ -18,8 +18,9 @@ public class BaseFragment extends Fragment {
             mProgressDialog.setCanceledOnTouchOutside(false);
             mProgressDialog.setIndeterminate(true);
         }
-
-        mProgressDialog.show();
+        if (mProgressDialog != null) {
+            mProgressDialog.show();
+        }
     }
 
     public void hideProgressDialog() {

@@ -3,8 +3,8 @@ package com.start.neighbourfood.models;
 public class UserBaseInfo {
 
     private String userUid;
-    private String fName;
-    private String lName;
+    private String fname;
+    private String lname;
     private String apartmentID;
     private String phoneNo;
     private String flatID;
@@ -19,20 +19,20 @@ public class UserBaseInfo {
         this.userUid = userUid;
     }
 
-    public String getfName() {
-        return fName;
+    public String getFname() {
+        return fname;
     }
 
-    public void setfName(String fName) {
-        this.fName = fName;
+    public void setFname(String fname) {
+        this.fname = fname;
     }
 
-    public String getlName() {
-        return lName;
+    public String getLname() {
+        return lname;
     }
 
-    public void setlName(String lName) {
-        this.lName = lName;
+    public void setLname(String lname) {
+        this.lname = lname;
     }
 
     public String getApartmentID() {

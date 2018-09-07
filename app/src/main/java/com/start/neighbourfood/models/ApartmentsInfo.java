@@ -2,8 +2,16 @@ package com.start.neighbourfood.models;
 
 public class ApartmentsInfo {
     private String apartmentName;
-    private String id;
+    private String apartmentID;
 
+    public ApartmentsInfo() {
+    }
+
+
+    @Override
+    public String toString() {
+        return this.apartmentName;
+    }
 
     public String getApartmentName() {
         return apartmentName;
@@ -13,21 +21,11 @@ public class ApartmentsInfo {
         this.apartmentName = apartmentName;
     }
 
-    public String getId() {
-        return id;
+    public String getApartmentID() {
+        return apartmentID;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public ApartmentsInfo(String id, String name){
-        this.id = id;
-        this.apartmentName = name;
-    }
-
-    @Override
-    public String toString() {
-        return this.apartmentName;
+    public void setApartmentID(String apartmentID) {
+        this.apartmentID = apartmentID;
     }
 }

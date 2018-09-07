@@ -17,6 +17,7 @@ android {
         }
         debug {
             buildConfigField "String", "SERVER_URL", '"http://nfservice.azurewebsites.net/api"'
+            buildConfigField "String", "LOCALHOST", '"http://localhost:53526/api"'
         }
     }
 }

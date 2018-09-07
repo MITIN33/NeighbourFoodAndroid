@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Filter;
 
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.FlatsInfo;
@@ -20,8 +20,6 @@ import com.start.neighbourfood.models.FoodItem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 
 public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
@@ -61,7 +59,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         FlatsInfo flatsInfo = flatlistfiltered.get(position);
         String flatText = "Served by Flat: "+flatsInfo.getFlatNumber();
         rowHolder.flatNumber.setText(flatText);
-        rowHolder.rating.setText("4.5/5");
+        rowHolder.rating.setText(flatsInfo.getRating() == null ? "4/5" : flatsInfo.getRating());
         rowHolder.userName.setText(flatsInfo.getSellerName());
         rowHolder.imageView.setImageResource(R.drawable.food_icon);
         List<FoodItem> list = new ArrayList<>();

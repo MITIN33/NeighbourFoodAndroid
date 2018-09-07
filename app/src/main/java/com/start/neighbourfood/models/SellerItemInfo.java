@@ -9,6 +9,7 @@ public class SellerItemInfo {
     private int quantity;
     private String price;
     private int servedFor;
+    private String flatID;
     private boolean isAvailable;
 
     public int getServedFor() {
@@ -73,5 +74,13 @@ public class SellerItemInfo {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public String getFlatID() {
+        return flatID;
+    }
+
+    public void setFlatID(String flatID) {
+        this.flatID = flatID;
     }
 }

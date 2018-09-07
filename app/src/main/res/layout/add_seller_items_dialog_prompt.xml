@@ -52,13 +52,13 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radio_pirates"
+                android:id="@+id/radio_veg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Veg" />
 
             <RadioButton
-                android:id="@+id/radio_ninjas"
+                android:id="@+id/radio_nonveg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Non Veg" />

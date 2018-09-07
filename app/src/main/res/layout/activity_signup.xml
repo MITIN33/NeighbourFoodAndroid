@@ -7,7 +7,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="492dp"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
@@ -16,7 +16,7 @@
             <!-- Neighbor Food Logo-->
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="100dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/foodie" />
 
@@ -54,7 +54,6 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/edit_text_border"
-                android:fontFamily="serif"
                 android:hint="Last Name"
                 android:inputType="textCapWords"
                 android:paddingStart="5dp" />
@@ -89,30 +88,47 @@
                 android:background="@drawable/spinner_background" />
 
             <!-- Flat Number Label -->
-            <EditText
+            <Spinner
                 android:id="@+id/flat_number_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/edit_text_border"
-                android:hint="Flat No."
-                android:maxLength="1024"
-                android:paddingStart="5dp" />
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/spinner_background" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:text="If you do not see your flat number then its aleady registered or contact us."
+                android:textSize="12sp" />
+
+            <CheckBox
+                android:id="@+id/signup_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:checked="false"
+                android:text="By signing you agree with our terms and conditions."
+                android:textSize="12sp" />
 
             <!-- Signup Button -->
             <Button
                 android:id="@+id/btn_signup"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:layout_marginTop="30dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="#fd7c7c"
+                android:layout_marginTop="20dp"
                 android:padding="0dp"
                 android:text="@string/action_sign_up"
+                android:background="@drawable/ripple"
                 android:textColor="#ffffff"
                 android:textSize="14sp"
                 android:textStyle="bold" />

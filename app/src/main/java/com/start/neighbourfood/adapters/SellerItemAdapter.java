@@ -36,7 +36,7 @@ public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.Se
     public void onBindViewHolder(SellerItemHolder holder, final int position) {
         final FoodItemDetails item = mDataset.get(position);
         holder.name.setText(item.getItemName());
-        holder.description.setText(item.getItemName());
+        holder.description.setText(item.getItemDesc());
         holder.price.setText(String.format("₹%s", item.getPrice()));
         holder.editButton.setOnClickListener(mListener);
         holder.servedFor.setText(String.format("Served For %s", item.getServedFor()));

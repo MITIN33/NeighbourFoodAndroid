@@ -53,7 +53,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         FoodItemRowViewHolder rowHolder = (FoodItemRowViewHolder) holder;
         rowHolder.getFoodNameView().setText(mDataSet.get(position).getItemName());
-        rowHolder.getServingView().setText("2 delicious samosa served with green chatni.");//mDataSet.get(position).getItemServing());
+        rowHolder.getServingView().setText(mDataSet.get(position).getItemDesc());
         rowHolder.getPriceView().setText(String.format("\u20B9 %s", mDataSet.get(position).getPrice()));
         rowHolder.getQtyButton().setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override

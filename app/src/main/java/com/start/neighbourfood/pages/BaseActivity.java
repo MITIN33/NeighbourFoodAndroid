@@ -12,9 +12,14 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.facebook.login.LoginManager;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.UserBaseInfo;
+
+import java.io.IOException;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -117,5 +122,19 @@ public class BaseActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         return cm.getActiveNetworkInfo() != null;
+    }
+
+    public UserBaseInfo getUserBaseInfo() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            String result = getFromSharedPreference(ServiceConstants.userDetail);
+            if (result != null) {
+                return objectMapper.readValue(result, new TypeReference<UserBaseInfo>() {
+                });
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

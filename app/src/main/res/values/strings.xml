@@ -130,6 +130,6 @@
     <string name="delete">delete</string>
     <string name="search_hint">hint</string>
     <string name="goToCart">Go To Cart</string>
-    <string name="title_activity_order_summary">OrderSummaryActivity</string>
+    <string name="title_activity_order_summary">Order Summary</string>
     <string name="foodDescription">Describe your food</string>
 </resources>

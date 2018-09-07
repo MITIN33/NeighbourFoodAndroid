@@ -1,6 +1,5 @@
 package com.start.neighbourfood.models;
 
-import java.security.PublicKey;
 import java.util.List;
 
 public class FlatsInfo {
@@ -9,6 +8,8 @@ public class FlatsInfo {
     private String SellerId;
     private String flatNumber;
     private String rating;
+    private String flatID;
+    private String apartmentID;
     private List<FoodItem> foodItems;
 
     public FlatsInfo(){
@@ -55,4 +56,24 @@ public class FlatsInfo {
         this.rating = rating;
     }
 
+    @Override
+    public String toString() {
+        return this.flatNumber;
+    }
+
+    public String getFlatID() {
+        return flatID;
+    }
+
+    public void setFlatID(String flatID) {
+        this.flatID = flatID;
+    }
+
+    public String getApartmentID() {
+        return apartmentID;
+    }
+
+    public void setApartmentID(String apartmentID) {
+        this.apartmentID = apartmentID;
+    }
 }

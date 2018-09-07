@@ -12,7 +12,10 @@ public class FoodItemDetails {
     private String sellerID;
     private String quantity;
     private String itemDesc;
-    private String isAvailable;
+    private String flatID;
+    private boolean isAvailable;
+    private String sellerItemID;
+    private boolean veg;
 
     public FoodItemDetails() {
 
@@ -79,11 +82,35 @@ public class FoodItemDetails {
         this.sellerID = sellerID;
     }
 
-    public String isAvailable() {
+    public boolean isAvailable() {
         return isAvailable;
     }
 
-    public void setAvailable(String isAvailable) {
+    public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
+    }
+
+    public String getFlatID() {
+        return flatID;
+    }
+
+    public void setFlatID(String flatID) {
+        this.flatID = flatID;
+    }
+
+    public String getSellerItemID() {
+        return sellerItemID;
+    }
+
+    public void setSellerItemID(String sellerItemID) {
+        this.sellerItemID = sellerItemID;
+    }
+
+    public boolean isVeg() {
+        return veg;
+    }
+
+    public void setVeg(boolean veg) {
+        this.veg = veg;
     }
 }

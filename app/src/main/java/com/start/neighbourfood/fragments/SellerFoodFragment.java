@@ -53,6 +53,7 @@ import java.util.List;
 
 public class SellerFoodFragment extends BaseFragment implements TaskHandler, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
+    private static final String TAG = SellerFoodFragment.class.getSimpleName();
     protected List<FoodItemDetails> mDataset;
     protected SellerItemAdapter mAdapter;
     private CoordinatorLayout coordinatorLayout;
@@ -297,12 +298,12 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         }
 
         fetchFoodItem(promptsView);
-
+        String updateBtnText = selectedItem != null ? "Update" : "Add";
         // set dialog message
         alertDialogBuilder
                 .setTitle("Add the food item details:")
                 .setCancelable(false)
-                .setPositiveButton("Add",
+                .setPositiveButton(updateBtnText,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
@@ -333,7 +334,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
-                                                Log.e("ADD_SELLER_ITEM", error.getMessage());
+                                                Log.e(TAG, error.getMessage());
                                             }
                                         });
                                     } else {
@@ -368,5 +369,6 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
         // show the dialog box
         alertDialog.show();
+        selectedItem = null;
     }
 }

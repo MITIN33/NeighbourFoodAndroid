@@ -67,18 +67,7 @@ public class ServiceManager {
      /***********/
     public void fetchUserfromUid(String uid, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.userApiPath) + "/" + uid;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createGetRequest(taskHandler, url);
     }
 
     /***********
@@ -107,67 +96,23 @@ public class ServiceManager {
 
     public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
         String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createGetRequest(taskHandler, url);
     }
 
     public void fetchFoodItemsForFlat(String flatId, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createGetRequest(taskHandler, url);
     }
 
 
     public void fetchAllFoodItem(final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.foodApiPAth);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createGetRequest(taskHandler, url);
     }
 
     public void addSellerItem(JSONObject jsonObject, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createPostRequest(taskHandler, url, jsonObject);
     }
 
     public void removeSellerItem(String sellerITemID, final TaskHandler taskHandler) {
@@ -202,6 +147,16 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
+    public void fetchAllApartments(final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.apartmentApiPath);
+        createGetRequest(taskHandler, url);
+    }
+
+    public void fetchAllFlatsInApartment(String apartmetnID, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.flatApiPAth) + "/apartments/" + apartmetnID;
+        createGetRequest(taskHandler, url);
+    }
+
     private String getValue(JSONObject object, String key) {
         try {
             return object.getString(key);
@@ -211,8 +166,7 @@ public class ServiceManager {
         return null;
     }
 
-    public void fetchAllApartments(final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.apartmentApiPath);
+    private void createGetRequest(final TaskHandler taskHandler, String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -227,9 +181,8 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void fetchAllFlatsInApartment(String apartmetnID, final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.flatApiPAth) + "/apartments/" + apartmetnID;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
+    private void createPostRequest(final TaskHandler taskHandler, String url, JSONObject jsonObject) {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 taskHandler.onTaskCompleted(response);

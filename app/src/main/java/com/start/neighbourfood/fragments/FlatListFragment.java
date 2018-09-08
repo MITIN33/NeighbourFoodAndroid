@@ -186,6 +186,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     public void onErrorResponse(VolleyError error) {
         Log.e(TAG, "onErrorResponse: Unable to load", error);
         mSwipeRefreshLayout.setRefreshing(false);
+        hideProgressDialog();
     }
 
     @Override

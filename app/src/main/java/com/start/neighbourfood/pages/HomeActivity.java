@@ -53,7 +53,6 @@ public class HomeActivity extends BaseActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         if (isNetworkConnected()) {
             loadFragment(new FlatListFragment());
         } else {
@@ -104,4 +103,10 @@ public class HomeActivity extends BaseActivity
         transaction.commit();
     }
 
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+
+    }
 }

@@ -157,6 +157,11 @@ public class ServiceManager {
         createGetRequest(taskHandler, url);
     }
 
+    public void placeOrder(JSONObject jsonObject, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.orderApiPath);
+        createPostRequest(taskHandler, url, jsonObject);
+    }
+
     private String getValue(JSONObject object, String key) {
         try {
             return object.getString(key);

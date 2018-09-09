@@ -45,6 +45,15 @@
             android:name=".pages.OrderSummaryActivity"
             android:label="@string/title_activity_order_summary"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".pages.OrderTrackActivity"
+            android:label="@string/title_activity_order_track"
+            android:parentActivityName=".pages.BaseActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.start.neighbourfood.pages.BaseActivity" />
+        </activity>
     </application>
 
 </manifest>

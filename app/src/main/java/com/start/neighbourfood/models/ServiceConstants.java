@@ -9,4 +9,5 @@ public class ServiceConstants {
     public static final String apartmentApiPath = "/apartment";
     public static final String selleritemApiPath = "/selleritem";
     public static final String userDetail = "userInfo";
+    public static final String orderApiPath = "/order";
 }

@@ -60,6 +60,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     private FloatingActionButton mPlusOneButton;
     private FoodItemDetails selectedItem;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    int positin;
 
     public SellerFoodFragment() {
     }
@@ -72,6 +73,8 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        positin = -1;
+        selectedItem = null;
         setHasOptionsMenu(false);
     }
 
@@ -80,7 +83,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         try {
             super.onCreateView(inflater, container, savedInstanceState);
             View rootView = inflater.inflate(R.layout.content_seller_item_list, container, false);
-            RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
+            final RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
             final Switch switchOne = (Switch) rootView.findViewById(R.id.switch_one);
             mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container_seller);
 
@@ -111,6 +114,9 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mAdapter = new SellerItemAdapter(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if (positin != -1) {
+                        selectedItem = mDataset.get(positin);
+                    }
                     showDialogueBox();
                 }
             });
@@ -129,7 +135,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    selectedItem = mDataset.get(position);
+                    positin = position;
                 }
 
                 @Override
@@ -341,6 +347,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                         ServiceManager.getInstance(getActivity()).updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
                                             public void onTaskCompleted(JSONObject result) {
+                                                mAdapter.notifyItemChanged(positin, foodItemDetails);
                                                 Toast.makeText(getContext(), foodItemName.getText() + " is updated!", Toast.LENGTH_SHORT).show();
                                             }
 
@@ -354,13 +361,14 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
+                                selectedItem = null;
                             }
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+                                selectedItem = null;
                             }
                         });
 
@@ -369,6 +377,6 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
         // show the dialog box
         alertDialog.show();
-        selectedItem = null;
+
     }
 }

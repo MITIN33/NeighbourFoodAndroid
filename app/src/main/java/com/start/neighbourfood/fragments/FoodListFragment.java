@@ -106,7 +106,8 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
                         return;
                     }
                     saveOrderItems(orderItems);
-                    startActivity(i);
+                    getActivity().startActivity(i);
+                    //getActivity().finish();
                 }
             });
 

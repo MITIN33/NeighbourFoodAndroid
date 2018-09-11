@@ -3,7 +3,9 @@ package com.start.neighbourfood.services;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -12,16 +14,23 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.start.neighbourfood.BuildConfig;
 import com.start.neighbourfood.auth.TaskHandler;
+import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.models.ServiceConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ServiceManager {
+
+    private static final String TAG = ServiceManager.class.getSimpleName();
     private static ServiceManager mInstance;
-    private static Context mCtx;
+    private Context mCtx;
     private ProgressDialog mProgressDialog;
     private RequestQueue mRequestQueue;
 
@@ -37,7 +46,7 @@ public class ServiceManager {
         return mInstance;
     }
 
-    public RequestQueue getRequestQueue() {
+    private RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
@@ -46,12 +55,15 @@ public class ServiceManager {
         return mRequestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
-        if (req != null) {
-            int socketTimeout = 10000;//10 seconds
-            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-            req.setRetryPolicy(policy);
+    private <T> void addToRequestQueue(Request<T> req) {
+        if (req == null) {
+            Log.i(TAG, "Request cannot be null");
         }
+
+        int socketTimeout = 10000;//10 seconds
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        req.setRetryPolicy(policy);
+
         getRequestQueue().add(req);
     }
 
@@ -67,7 +79,7 @@ public class ServiceManager {
      /***********/
     public void fetchUserfromUid(String uid, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.userApiPath) + "/" + uid;
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     /***********
@@ -96,23 +108,23 @@ public class ServiceManager {
 
     public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
         String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void fetchFoodItemsForFlat(String flatId, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
 
     public void fetchAllFoodItem(final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.foodApiPAth);
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void addSellerItem(JSONObject jsonObject, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath);
-        createPostRequest(taskHandler, url, jsonObject);
+        createRequest(Request.Method.POST, taskHandler, url, jsonObject);
     }
 
     public void removeSellerItem(String sellerITemID, final TaskHandler taskHandler) {
@@ -149,17 +161,62 @@ public class ServiceManager {
 
     public void fetchAllApartments(final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.apartmentApiPath);
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void fetchAllFlatsInApartment(String apartmetnID, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.flatApiPAth) + "/apartments/" + apartmetnID;
-        createGetRequest(taskHandler, url);
+        createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void placeOrder(JSONObject jsonObject, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.orderApiPath);
-        createPostRequest(taskHandler, url, jsonObject);
+        createRequest(Request.Method.POST, taskHandler, url, jsonObject);
+    }
+
+    public void addUserTokenInfo(JSONObject jsonObject, TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.deviceToken);
+        createRequest(Request.Method.PUT,taskHandler, url, jsonObject);
+    }
+
+    public void getUserNotification(String userUid, TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.deviceToken) + "/" + userUid;
+        createRequest(Request.Method.GET, taskHandler, url, null);
+    }
+
+    public void sendNotification(NfMessageNotification messageNotification) {
+        Gson gson = new Gson();
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(gson.toJson(messageNotification));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(ServiceConstants.fcmUrl, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> header = new HashMap<>();
+                header.put("Authorization", "key=" + ServiceConstants.fcmServerKey);
+                return header;
+            }
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
+        addToRequestQueue(request);
     }
 
     private String getValue(JSONObject object, String key) {
@@ -171,33 +228,43 @@ public class ServiceManager {
         return null;
     }
 
-    private void createGetRequest(final TaskHandler taskHandler, String url) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+    private void createRequest(int method, final TaskHandler taskHandler, String url, JSONObject jsonObject) {
+
+        try {
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, jsonObject, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    taskHandler.onTaskCompleted(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    taskHandler.onErrorResponse(error);
+                }
+            });
+            addToRequestQueue(jsonObjectRequest);
+        } catch (Exception ex) {
+            Log.i(TAG, String.format("Error in network call. Exception :%s", ex.getMessage()));
+        }
     }
 
-    private void createPostRequest(final TaskHandler taskHandler, String url, JSONObject jsonObject) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+    private void createPostRequest(int methood, final TaskHandler taskHandler, String url, JSONObject jsonObject) {
+        try {
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(methood, url, jsonObject, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    taskHandler.onTaskCompleted(response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    taskHandler.onErrorResponse(error);
+                }
+            });
+            addToRequestQueue(jsonObjectRequest);
+        }
+        catch (Exception ex){
+            Log.i(TAG, String.format("Error in network call. Exception :%s", ex.getMessage()));
+        }
     }
 }

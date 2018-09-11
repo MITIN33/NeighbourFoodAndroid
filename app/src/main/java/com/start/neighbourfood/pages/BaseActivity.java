@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.services.Config;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getSharedPreferences("nfService", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
     }
 
     private SharedPreferences getLocalSharedPreference() {
@@ -106,7 +107,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public String getFromSharedPreference(String key) {
-        return getLocalSharedPreference().getString(key, null);
+        try {
+            return getLocalSharedPreference().getString(key, null);
+        }
+        catch (Exception ex){
+            return null;
+        }
     }
 
     public void signOut() {
@@ -114,6 +120,7 @@ public class BaseActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
         saveStringInSharedPreference(ServiceConstants.signedInKey, null);
+        saveStringInSharedPreference("deviceRegistered", "false");
         hideProgressDialog();
         navigateToLoginPage();
     }

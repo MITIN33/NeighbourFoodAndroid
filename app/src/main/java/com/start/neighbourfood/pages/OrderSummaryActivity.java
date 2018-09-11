@@ -16,9 +16,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.models.OrderDetail;
 import com.start.neighbourfood.models.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
@@ -27,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +36,8 @@ public class OrderSummaryActivity extends BaseActivity {
 
     private List<FoodItemDetails> foodItemDetailsList;
     private Button placeOrderBtn;
-
+    private UserBaseInfo user;
+    private String sellerID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,19 +52,22 @@ public class OrderSummaryActivity extends BaseActivity {
                 finish();
             }
         });
+        user = getUserBaseInfo();
 
         RecyclerView mRecyclerView = findViewById(R.id.ordered_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         String list = getFromSharedPreference("orderedItem");
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             foodItemDetailsList = objectMapper.readValue(list, new TypeReference<List<FoodItemDetails>>() {
             });
+            sellerID = foodItemDetailsList.get(0).getSellerID();
             OrderItemsAdapter adapter = new OrderItemsAdapter(foodItemDetailsList);
             mRecyclerView.setAdapter(adapter);
-            ((TextView) findViewById(R.id.total_bill)).setText("\u20B9 " + getTotalPrice());
+            ((TextView) findViewById(R.id.total_bill)).setText(String.format("₹ %s", NFUtils.getTotalPrice(foodItemDetailsList)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,9 +76,37 @@ public class OrderSummaryActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 placeOrder();
+                fetchTargetToken(sellerID);
+                saveStringInSharedPreference("startTime",null);
             }
         });
 
+    }
+
+    private void fetchTargetToken(String sellerID) {
+        if (sellerID == null)
+            return;
+        ServiceManager.getInstance(getApplicationContext()).getUserNotification(sellerID, new TaskHandler() {
+            @Override
+            public void onTaskCompleted(JSONObject result) {
+                try {
+                    String targetToken = result.getJSONObject("Result").getString("data");
+                    sendNotificationTo(targetToken, NFUtils.constructMessage());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+    }
+
+    private void sendNotificationTo(String targetToken, String message) {
+        NfMessageNotification messageNotification = new NfMessageNotification(targetToken, message);
+        ServiceManager.getInstance(this).sendNotification(messageNotification);
     }
 
     private void placeOrder() {
@@ -81,21 +114,16 @@ public class OrderSummaryActivity extends BaseActivity {
         showProgressDialog();
         long epochTime = date.getTime();
         try {
-            UserBaseInfo user = getUserBaseInfo();
-            String orderID = String.format("ORD%s%s", epochTime, user.getUserUid().substring(0, 4)).toUpperCase();
+            String orderID = NFUtils.getOrderID(epochTime , user.getUserUid());
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setCreateTime(String.valueOf(epochTime));
-            List<FoodItemDetails> list = new ArrayList<>();
-            for (FoodItemDetails item : foodItemDetailsList) {
-                list.add(item);
-            }
-            orderDetail.setSellerItemId(list);
+            orderDetail.setSellerItemId(foodItemDetailsList);
             orderDetail.setOrderId(orderID);
             orderDetail.setUserPlacedBy(user.getUserUid());
             orderDetail.setOrderStatus("Confirmation");
             orderDetail.setUserPlacedTo(foodItemDetailsList.get(0).getSellerID());
 
-            JSONObject jsonObject = new JSONObject(new Gson().toJson(orderDetail).toString());
+            JSONObject jsonObject = new JSONObject(new Gson().toJson(orderDetail));
 
             ServiceManager.getInstance(this).placeOrder(jsonObject, new TaskHandler() {
                 @Override
@@ -117,16 +145,4 @@ public class OrderSummaryActivity extends BaseActivity {
             e.printStackTrace();
         }
     }
-
-    private String getTotalPrice() {
-        int sum = 0;
-        for (FoodItemDetails itemDetails : foodItemDetailsList) {
-            int pr = Integer.parseInt(itemDetails.getPrice());
-            int q = Integer.parseInt(itemDetails.getQuantity());
-            sum += pr * q;
-        }
-
-        return String.valueOf(sum);
-    }
-
 }

@@ -9,15 +9,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.fragments.FlatListFragment;
 import com.start.neighbourfood.fragments.SellerFoodFragment;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.services.ServiceManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -42,6 +49,8 @@ public class HomeActivity extends BaseActivity
             return;
         }
 
+        registerDevice(user.getUid(), getFromSharedPreference("regId"));
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -57,6 +66,31 @@ public class HomeActivity extends BaseActivity
             loadFragment(new FlatListFragment());
         } else {
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void registerDevice(String uid, String regId) {
+        String savedId = getFromSharedPreference("deviceRegistered");
+        if (regId != null && (savedId == null || "false".equals(getFromSharedPreference("deviceRegistered")))){
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("userUid",uid);
+                jsonObject.put("tokenId", regId);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            ServiceManager.getInstance(getApplicationContext()).addUserTokenInfo(jsonObject, new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject result) {
+                    saveStringInSharedPreference("deviceRegistered", "true");
+                }
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e(TAG, "Error Saving: " + error);
+                }
+            });
         }
     }
 

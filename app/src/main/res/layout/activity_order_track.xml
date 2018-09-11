@@ -20,4 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <include layout="@layout/content_order_track" />
+
 </android.support.design.widget.CoordinatorLayout>

@@ -133,4 +133,6 @@
     <string name="title_activity_order_summary">Order Summary</string>
     <string name="foodDescription">Describe your food</string>
     <string name="title_activity_order_track">Order Track</string>
+    <string name="title_activity_seller_order_track">Order Request Track</string>
+    <string name="order_status">Order Status:</string>
 </resources>

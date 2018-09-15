@@ -86,6 +86,17 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
+    public void navigateToOrderHistory() {
+        Intent i = new Intent(getApplicationContext(), BuyerOrderActivity.class);
+        startActivity(i);
+    }
+
+    public void navigateToTrackOrder(String orderID){
+        Intent i = new Intent(getApplicationContext(), OrderTrackActivity.class);
+        i.putExtra(ServiceConstants.orderIdLabel,orderID);
+        startActivity(i);
+    }
+
     public void navigateToLoginPage() {
         Intent i = new Intent(this, LoginActivity.class);
         // Closing all the Activities

@@ -1,7 +1,6 @@
 package com.start.neighbourfood.services;
 
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 
@@ -30,13 +29,10 @@ public class ServiceManager {
 
     private static final String TAG = ServiceManager.class.getSimpleName();
     private static ServiceManager mInstance;
-    private Context mCtx;
-    private ProgressDialog mProgressDialog;
     private RequestQueue mRequestQueue;
 
     private ServiceManager(Context context) {
-        mCtx = context;
-        mRequestQueue = getRequestQueue();
+        mRequestQueue = getRequestQueue(context);
     }
 
     public static synchronized ServiceManager getInstance(Context context) {
@@ -46,7 +42,7 @@ public class ServiceManager {
         return mInstance;
     }
 
-    private RequestQueue getRequestQueue() {
+    private RequestQueue getRequestQueue(Context mCtx) {
         if (mRequestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
@@ -64,7 +60,7 @@ public class ServiceManager {
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         req.setRetryPolicy(policy);
 
-        getRequestQueue().add(req);
+        mRequestQueue.add(req);
     }
 
     private String getFullUrl(String url) {
@@ -219,6 +215,16 @@ public class ServiceManager {
         addToRequestQueue(request);
     }
 
+    public void fetchOrderDetail(String orderID, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.orderApiPath) + "/" + orderID;
+        createRequest(Request.Method.GET,taskHandler, url, null);
+    }
+
+    public void fetchAllPastOrderForUSer(String userId, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.orderApiPath) + "/buyer/" + userId;
+        createRequest(Request.Method.GET,taskHandler, url, null);
+    }
+
     private String getValue(JSONObject object, String key) {
         try {
             return object.getString(key);
@@ -244,26 +250,6 @@ public class ServiceManager {
             });
             addToRequestQueue(jsonObjectRequest);
         } catch (Exception ex) {
-            Log.i(TAG, String.format("Error in network call. Exception :%s", ex.getMessage()));
-        }
-    }
-
-    private void createPostRequest(int methood, final TaskHandler taskHandler, String url, JSONObject jsonObject) {
-        try {
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(methood, url, jsonObject, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    taskHandler.onTaskCompleted(response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    taskHandler.onErrorResponse(error);
-                }
-            });
-            addToRequestQueue(jsonObjectRequest);
-        }
-        catch (Exception ex){
             Log.i(TAG, String.format("Error in network call. Exception :%s", ex.getMessage()));
         }
     }

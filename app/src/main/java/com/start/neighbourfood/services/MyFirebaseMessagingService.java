@@ -56,13 +56,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
             pushNotification.putExtra("message", message);
             this.sendBroadcast(pushNotification);
-/*
-            Intent i = new Intent(this, OrderTrackActivity.class);
-            // Closing all the Activities
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            i.putExtra("message",message);
-            // Staring Login Activity
-            startActivity(i);*/
 
             // play notification sound
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());

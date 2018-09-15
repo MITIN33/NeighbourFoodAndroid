@@ -22,6 +22,8 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.models.OrderDetail;
+import com.start.neighbourfood.models.OrderProgress;
+import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -76,14 +78,13 @@ public class OrderSummaryActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 placeOrder();
-                fetchTargetToken(sellerID);
-                saveStringInSharedPreference("startTime",null);
+                sendNotification(sellerID);
             }
         });
 
     }
 
-    private void fetchTargetToken(String sellerID) {
+    private void sendNotification(String sellerID) {
         if (sellerID == null)
             return;
         ServiceManager.getInstance(getApplicationContext()).getUserNotification(sellerID, new TaskHandler() {
@@ -114,13 +115,13 @@ public class OrderSummaryActivity extends BaseActivity {
         showProgressDialog();
         long epochTime = date.getTime();
         try {
-            String orderID = NFUtils.getOrderID(epochTime , user.getUserUid());
+            final String orderID = NFUtils.getOrderID(epochTime , user.getUserUid());
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setCreateTime(String.valueOf(epochTime));
             orderDetail.setSellerItemId(foodItemDetailsList);
             orderDetail.setOrderId(orderID);
             orderDetail.setUserPlacedBy(user.getUserUid());
-            orderDetail.setOrderStatus("Confirmation");
+            orderDetail.setOrderStatus(OrderProgress.OrderStatus.PENDING_CONFIRMATION.toString());
             orderDetail.setUserPlacedTo(foodItemDetailsList.get(0).getSellerID());
 
             JSONObject jsonObject = new JSONObject(new Gson().toJson(orderDetail));
@@ -129,6 +130,7 @@ public class OrderSummaryActivity extends BaseActivity {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
                     Intent i = new Intent(getApplicationContext(), OrderTrackActivity.class);
+                    i.putExtra(ServiceConstants.orderIdLabel,orderID);
                     startActivity(i);
                     finish();
                     hideProgressDialog();

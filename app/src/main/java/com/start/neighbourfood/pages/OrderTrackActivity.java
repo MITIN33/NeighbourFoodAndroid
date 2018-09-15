@@ -6,31 +6,37 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
+import com.start.neighbourfood.auth.TaskHandler;
+import com.start.neighbourfood.models.OrderProgress;
 import com.start.neighbourfood.services.Config;
+import com.start.neighbourfood.services.ServiceManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class OrderTrackActivity extends BaseActivity {
 
     private TextView timer;
-    private long StartTime;
+    private long startTime, endTime;
     private Handler handler;
-    private boolean mStopHandler = false;
+    private OrderProgress orderProgress;
+    private ImageView orderConfirmImg, foodPreparedImg;
+    private TextView preparedFoodText, orderConfirmText;
     public Runnable runnable = new Runnable() {
 
         public void run() {
 
             int Seconds, Minutes;
 
-            long updateTime = SystemClock.uptimeMillis() - StartTime;
+            long updateTime = (orderProgress.getEndTime() == 0 ? System.currentTimeMillis() : orderProgress.getEndTime()) - orderProgress.getStartTime();
 
             Seconds = (int) (updateTime / 1000);
 
@@ -38,17 +44,14 @@ public class OrderTrackActivity extends BaseActivity {
 
             Seconds = Seconds % 60;
 
-            timer.setText(String.format("%02d:%02d", Minutes,Seconds));
+            timer.setText(String.format("%02d:%02d", Minutes, Seconds));
 
-            if (!mStopHandler) {
+            if (!mStopHandler()) {
                 handler.postDelayed(this, 1000);
             }
         }
 
     };
-    private Animation animFadein;
-    private ImageView orderConfirmImg, foodPreparedImg;
-    private TextView preparedFoodText, orderConfirmText;
     //This is the handler that will manager to process the broadcast intent
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -57,10 +60,10 @@ public class OrderTrackActivity extends BaseActivity {
             // Extract data included in the Intent
             String message = intent.getStringExtra("message");
 
-            if (NFUtils.isOrderAcceptanceNotification(message)){
+
+            if (NFUtils.isOrderAcceptanceNotification(message)) {
                 setUIForOrderConfirmation();
-            }
-            else if (NFUtils.isFoodPrepared(message)){
+            } else if (NFUtils.isFoodPrepared(message)) {
                 setUIForFoodPrepared();
             }
 
@@ -76,43 +79,47 @@ public class OrderTrackActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         timer = findViewById(R.id.timer);
         setSupportActionBar(toolbar);
-        StartTime = SystemClock.uptimeMillis();
         orderConfirmImg = findViewById(R.id.confirm_img);
         foodPreparedImg = findViewById(R.id.foodPrepared_img);
         preparedFoodText = findViewById(R.id.foodPrepared_txt);
         orderConfirmText = findViewById(R.id.confirm_text);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         handler = new Handler();
-        handler.post(runnable);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        animFadein = AnimationUtils.loadAnimation(getApplicationContext(),
-                R.anim.bounce);
+        //Animation animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        saveStringInSharedPreference("startTime",String.valueOf(StartTime));
         unregisterReceiver(mMessageReceiver);
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        String time = getFromSharedPreference("startTime");
-        if (time != null) {
-            StartTime = Long.parseLong(time);
+        String orderId = getIntent().getExtras().getString("orderID");
+
+        //came for the firs time on this page
+        if (orderProgress == null) {
+            orderProgress = new OrderProgress();
+            orderProgress.setOrderId(orderId);
         }
+
+        fetchOrderDetail(orderId);
         registerReceiver(mMessageReceiver, new IntentFilter(Config.PUSH_NOTIFICATION));
     }
 
     private void setUIForFoodPrepared() {
-        //setUIForOrderConfirmation();
+        setUIForOrderConfirmation();
         findViewById(R.id.finish_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.green_tick);
         preparedFoodText.setText("Food prepared");
+        if (orderProgress.getEndTime() == 0) {
+            orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+            orderProgress.setEndTime(System.currentTimeMillis());
+        }
     }
 
     private void setUIForOrderConfirmation() {
@@ -121,7 +128,55 @@ public class OrderTrackActivity extends BaseActivity {
         findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.wait);
         preparedFoodText.setText("Food is being prepared");
+
+        orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
+    }
+
+    private boolean mStopHandler() {
+        return OrderProgress.OrderStatus.COMPLETED.equals(orderProgress.getOrderStatus());
     }
 
 
+    private void fetchOrderDetail(String orderID) {
+        if (orderID == null) {
+            return;
+        }
+        showProgressDialog();
+        ServiceManager.getInstance(this).fetchOrderDetail(orderID, new TaskHandler() {
+            @Override
+            public void onTaskCompleted(JSONObject result) {
+                try {
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
+                    orderProgress.setId(result.getJSONObject("Result").getString("id"));
+                    orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
+                    if(result.getJSONObject("Result").has("endTime")) {
+                        orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
+                    }
+                    handler.post(runnable);
+                    updateUI();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                hideProgressDialog();
+            }
+        });
+    }
+
+    private void updateUI() {
+        switch (orderProgress.getOrderStatus()) {
+            case PENDING_CONFIRMATION:
+                break;
+            case PREPARING:
+                setUIForOrderConfirmation();
+                break;
+            case COMPLETED:
+                setUIForFoodPrepared();
+                break;
+        }
+    }
 }

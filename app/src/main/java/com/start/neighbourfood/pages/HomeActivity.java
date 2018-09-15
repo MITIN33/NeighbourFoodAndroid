@@ -114,7 +114,7 @@ public class HomeActivity extends BaseActivity
             if (id == R.id.nav_settings) {
 
             } else if (id == R.id.nav_trackOrder) {
-
+                navigateToOrderHistory();
             } else if (id == R.id.nav_home) {
                 loadFragment(new FlatListFragment());
             } else if (id == R.id.nav_logout) {
@@ -123,6 +123,9 @@ public class HomeActivity extends BaseActivity
 
             } else if (id == R.id.seller_page) {
                 loadFragment(new SellerFoodFragment());
+            }
+            else if(id == R.id.nav_Request){
+
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

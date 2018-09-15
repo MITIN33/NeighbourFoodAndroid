@@ -1,5 +1,6 @@
 package com.start.neighbourfood.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class SellerItemAdapter extends RecyclerView.Adapter<SellerItemAdapter.Se
         mListener = listener;
     }
 
+    @NonNull
     @Override
     public SellerItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())

@@ -2,12 +2,12 @@ package com.start.neighbourfood.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.services.Config;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ public class SharedPreferenceUtils {
     private SharedPreferences.Editor mSharedPreferencesEditor;
 
     private SharedPreferenceUtils(Context context) {
-        mSharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        mSharedPreferences = context.getSharedPreferences(Config.SHARED_PREF, Context.MODE_PRIVATE);
         mSharedPreferencesEditor = mSharedPreferences.edit();
     }
 

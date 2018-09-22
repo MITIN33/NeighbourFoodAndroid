@@ -92,7 +92,7 @@ public class OrderSummaryActivity extends BaseActivity {
             public void onTaskCompleted(JSONObject result) {
                 try {
                     String targetToken = result.getJSONObject("Result").getString("data");
-                    sendNotificationTo(targetToken, NFUtils.constructMessage());
+                    sendNotificationTo(targetToken, NFUtils.constructOrderAcceptedMessage());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -129,7 +129,7 @@ public class OrderSummaryActivity extends BaseActivity {
             ServiceManager.getInstance(this).placeOrder(jsonObject, new TaskHandler() {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
-                    Intent i = new Intent(getApplicationContext(), OrderTrackActivity.class);
+                    Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
                     i.putExtra(ServiceConstants.orderIdLabel,orderID);
                     startActivity(i);
                     finish();

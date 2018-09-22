@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,7 +23,7 @@ import com.start.neighbourfood.services.ServiceManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class OrderTrackActivity extends BaseActivity {
+public class OrderTrackBuyerActivity extends BaseActivity {
 
     private TextView timer;
     private long startTime, endTime;
@@ -36,7 +37,9 @@ public class OrderTrackActivity extends BaseActivity {
 
             int Seconds, Minutes;
 
-            long updateTime = (orderProgress.getEndTime() == 0 ? System.currentTimeMillis() : orderProgress.getEndTime()) - orderProgress.getStartTime();
+            long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
+            long updateTime = endTime - orderProgress.getStartTime();
+
 
             Seconds = (int) (updateTime / 1000);
 
@@ -52,6 +55,7 @@ public class OrderTrackActivity extends BaseActivity {
         }
 
     };
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     //This is the handler that will manager to process the broadcast intent
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -86,6 +90,23 @@ public class OrderTrackActivity extends BaseActivity {
         handler = new Handler();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+        mSwipeRefreshLayout = findViewById(R.id.order_buyer_swipe_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchOrderDetail(orderProgress.getOrderId());
+            }
+        });
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchOrderDetail(orderProgress.getOrderId());
+            }
+        });
+
         //Animation animFadein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.bounce);
 
     }
@@ -116,10 +137,7 @@ public class OrderTrackActivity extends BaseActivity {
         findViewById(R.id.finish_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.green_tick);
         preparedFoodText.setText("Food prepared");
-        if (orderProgress.getEndTime() == 0) {
-            orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
-            orderProgress.setEndTime(System.currentTimeMillis());
-        }
+        orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
     }
 
     private void setUIForOrderConfirmation() {
@@ -128,7 +146,6 @@ public class OrderTrackActivity extends BaseActivity {
         findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.wait);
         preparedFoodText.setText("Food is being prepared");
-
         orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
     }
 
@@ -149,7 +166,7 @@ public class OrderTrackActivity extends BaseActivity {
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
                     orderProgress.setId(result.getJSONObject("Result").getString("id"));
                     orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
-                    if(result.getJSONObject("Result").has("endTime")) {
+                    if (result.getJSONObject("Result").has("endTime")) {
                         orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
                     }
                     handler.post(runnable);
@@ -158,11 +175,13 @@ public class OrderTrackActivity extends BaseActivity {
                     e.printStackTrace();
                 }
                 hideProgressDialog();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 hideProgressDialog();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }

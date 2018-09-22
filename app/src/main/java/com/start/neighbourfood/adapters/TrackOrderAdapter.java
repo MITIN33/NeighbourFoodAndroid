@@ -1,5 +1,6 @@
 package com.start.neighbourfood.adapters;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,9 +38,16 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
         java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
         trackOrderItemHolder.orderStatus.setText(orderDetail.getOrderStatus());
         trackOrderItemHolder.dateTime.setText(String.valueOf(simpleDateFormat.format(new Date(Long.parseLong(orderDetail.getCreateTime())))));
-        trackOrderItemHolder.flatName.setText(String.format("Served by %s", orderDetail.getFlatNumber()));
+        trackOrderItemHolder.flatName.setText(String.format("(%s)", orderDetail.getFlatNumber()));
         trackOrderItemHolder.userName.setText(orderDetail.getSellerName());
         trackOrderItemHolder.bill.setText(String.format("₹ %s", orderDetail.getTotalBill()));
+        trackOrderItemHolder.orderType.setText(String.format("ORDER: %s", orderDetail.getOrderType()));
+        if (orderDetail.getOrderType().equals("ACCEPTED")){
+            trackOrderItemHolder.orderType.setTextColor(Color.MAGENTA);
+        }
+        else    {
+            trackOrderItemHolder.orderType.setTextColor(Color.BLUE);
+        }
     }
 
     @Override
@@ -48,7 +56,7 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
     }
 
     public class TrackOrderItemHolder extends RecyclerView.ViewHolder {
-        public TextView userName, flatName, bill, orderStatus, dateTime;
+        public TextView userName, flatName, bill, orderStatus, dateTime, orderType;
 
         public TrackOrderItemHolder(View view) {
             super(view);
@@ -57,6 +65,7 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
             bill = view.findViewById(R.id.txtBill);
             dateTime= view.findViewById(R.id.txtDate);
             orderStatus = view.findViewById(R.id.txtStatus2);
+            orderType = view.findViewById(R.id.orderType);
         }
     }
 

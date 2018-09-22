@@ -6,8 +6,14 @@ import java.util.List;
 
 public class NFUtils {
 
-    public static String constructMessage(){
-        return "have a new notification from";
+
+
+    public static String constructOrderAcceptedMessage(){
+        return "Confirmed: have a new notification from";
+    }
+
+    public static String constructFoodPreparedMessage(){
+        return "Food Prepared: have a new notification from";
     }
 
     public static String getTotalPrice(List<FoodItemDetails> foodItemDetailsList) {

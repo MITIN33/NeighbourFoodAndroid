@@ -13,28 +13,44 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-        <TextView
-            android:id="@+id/txtUserName"
+        <LinearLayout
+            android:id="@+id/username_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="1dp"
-            android:text="Served by Flat 103"
-            android:textSize="18sp" />
+            >
+
+            <TextView
+                android:id="@+id/txtUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="1dp"
+                android:text="Usha Rani"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txtFlatNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txtUserName"
+                android:padding="1dp"
+                android:text="(103)"
+                android:textSize="18sp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/txtFlatNumber"
+            android:id="@+id/orderType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/txtUserName"
+            android:layout_below="@+id/username_layout"
             android:padding="1dp"
-            android:text="Usha Rani" />
-
+            android:text="Order Placed" />
 
         <LinearLayout
             android:id="@+id/orderStatusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtFlatNumber"
+            android:layout_below="@id/orderType"
             android:layout_marginTop="10dp"
             android:orientation="horizontal">
 

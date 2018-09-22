@@ -31,7 +31,7 @@ public class BuyerOrderActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_buyer_order);
+        setContentView(R.layout.activity_order_list);
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -41,7 +41,7 @@ public class BuyerOrderActivity extends BaseActivity {
 
     private void fetchAllOrdersByUser() {
         showProgressDialog();
-        ServiceManager.getInstance(this).fetchAllPastOrderForUSer(userUid, new TaskHandler() {
+        ServiceManager.getInstance(this).fetchAllPastOrderForBuyer(userUid, new TaskHandler() {
             @Override
             public void onTaskCompleted(JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -55,7 +55,11 @@ public class BuyerOrderActivity extends BaseActivity {
                     mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
                         @Override
                         public void onClick(View view, int position) {
-                            navigateToTrackOrder(orderDetails.get(position).getOrderId());
+                            if("REQUESTED".equals(orderDetails.get(position).getOrderType())) {
+                                navigateToBuyerTrackOrder(orderDetails.get(position).getOrderId());
+                            }else{
+                                navigateToSellerTrackOrder(orderDetails.get(position).getOrderId());
+                            }
                         }
 
                         @Override

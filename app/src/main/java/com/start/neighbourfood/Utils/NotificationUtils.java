@@ -20,7 +20,9 @@ import android.text.TextUtils;
 import android.util.Patterns;
 
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.services.Config;
+import com.start.neighbourfood.services.ServiceManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -209,5 +211,10 @@ public class NotificationUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void sendNotificationTo(Context context, String targetToken, String message) {
+        NfMessageNotification messageNotification = new NfMessageNotification(targetToken, message);
+        ServiceManager.getInstance(context).sendNotification(messageNotification);
     }
 }

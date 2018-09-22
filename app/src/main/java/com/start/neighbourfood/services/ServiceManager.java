@@ -175,6 +175,11 @@ public class ServiceManager {
         createRequest(Request.Method.PUT,taskHandler, url, jsonObject);
     }
 
+    public void updateOrderStatus(String orderID,String status, TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.orderApiPath) + "/" + orderID + "/" + status;
+        createRequest(Request.Method.PUT,taskHandler, url, null);
+    }
+
     public void getUserNotification(String userUid, TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.deviceToken) + "/" + userUid;
         createRequest(Request.Method.GET, taskHandler, url, null);
@@ -220,8 +225,8 @@ public class ServiceManager {
         createRequest(Request.Method.GET,taskHandler, url, null);
     }
 
-    public void fetchAllPastOrderForUSer(String userId, final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.orderApiPath) + "/buyer/" + userId;
+    public void fetchAllPastOrderForBuyer(String userId, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.orderApiPath) + "/user/" + userId;
         createRequest(Request.Method.GET,taskHandler, url, null);
     }
 

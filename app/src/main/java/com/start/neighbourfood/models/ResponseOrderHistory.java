@@ -9,6 +9,7 @@ public class ResponseOrderHistory {
     private String orderStatus;
     private String sellerName;
     private String endTime;
+    private String orderType;
 
     public String getSellerName() {
         return sellerName;
@@ -64,5 +65,13 @@ public class ResponseOrderHistory {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
     }
 }

@@ -8,6 +8,7 @@ public class OrderProgress {
     private String orderId;
     private String id;
     private long endTime;
+    private String orderType;
 
     public String getMessage() {
         return message;
@@ -55,6 +56,14 @@ public class OrderProgress {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
     }
 
 

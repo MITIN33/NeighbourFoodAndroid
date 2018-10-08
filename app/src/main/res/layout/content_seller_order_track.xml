@@ -27,7 +27,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/timer"
+            android:id="@+id/seller_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/header"
@@ -43,10 +43,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/timer"
+            android:layout_below="@id/seller_timer"
             android:layout_marginTop="20dp"
             android:gravity="center"
             android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/ordered_seller_Item_recycleView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_below="@id/icon_layout"
+                android:layout_marginTop="5dp"
+                tools:context="com.start.neighbourfood.fragments.FlatListFragment"
+                tools:listitem="@layout/order_summary_list">
+
+            </android.support.v7.widget.RecyclerView>
 
             <RelativeLayout
                 android:id="@+id/waiting_confirm_layout"

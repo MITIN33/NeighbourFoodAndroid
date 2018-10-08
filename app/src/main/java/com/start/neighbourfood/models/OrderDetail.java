@@ -8,13 +8,13 @@ public class OrderDetail {
     private String orderId;
     private String userPlacedBy;
     private String userPlacedTo;
-    private List<FoodItemDetails> sellerItemIds;
+    private List<FoodItemDetails> sellerItems;
     private int quantity;
     private String createTime;
     private String orderStatus;
 
     public OrderDetail() {
-        sellerItemIds = new ArrayList<>();
+        sellerItems = new ArrayList<>();
     }
 
     public String getOrderId() {
@@ -26,11 +26,11 @@ public class OrderDetail {
     }
 
     public List<FoodItemDetails> getSellerItemId() {
-        return sellerItemIds;
+        return sellerItems;
     }
 
     public void setSellerItemId(List<FoodItemDetails> sellerItemId) {
-        this.sellerItemIds = sellerItemId;
+        this.sellerItems = sellerItemId;
     }
 
     public int getQuantity() {

@@ -13,10 +13,6 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Orders" />
         <item
-            android:id="@+id/nav_Request"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Requests" />
-        <item
             android:id="@+id/seller_page"
             android:icon="@drawable/ic_menu_camera"
             android:title="Selling Items" />

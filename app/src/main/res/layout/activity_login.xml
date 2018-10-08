@@ -1,40 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:transitionName="@+id/login_linear_layout"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:name="@+id/loginCoordinateLayout"
     tools:context="com.start.neighbourfood.pages.LoginActivity">
 
     <!-- Neighbor Food Logo-->
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="110dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="24dp"
-        android:src="@drawable/foodie" />
 
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/foodie" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,8 +51,8 @@
                 android:background="@drawable/edit_mobile_border"
                 android:hint=" Mobile Number "
                 android:inputType="phone"
-                android:maxLines="1"
                 android:maxLength="13"
+                android:maxLines="1"
                 android:paddingLeft="5dp"
                 android:singleLine="true" />
 
@@ -96,7 +86,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"
                 android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/editTextCode"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="20dp"
                 android:background="#f1f1f1"
                 android:fontFamily="serif"
                 android:text="Send Code"
@@ -111,10 +102,10 @@
             android:layout_height="38dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:text="@string/action_sign_in"
             android:layout_marginTop="30dp"
             android:background="#fd7c7c"
             android:fontFamily="serif"
+            android:text="@string/action_sign_in"
             android:textAllCaps="false"
             android:textColor="?attr/colorBackgroundFloating" />
 
@@ -135,4 +126,4 @@
                 android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

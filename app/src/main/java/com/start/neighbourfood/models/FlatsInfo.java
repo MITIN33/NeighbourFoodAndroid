@@ -10,6 +10,7 @@ public class FlatsInfo {
     private String rating;
     private String flatID;
     private String apartmentID;
+    private String photoUrl;
     private List<FoodItem> foodItems;
 
     public FlatsInfo(){
@@ -75,5 +76,13 @@ public class FlatsInfo {
 
     public void setApartmentID(String apartmentID) {
         this.apartmentID = apartmentID;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

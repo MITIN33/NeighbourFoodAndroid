@@ -91,15 +91,17 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public void navigateToBuyerTrackOrder(String orderID){
+    public void navigateToBuyerTrackOrder(String orderID, String flatNumber){
         Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
         i.putExtra(ServiceConstants.orderIdLabel,orderID);
+        i.putExtra(ServiceConstants.orderFlatNumberLabel,flatNumber);
         startActivity(i);
     }
 
-    public void navigateToSellerTrackOrder(String orderID){
+    public void navigateToSellerTrackOrder(String orderID, String flatNumber){
         Intent i = new Intent(getApplicationContext(), OrderTrackSellerActivity.class);
         i.putExtra(ServiceConstants.orderIdLabel,orderID);
+        i.putExtra(ServiceConstants.orderFlatNumberLabel,flatNumber);
         startActivity(i);
     }
 

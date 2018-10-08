@@ -10,6 +10,7 @@ public class UserBaseInfo {
     private String flatID;
     private String rating;
     private String userName;
+    private String photoUrl;
 
     public String getUserUid() {
         return userUid;
@@ -73,5 +74,13 @@ public class UserBaseInfo {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

@@ -81,6 +81,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         private final TextView servingView;
         private final TextView priceView;
         private final ElegantNumberButton qtyButton;
+        //private final TextView flatNumber;
 
         public FoodItemRowViewHolder(View v) {
             super(v);
@@ -88,7 +89,6 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             servingView = v.findViewById(R.id.serving_string);
             priceView = v.findViewById(R.id.food_item_price);
             qtyButton = v.findViewById(R.id.quantity_button);
-
             // set the initial and the final Number for the quantity_button
             Integer minQty = 0;
             Integer maxQty = 10;        // Read this from the DB later

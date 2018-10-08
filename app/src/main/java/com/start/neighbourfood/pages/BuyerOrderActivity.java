@@ -11,10 +11,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Response.ResponseOrderHistory;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.TrackOrderAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.ResponseOrderHistory;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -55,10 +55,10 @@ public class BuyerOrderActivity extends BaseActivity {
                     mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
                         @Override
                         public void onClick(View view, int position) {
-                            if("REQUESTED".equals(orderDetails.get(position).getOrderType())) {
-                                navigateToBuyerTrackOrder(orderDetails.get(position).getOrderId());
+                            if("PLACED".equals(orderDetails.get(position).getOrderType())) {
+                                navigateToBuyerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
                             }else{
-                                navigateToSellerTrackOrder(orderDetails.get(position).getOrderId());
+                                navigateToSellerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
                             }
                         }
 

@@ -55,7 +55,7 @@ public class OrderSummaryActivity extends BaseActivity {
             }
         });
         user = getUserBaseInfo();
-
+        ((TextView)findViewById(R.id.flat_number)).setText(getFromSharedPreference("flatNumber"));
         RecyclerView mRecyclerView = findViewById(R.id.ordered_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));

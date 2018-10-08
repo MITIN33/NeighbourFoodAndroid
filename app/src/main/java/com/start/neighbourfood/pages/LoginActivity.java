@@ -2,6 +2,7 @@ package com.start.neighbourfood.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -38,8 +39,6 @@ import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONObject;
 
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,6 +65,31 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
 
     private ServiceManager serviceManager;
 
+    Handler handler = new Handler();
+    int count = 60;
+    // Define the code block to be executed
+
+   // Start the initial runnable task by posting through the handler
+    private Button buttonCode;
+    private Runnable runnableCode = new Runnable() {
+        @Override
+        public void run() {
+            // Do something here on the main thread
+            //Log.d("Handlers", "Called on main thread");
+            buttonCode.setText(String.format("Wait(%s)",count--));
+
+            // Repeat this the same runnable code block again another 1 seconds
+            if(count > 0) {
+                handler.postDelayed(runnableCode, 1000);
+            }
+            else {
+                count = 60;
+                buttonCode.setText("Resend");
+                buttonCode.setEnabled(true);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +100,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
 
         LoginButton loginButton = findViewById(R.id.button_facebook_login);
         bindLoginActionButton(loginButton);
+        buttonCode = findViewById(R.id.buttonGetVerificationCode);
 
         editTextCode = findViewById(R.id.editTextCode);
         editTextPhone = findViewById(R.id.editTextPhone);
@@ -92,7 +117,11 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     return;
                 } else {
                     sendVerificationCode();
+                    handler.post(runnableCode);
                 }
+
+
+
             }
         });
 
@@ -268,25 +297,9 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             findViewById(R.id.buttonGetVerificationCode).setEnabled(false);
-            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Wait (60s)");
             Toast.makeText(getApplicationContext(),
                     "Code Sent ", Toast.LENGTH_LONG).show();
             codeSent = s;
-            Timer buttonTimer = new Timer();
-            buttonTimer.schedule(new TimerTask() {
-
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            findViewById(R.id.buttonGetVerificationCode).setEnabled(true);
-                            ((Button) findViewById(R.id.buttonGetVerificationCode)).setText("Resend");
-                        }
-                    });
-                }
-            }, 60000);
         }
     };
 }

@@ -27,6 +27,7 @@ public class BaseFragment extends Fragment {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
+        mProgressDialog = null;
     }
 
     public String getFromSharedPreference(String key) {

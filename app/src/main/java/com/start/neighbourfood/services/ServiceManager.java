@@ -101,6 +101,21 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
+    public void updateProfilePhoto(String id, String photoUrl,JSONObject jsonObject,final TaskHandler taskHandler){
+        String url = getFullUrl(ServiceConstants.userApiPath) + "/" + id ;
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                taskHandler.onTaskCompleted(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                taskHandler.onErrorResponse(error);
+            }
+        });
+        addToRequestQueue(jsonObjectRequest);
+    }
 
     public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
         String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");

@@ -10,9 +10,10 @@
         android:layout_height="90dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:padding="5dp"
         android:scaleType="centerCrop"
         android:layout_marginTop="15dp"
-        android:src="@drawable/food_icon" />
+        android:src="@drawable/defaultood" />
 
     <RelativeLayout
         android:id="@+id/rel_layout_1"

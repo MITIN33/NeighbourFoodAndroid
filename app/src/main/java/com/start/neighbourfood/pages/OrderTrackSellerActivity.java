@@ -3,21 +3,31 @@ package com.start.neighbourfood.pages;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.Utils.NotificationUtils;
+import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
+import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.OrderProgress;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
 
 public class OrderTrackSellerActivity extends BaseActivity {
 
@@ -53,6 +63,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
     private String buyerId;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String buyerTokenId;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,13 +75,17 @@ public class OrderTrackSellerActivity extends BaseActivity {
 
 
         //Customer code
-        timer = findViewById(R.id.timer);
+        timer = findViewById(R.id.seller_timer);
         orderConfirmImg = findViewById(R.id.confirm_img);
         foodPreparedImg = findViewById(R.id.foodPrepared_img);
         preparedFoodText = findViewById(R.id.foodPrepared_txt);
         orderConfirmText = findViewById(R.id.confirm_text);
         handler = new Handler();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mRecyclerView = findViewById(R.id.ordered_seller_Item_recycleView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         mSwipeRefreshLayout = findViewById(R.id.seller_swipe_layout);
 
@@ -117,7 +132,6 @@ public class OrderTrackSellerActivity extends BaseActivity {
         findViewById(R.id.finish_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.green_tick);
         preparedFoodText.setText("Food prepared");
-        orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
     }
 
     private void setUIForOrderConfirmation() {
@@ -127,7 +141,6 @@ public class OrderTrackSellerActivity extends BaseActivity {
         findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.wait);
         preparedFoodText.setText("Tap to confirm if the food is ready.");
-        orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
     }
 
     private boolean mStopHandler() {
@@ -143,6 +156,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
             @Override
             public void onTaskCompleted(JSONObject result) {
                 try {
+                    ObjectMapper objectMapper = new ObjectMapper();
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
                     orderProgress.setId(result.getJSONObject("Result").getString("id"));
                     orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
@@ -150,9 +164,12 @@ public class OrderTrackSellerActivity extends BaseActivity {
                     if (result.getJSONObject("Result").has("endTime")) {
                         orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
                     }
+                    List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItemDetails>>() {
+                    });
+                    mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
                     handler.post(runnable);
                     updateUI();
-                } catch (JSONException e) {
+                } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
                 hideProgressDialog();
@@ -193,6 +210,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
                             @Override
                             public void onTaskCompleted(JSONObject result) {
                                 NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
                                 setUIForOrderConfirmation();
                             }
 
@@ -217,6 +235,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
                     NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
                     setUIForOrderConfirmation();
                 }
 
@@ -241,6 +260,8 @@ public class OrderTrackSellerActivity extends BaseActivity {
                             @Override
                             public void onTaskCompleted(JSONObject result) {
                                 NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage());
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                                orderProgress.setEndTime(System.currentTimeMillis());
                                 setUIForFoodPrepared();
                             }
 
@@ -265,6 +286,8 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
                     NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage());
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                    orderProgress.setEndTime(System.currentTimeMillis());
                     setUIForFoodPrepared();
                 }
 

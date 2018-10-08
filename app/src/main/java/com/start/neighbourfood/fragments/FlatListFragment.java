@@ -96,7 +96,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
             @Override
             public void onClick(View view, int position) {
                 FlatsInfo flats = mDataset.get(position);
-                loadFoodItemsForFlat(flats.getSellerId());
+                loadFoodItemsForFlat(flats.getSellerId(), flats.getFlatNumber());
             }
 
             @Override
@@ -110,15 +110,18 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     private void fetchFlatinfo() {
         showProgressDialog();
         try {
-            JSONObject userBaseInfo = new JSONObject(((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail));
-            ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
+            String userString =  ((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail);
+            if(userString != null) {
+                JSONObject userBaseInfo = new JSONObject(userString);
+                ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
+            }
         } catch (IllegalAccessException | JSONException e) {
             e.printStackTrace();
         }
     }
 
 
-    private void loadFoodItemsForFlat(String sellerId) {
+    private void loadFoodItemsForFlat(String sellerId, String flatNumber) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -129,6 +132,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         fragment.setExitTransition(exitSlide);
         Bundle args = new Bundle();
         args.putString("sellerId", sellerId);
+        args.putString("flatNumber", flatNumber);
         fragment.setArguments(args);
 
         fragmentTransaction.replace(R.id.content_frame, fragment);

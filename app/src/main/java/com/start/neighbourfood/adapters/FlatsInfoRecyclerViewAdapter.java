@@ -2,6 +2,9 @@ package com.start.neighbourfood.adapters;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -14,10 +17,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.models.FoodItem;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +67,12 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         rowHolder.flatNumber.setText(flatText);
         rowHolder.rating.setText(flatsInfo.getRating() == null ? "4/5" : flatsInfo.getRating());
         rowHolder.userName.setText(flatsInfo.getSellerName());
-        rowHolder.imageView.setImageResource(R.drawable.food_icon);
+        if(flatsInfo.getPhotoUrl() == null){
+            rowHolder.imageView.setImageResource(R.drawable.food_icon);
+        }else {
+            Picasso.get().load(flatsInfo.getPhotoUrl()).into(rowHolder.imageView);
+            //new DownLoadImageTask(rowHolder.imageView).execute(flatsInfo.getPhotoUrl());
+        }
         List<FoodItem> list = new ArrayList<>();
         int k =0;
         for (FoodItem item : flatsInfo.getFoodItems()){
@@ -150,5 +161,41 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 notifyDataSetChanged();
             }
         };
+    }
+
+    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView imageView;
+
+        public DownLoadImageTask(ImageView imageView) {
+            this.imageView = imageView;
+        }
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected Bitmap doInBackground(String... urls) {
+            String urlOfImage = urls[0];
+            Bitmap logo = null;
+            try {
+                InputStream is = new URL(urlOfImage).openStream();
+                /*
+                    decodeStream(InputStream is)
+                        Decode an input stream into a bitmap.
+                 */
+                logo = BitmapFactory.decodeStream(is);
+            } catch (Exception e) { // Catch the download exception
+                e.printStackTrace();
+            }
+            return logo;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(Bitmap result) {
+            imageView.setImageBitmap(result);
+        }
     }
 }

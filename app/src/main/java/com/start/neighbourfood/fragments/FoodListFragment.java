@@ -43,6 +43,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     protected List<FoodItemDetails> mDataset;
     private FoodItemsRecyclerViewAdapter mAdapter;
     private Button goToCartButton;
+    private String flatNumber;
     private List<FoodItemDetails> orderItems;
     private FoodItemDetails selectedItem;
     private HashMap<FoodItemDetails, String> orderQuantityMap;
@@ -122,6 +123,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     private void loadFoodItems() {
         showProgressDialog();
         String sellerId = getArguments().getString("sellerId");
+        flatNumber = getArguments().getString("flatNumber");
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
     }
 
@@ -152,6 +154,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
         try {
             jsonInString = mapper.writeValueAsString(orderItems);
             saveFromSharedPreference("orderedItem", jsonInString);
+            saveFromSharedPreference("flatNumber", flatNumber);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

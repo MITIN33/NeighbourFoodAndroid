@@ -32,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
@@ -57,9 +58,9 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     protected List<FoodItemDetails> mDataset;
     protected SellerItemAdapter mAdapter;
     private CoordinatorLayout coordinatorLayout;
-    private FloatingActionButton mPlusOneButton;
     private FoodItemDetails selectedItem;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private FirebaseUser user;
     int positin;
 
     public SellerFoodFragment() {
@@ -75,6 +76,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         super.onCreate(savedInstanceState);
         positin = -1;
         selectedItem = null;
+        user = FirebaseAuth.getInstance().getCurrentUser();
         setHasOptionsMenu(false);
     }
 
@@ -84,7 +86,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             super.onCreateView(inflater, container, savedInstanceState);
             View rootView = inflater.inflate(R.layout.content_seller_item_list, container, false);
             final RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
-            final Switch switchOne = (Switch) rootView.findViewById(R.id.switch_one);
+            final Switch switchOne = rootView.findViewById(R.id.switch_one);
             mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container_seller);
 
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -104,8 +106,10 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                             if (isChecked) {
                                 switchOne.setText("Available");
                                 switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.green_dark));
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(true), null);
                             } else {
                                 switchOne.setText("Not Available");
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(false), null);
                                 switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_500));
                             }
                         }
@@ -156,7 +160,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     }
 
     private void setFloatingButtonAction(View rootView) {
-        mPlusOneButton = rootView.findViewById(R.id.add_food_item_button);
+        FloatingActionButton mPlusOneButton = rootView.findViewById(R.id.add_food_item_button);
         mPlusOneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

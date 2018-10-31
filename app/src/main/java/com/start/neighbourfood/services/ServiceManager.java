@@ -78,6 +78,11 @@ public class ServiceManager {
         createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
+    public void toggleAvailability(String uid,String value, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/" + uid + "/user/" + value;
+        createRequest(Request.Method.GET, taskHandler, url, null);
+    }
+
     /***********
      /
      /Call to fetch user for the uid
@@ -260,12 +265,16 @@ public class ServiceManager {
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, jsonObject, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
-                    taskHandler.onTaskCompleted(response);
+                   if(taskHandler != null) {
+                       taskHandler.onTaskCompleted(response);
+                   }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    taskHandler.onErrorResponse(error);
+                    if(taskHandler!= null) {
+                        taskHandler.onErrorResponse(error);
+                    }
                 }
             });
             addToRequestQueue(jsonObjectRequest);

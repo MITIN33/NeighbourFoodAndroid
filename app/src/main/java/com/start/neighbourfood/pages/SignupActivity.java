@@ -151,7 +151,6 @@ public class SignupActivity extends BaseActivity {
 
     private void addUserToDB() {
         showProgressDialog();
-        String url = "http://nfservice.azurewebsites.net/api/user";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userObject = new JSONObject();
         try {
@@ -162,6 +161,7 @@ public class SignupActivity extends BaseActivity {
             userObject.put("lname", ((EditText) findViewById(R.id.last_name)).getText());
             userObject.put("phoneNo", ((EditText) findViewById(R.id.mobile_number)).getText());
             userObject.put("userName", user.getDisplayName());
+            userObject.put("rating","4.5");
             serviceManager.createUser(userObject, new SignUpTaskHandler(user));
         } catch (JSONException ex) {
             ex.printStackTrace();

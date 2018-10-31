@@ -62,6 +62,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private FirebaseUser user;
     int positin;
+    private Switch switchOne;
 
     public SellerFoodFragment() {
     }
@@ -86,7 +87,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             super.onCreateView(inflater, container, savedInstanceState);
             View rootView = inflater.inflate(R.layout.content_seller_item_list, container, false);
             final RecyclerView mRecyclerView = rootView.findViewById(R.id.recycler_view);
-            final Switch switchOne = rootView.findViewById(R.id.switch_one);
+            switchOne = rootView.findViewById(R.id.switch_one);
             mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container_seller);
 
             mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -206,7 +207,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     }
 
     private void loadFoodItems() {
-        showProgressDialog();
+        //showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
         mSwipeRefreshLayout.setRefreshing(false);
@@ -262,10 +263,11 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mDataset = foodItemDetails;
             mAdapter.setDataset(foodItemDetails);
             mAdapter.notifyDataSetChanged();
+            switchOne.setChecked(foodItemDetails.get(0).isAvailable());
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        hideProgressDialog();
+        //hideProgressDialog();
     }
 
     @Override

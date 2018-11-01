@@ -263,7 +263,9 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mDataset = foodItemDetails;
             mAdapter.setDataset(foodItemDetails);
             mAdapter.notifyDataSetChanged();
-            switchOne.setChecked(foodItemDetails.get(0).isAvailable());
+            if (foodItemDetails.size()>0) {
+                switchOne.setChecked(foodItemDetails.get(0).isAvailable());
+            }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }

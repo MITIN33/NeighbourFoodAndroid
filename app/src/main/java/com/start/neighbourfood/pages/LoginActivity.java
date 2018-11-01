@@ -130,11 +130,11 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
             @Override
             public void onClick(View v) {
                 if (!isNetworkConnected()) {
-                    Toast.makeText(LoginActivity.this, "No internet connection!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "No internet connection!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(editTextCode.getText())) {
-                    Toast.makeText(LoginActivity.this, "Incorrect code !", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Incorrect code !", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     verifySignInCode();
@@ -168,7 +168,12 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
         }
 
         if (!phone.startsWith("+")) {
-            phone = "+91" + phone;
+            if (phone.length() == 10 ) {
+                phone = "+91" + phone;
+            }
+            else {
+                phone = "+" + phone;
+            }
         }
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(

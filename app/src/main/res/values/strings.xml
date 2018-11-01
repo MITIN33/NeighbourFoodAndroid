@@ -135,4 +135,5 @@
     <string name="title_activity_order_track">Order Track</string>
     <string name="title_activity_seller_order_track">Order Request Track</string>
     <string name="order_status">Order Status:</string>
+    <string name="app_title">NeighbourFood</string>
 </resources>

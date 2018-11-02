@@ -99,6 +99,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         timer = findViewById(R.id.timer);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -20,9 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ApartmentsInfo;
-import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.HoodDetails;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -34,7 +33,6 @@ import java.util.List;
 public class SignupActivity extends BaseActivity {
 
     private final String TAG = "SIGNIN_ACTIVITY";
-    private UserBaseInfo userBaseInfo;
     private ServiceManager serviceManager;
     private JSONObject userObject;
     private Spinner spinner, flatNumber;
@@ -102,9 +100,9 @@ public class SignupActivity extends BaseActivity {
             public void onTaskCompleted(JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
-                    List<FlatsInfo> list = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
+                    List<HoodDetails> list = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<HoodDetails>>() {
                     });
-                    ArrayAdapter<FlatsInfo> adapter = new ArrayAdapter<FlatsInfo>(SignupActivity.this, android.R.layout.simple_spinner_item, list);
+                    ArrayAdapter<HoodDetails> adapter = new ArrayAdapter<HoodDetails>(SignupActivity.this, android.R.layout.simple_spinner_item, list);
                     // Specify the layout to use when the list of choices appears
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     // Apply the adapter to the spinner
@@ -156,7 +154,7 @@ public class SignupActivity extends BaseActivity {
         try {
             userObject.put("userUid", user.getUid());
             userObject.put("apartmentID", (((ApartmentsInfo) spinner.getSelectedItem()).getApartmentID()));
-            userObject.put("flatID", (((FlatsInfo) flatNumber.getSelectedItem()).getFlatID()));
+            userObject.put("flatID", (((HoodDetails) flatNumber.getSelectedItem()).getFlatId()));
             userObject.put("fname", ((EditText) findViewById(R.id.first_name)).getText());
             userObject.put("lname", ((EditText) findViewById(R.id.last_name)).getText());
             userObject.put("phoneNo", ((EditText) findViewById(R.id.mobile_number)).getText());

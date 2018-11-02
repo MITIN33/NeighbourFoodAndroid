@@ -1,4 +1,4 @@
-package com.start.neighbourfood.models;
+package com.start.neighbourfood.models.v1.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

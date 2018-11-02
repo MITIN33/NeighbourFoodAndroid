@@ -1,6 +1,6 @@
 package com.start.neighbourfood.Utils;
 
-import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.v1.response.FoodItem;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class NFUtils {
         return "Food Prepared: have a new notification from";
     }
 
-    public static String getTotalPrice(List<FoodItemDetails> foodItemDetailsList) {
+    public static String getTotalPrice(List<FoodItem> foodItemDetailsList) {
         int sum = 0;
-        for (FoodItemDetails itemDetails : foodItemDetailsList) {
+        for (FoodItem itemDetails : foodItemDetailsList) {
             int pr = Integer.parseInt(itemDetails.getPrice());
             int q = Integer.parseInt(itemDetails.getQuantity());
             sum += pr * q;

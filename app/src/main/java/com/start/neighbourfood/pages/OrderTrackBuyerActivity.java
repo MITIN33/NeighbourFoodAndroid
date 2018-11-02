@@ -23,9 +23,9 @@ import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.OrderProgress;
-import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.FoodItem;
 import com.start.neighbourfood.services.Config;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -40,7 +40,6 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     private TextView timer;
     private long startTime, endTime;
     private Handler handler;
-    private String flatNumber;
     private OrderProgress orderProgress;
     private ImageView orderConfirmImg, foodPreparedImg;
     private TextView preparedFoodText, orderConfirmText;
@@ -100,6 +99,12 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         timer = findViewById(R.id.timer);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         orderConfirmImg = findViewById(R.id.confirm_img);
         foodPreparedImg = findViewById(R.id.foodPrepared_img);
         preparedFoodText = findViewById(R.id.foodPrepared_txt);
@@ -141,10 +146,6 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     public void onResume() {
         super.onResume();
         String orderId = getIntent().getExtras().getString("orderID");
-        flatNumber = getFromSharedPreference("flatNumber");
-        if (flatNumber == null){
-            flatNumber = getIntent().getExtras().getString(ServiceConstants.orderFlatNumberLabel);
-        }
 
         //came for the firs time on this page
         if (orderProgress == null) {
@@ -168,7 +169,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         orderConfirmText.setText("Member accepted the food order");
         findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
         foodPreparedImg.setImageResource(R.drawable.wait);
-        finalMsg.setText("Go get your food from flat #"+flatNumber);
+        finalMsg.setText(String.format("Go get your food from %s in flat #%s", orderProgress.getUserPlacedTo().getfName() , orderProgress.getUserPlacedTo().getFlatNumber()));
         preparedFoodText.setText("Food is being prepared");
     }
 
@@ -188,14 +189,15 @@ public class OrderTrackBuyerActivity extends BaseActivity {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
-                    orderProgress.setId(result.getJSONObject("Result").getString("id"));
                     orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
                     if (result.getJSONObject("Result").has("endTime")) {
                         orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
                     }
-                    List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItemDetails>>() {
+                    List<FoodItem> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItem>>() {
                     });
+                    orderProgress.setUserPlacedTo(objectMapper.readValue(result.getJSONObject("Result").getJSONObject("userPlacedTo").toString(), UserBaseInfo.class));
                     mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
+                    ((TextView)findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed to %s (Flat: %s)",orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
                     handler.post(runnable);
                     updateUI();
                 } catch (JSONException | IOException e) {

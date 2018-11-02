@@ -19,8 +19,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.models.FoodItem;
+import com.start.neighbourfood.models.v1.response.HoodDetails;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -31,8 +30,8 @@ import java.util.List;
 public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private static final String TAG = "FLAT_ADAPTOR";
 
-    private List<FlatsInfo> mDataSet;
-    private List<FlatsInfo> flatlistfiltered;
+    private List<HoodDetails> mDataSet;
+    private List<HoodDetails> flatlistfiltered;
     private Context context;
 
     /**
@@ -40,7 +39,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
      *
      * @param dataSet String[] containing the data to populate views to be used by RecyclerView.
      */
-    public FlatsInfoRecyclerViewAdapter(Context context, List<FlatsInfo> dataSet) {
+    public FlatsInfoRecyclerViewAdapter(Context context, List<HoodDetails> dataSet) {
         // For now, giving the dummy food items
         mDataSet = dataSet;
         this.context = context;
@@ -62,7 +61,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         RowViewHolder rowHolder = (RowViewHolder) holder;
-        FlatsInfo flatsInfo = flatlistfiltered.get(position);
+        HoodDetails flatsInfo = flatlistfiltered.get(position);
         String flatText = "Served by Flat: "+flatsInfo.getFlatNumber();
         rowHolder.flatNumber.setText(flatText);
         rowHolder.rating.setText(flatsInfo.getRating() == null ? "4/5" : flatsInfo.getRating());
@@ -73,15 +72,15 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
             Picasso.get().load(flatsInfo.getPhotoUrl()).into(rowHolder.imageView);
             //new DownLoadImageTask(rowHolder.imageView).execute(flatsInfo.getPhotoUrl());
         }
-        List<FoodItem> list = new ArrayList<>();
+
+        List<String> list = new ArrayList<>();
         int k =0;
-        for (FoodItem item : flatsInfo.getFoodItems()){
-            list.add(item);
-            if (k++ > 3)
-                break;
+        for (int i = 0; i < Math.min(3,flatsInfo.getFoodItems().size()); i++) {
+            list.add(flatsInfo.getFoodItems().get(i));
         }
-        final ArrayAdapter<FoodItem> arrayAdapter =
-                new ArrayAdapter<FoodItem>(context, R.layout.nf_list_item, list){
+
+        final ArrayAdapter<String> arrayAdapter =
+                new ArrayAdapter<String>(context, R.layout.nf_list_item, list){
             @Override
             public View getView(int position, View convertView, ViewGroup parent){
                 /// Get the Item from ListView
@@ -107,7 +106,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return flatlistfiltered.size();
     }
 
-    public void setDataSet(List<FlatsInfo> dataset){
+    public void setDataSet(List<HoodDetails> dataset){
         mDataSet = dataset;
         flatlistfiltered = dataset;
     }
@@ -137,9 +136,8 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                 if (charString.isEmpty()) {
                     flatlistfiltered = mDataSet;
                 } else {
-                    List<FlatsInfo> filteredList = new ArrayList<>();
-                    for (FlatsInfo item : mDataSet) {
-
+                    List<HoodDetails> filteredList = new ArrayList<>();
+                    for (HoodDetails item : mDataSet) {
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
                         if (item.getSellerName().toLowerCase().contains(charString.toLowerCase())) {
@@ -157,7 +155,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                flatlistfiltered = (List<FlatsInfo>) filterResults.values;
+                flatlistfiltered = (List<HoodDetails>) filterResults.values;
                 notifyDataSetChanged();
             }
         };

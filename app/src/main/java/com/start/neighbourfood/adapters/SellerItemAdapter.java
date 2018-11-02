@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.v1.request.FoodItemDetails;
 
 import java.util.ArrayList;
 import java.util.List;

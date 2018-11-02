@@ -8,16 +8,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.v1.response.FoodItem;
 
 import java.util.List;
 
 public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.OrderListViewHolder> {
 
 
-    private List<FoodItemDetails> foodItemDetails;
+    private List<FoodItem> foodItemDetails;
 
-    public OrderItemsAdapter(List<FoodItemDetails> foodItems) {
+    public OrderItemsAdapter(List<FoodItem> foodItems) {
         foodItemDetails = foodItems;
     }
 
@@ -33,7 +33,7 @@ public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.Or
     @Override
     public void onBindViewHolder(@NonNull OrderListViewHolder viewHolder, int i) {
         OrderListViewHolder orderListViewHolder = viewHolder;
-        FoodItemDetails foodItemDetail = foodItemDetails.get(i);
+        FoodItem foodItemDetail = foodItemDetails.get(i);
         orderListViewHolder.description.setText("2 delicious samosa served with green chatni.");
         orderListViewHolder.itemPrice.setText(String.format("\u20B9 %s", foodItemDetail.getPrice()));
         orderListViewHolder.itemName.setText(foodItemDetail.getItemName());
@@ -61,6 +61,7 @@ public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.Or
         public TextView description;
         public TextView itemPrice;
         public TextView quantity;
+        public TextView servedFor;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -72,6 +73,7 @@ public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.Or
             itemPrice = itemView.findViewById(R.id.itemPrice);
             description = itemView.findViewById(R.id.description);
             quantity = itemView.findViewById(R.id.quantity);
+            servedFor = itemView.findViewById(R.id.servedFor);
         }
     }
 }

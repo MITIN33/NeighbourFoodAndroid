@@ -27,8 +27,8 @@ import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FlatsInfoRecyclerViewAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.HoodDetails;
 import com.start.neighbourfood.pages.BaseActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -46,7 +46,7 @@ import java.util.List;
 public class FlatListFragment extends BaseFragment implements TaskHandler, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = FlatListFragment.class.getSimpleName();
-    private List<FlatsInfo> mDataset;
+    private List<HoodDetails> mDataset;
     public FlatsInfoRecyclerViewAdapter mAdapter;
     private SearchView searchView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -95,7 +95,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                FlatsInfo flats = mDataset.get(position);
+                HoodDetails flats = mDataset.get(position);
                 loadFoodItemsForFlat(flats.getSellerId(), flats.getFlatNumber());
             }
 
@@ -110,12 +110,11 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     private void fetchFlatinfo() {
         showProgressDialog();
         try {
-            String userString =  ((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail);
-            if(userString != null) {
-                JSONObject userBaseInfo = new JSONObject(userString);
-                ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
+            UserBaseInfo userBaseInfo =  ((BaseActivity) getActivity()).getUserBaseInfo();
+            if(userBaseInfo != null) {
+                ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo.getUserUid(), userBaseInfo.getApartmentId(), this);
             }
-        } catch (IllegalAccessException | JSONException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -172,7 +171,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     public void onTaskCompleted(JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            List<FlatsInfo> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
+            List<HoodDetails> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<HoodDetails>>() {
             });
             mDataset = flatsInfos;
             mAdapter.setDataSet(flatsInfos);

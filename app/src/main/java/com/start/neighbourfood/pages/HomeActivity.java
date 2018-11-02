@@ -28,7 +28,6 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -38,6 +37,7 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.fragments.FlatListFragment;
 import com.start.neighbourfood.fragments.SellerFoodFragment;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -50,7 +50,7 @@ public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "HOME_ACTIVITY";
-    private FirebaseUser user;
+    private UserBaseInfo user;
 
     private static final int SELECT_PICTURE = 100;
 
@@ -59,14 +59,14 @@ public class HomeActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        user = getUserBaseInfo();
         // Check for login
         if (user == null || getFromSharedPreference(ServiceConstants.signedInKey) == null) {
             navigateToLoginPage();
             return;
         }
 
-        registerDevice(user.getUid(), getFromSharedPreference("regId"));
+        registerDevice(user.getUserUid(), getFromSharedPreference("regId"));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,9 +84,12 @@ public class HomeActivity extends BaseActivity
         ImageView imageView = headerView.findViewById(R.id.header_imageView);
         TextView emailView = headerView.findViewById(R.id.header_mail);
 
-        userName.setText(user.getDisplayName());
-        if (user.getPhotoUrl() != null) {
-            new DownLoadImageTask(imageView).execute(user.getPhotoUrl().toString());
+        userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
+        if (FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl() != null) {
+            new DownLoadImageTask(imageView).execute(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl().toString());
+        }
+        else {
+            imageView.setImageResource(R.drawable.food_icon);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +99,7 @@ public class HomeActivity extends BaseActivity
             }
         });
 
-        emailView.setText(user.getEmail());
+        emailView.setText("+91 " + user.getPhoneNo());
 
 
     }
@@ -231,7 +234,7 @@ public class HomeActivity extends BaseActivity
                                         .setPhotoUri(downloadUri)
                                         .build();
 
-                                user.updateProfile(profileUpdates)
+                                FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
@@ -241,7 +244,7 @@ public class HomeActivity extends BaseActivity
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
-                                                ServiceManager.getInstance(HomeActivity.this).updateProfilePhoto(user.getUid(), downloadUri.toString(), jsonObject,new TaskHandler() {
+                                                ServiceManager.getInstance(HomeActivity.this).updateProfilePhoto(user.getUserUid(), downloadUri.toString(), jsonObject,new TaskHandler() {
                                                     @Override
                                                     public void onTaskCompleted(JSONObject result) {
 

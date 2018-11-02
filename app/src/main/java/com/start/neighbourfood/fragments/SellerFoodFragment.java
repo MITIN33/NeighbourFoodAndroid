@@ -19,8 +19,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -38,10 +36,9 @@ import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.SellerItemAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItem;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.RecyclerItemTouchHelper;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.request.FoodItemDetails;
 import com.start.neighbourfood.pages.BaseActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -49,7 +46,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SellerFoodFragment extends BaseFragment implements TaskHandler, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
@@ -171,7 +167,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         });
     }
 
-    private void fetchFoodItem(final View promptsView) {
+    /*private void fetchFoodItem(final View promptsView) {
 
         ServiceManager.getInstance(getActivity()).fetchAllFoodItem(new TaskHandler() {
             @Override
@@ -205,11 +201,11 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         }
         return list;
     }
-
+*/
     private void loadFoodItems() {
         //showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
+        ServiceManager.getInstance(getActivity()).fetchSellingItemsForFlat(sellerId, this);
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -263,7 +259,12 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mDataset = foodItemDetails;
             mAdapter.setDataset(foodItemDetails);
             mAdapter.notifyDataSetChanged();
-            switchOne.setChecked(foodItemDetails.get(0).isAvailable());
+            if (foodItemDetails.size() > 0) {
+                switchOne.setChecked(foodItemDetails.get(0).isAvailable());
+            }
+            else {
+                switchOne.setChecked(true);
+            }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -309,7 +310,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             foodItemPrice.setText(selectedItem.getPrice());
         }
 
-        fetchFoodItem(promptsView);
+        //fetchFoodItem(promptsView);
         String updateBtnText = selectedItem != null ? "Update" : "Add";
         // set dialog message
         alertDialogBuilder
@@ -329,7 +330,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 foodItemDetails.setServedFor(String.valueOf(numberPicker.getValue()));
                                 foodItemDetails.setSellerID(userBaseInfo.getUserUid());
                                 foodItemDetails.setPrice(String.valueOf(foodItemPrice.getText()));
-                                foodItemDetails.setFlatID(userBaseInfo.getFlatID());
+                                foodItemDetails.setFlatID(userBaseInfo.getFlatId());
                                 foodItemDetails.setItemDesc(String.valueOf(foodItemDesc.getText()));
                                 foodItemDetails.setVeg(radioGroup.isChecked());
                                 foodItemDetails.setAvailable(true);

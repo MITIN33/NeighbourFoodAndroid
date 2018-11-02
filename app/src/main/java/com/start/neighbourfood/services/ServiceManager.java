@@ -122,13 +122,18 @@ public class ServiceManager {
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
-        String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");
+    public void fetchAvailableHoods(String userId, String apartmentId, final TaskHandler taskHandler) throws IllegalAccessException {
+         String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + apartmentId + "/user/" + userId;
+        createRequest(Request.Method.GET, taskHandler, url, null);
+    }
+
+    public void fetchSellingItemsForFlat(String flatId, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
         createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void fetchFoodItemsForFlat(String flatId, final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
+        String url = getFullUrl(ServiceConstants.flatApiPAth) + "/seller/" + flatId;
         createRequest(Request.Method.GET, taskHandler, url, null);
     }
 

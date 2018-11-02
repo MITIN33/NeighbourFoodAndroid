@@ -12,12 +12,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.facebook.login.LoginManager;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.Config;
 
 import java.io.IOException;
@@ -155,8 +154,7 @@ public class BaseActivity extends AppCompatActivity {
         try {
             String result = getFromSharedPreference(ServiceConstants.userDetail);
             if (result != null) {
-                return objectMapper.readValue(result, new TypeReference<UserBaseInfo>() {
-                });
+                return objectMapper.readValue(result, UserBaseInfo.class);
             }
         } catch (IOException e) {
             e.printStackTrace();

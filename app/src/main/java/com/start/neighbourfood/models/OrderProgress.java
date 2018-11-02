@@ -1,14 +1,17 @@
 package com.start.neighbourfood.models;
 
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+
 public class OrderProgress {
 
     private String message;
     private OrderStatus orderStatus;
     private long startTime;
     private String orderId;
-    private String id;
     private long endTime;
     private String orderType;
+    private UserBaseInfo userPlacedTo;
+    private UserBaseInfo userPlacedBy;
 
     public String getMessage() {
         return message;
@@ -42,14 +45,6 @@ public class OrderProgress {
         this.orderId = orderId;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public long getEndTime() {
         return endTime;
     }
@@ -64,6 +59,22 @@ public class OrderProgress {
 
     public void setOrderType(String orderType) {
         this.orderType = orderType;
+    }
+
+    public UserBaseInfo getUserPlacedTo() {
+        return userPlacedTo;
+    }
+
+    public void setUserPlacedTo(UserBaseInfo userPlacedTo) {
+        this.userPlacedTo = userPlacedTo;
+    }
+
+    public UserBaseInfo getUserPlacedBy() {
+        return userPlacedBy;
+    }
+
+    public void setUserPlacedBy(UserBaseInfo userPlacedBy) {
+        this.userPlacedBy = userPlacedBy;
     }
 
 

@@ -8,23 +8,23 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.models.OrderDetail;
 import com.start.neighbourfood.models.OrderProgress;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.SellerItemDetail;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -32,11 +32,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 public class OrderSummaryActivity extends BaseActivity {
 
-    private List<FoodItemDetails> foodItemDetailsList;
+    private SellerItemDetail sellerItemDetail;
     private Button placeOrderBtn;
     private UserBaseInfo user;
     private String sellerID;
@@ -64,12 +63,14 @@ public class OrderSummaryActivity extends BaseActivity {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            foodItemDetailsList = objectMapper.readValue(list, new TypeReference<List<FoodItemDetails>>() {
-            });
-            sellerID = foodItemDetailsList.get(0).getSellerID();
-            OrderItemsAdapter adapter = new OrderItemsAdapter(foodItemDetailsList);
+            sellerItemDetail = objectMapper.readValue(list, SellerItemDetail.class);
+            sellerID = sellerItemDetail.getSellerId();
+            OrderItemsAdapter adapter = new OrderItemsAdapter(sellerItemDetail.getFoodItemDetail());
             mRecyclerView.setAdapter(adapter);
-            ((TextView) findViewById(R.id.total_bill)).setText(String.format("₹ %s", NFUtils.getTotalPrice(foodItemDetailsList)));
+            ((TextView)findViewById(R.id.userName)).setText(sellerItemDetail.getfName());
+            ((TextView)findViewById(R.id.flat_number)).setText("Flat #" +sellerItemDetail.getFlatNumber());
+            ((ImageView)findViewById(R.id.hoodIcon)).setImageResource(R.drawable.food_icon);
+            ((TextView) findViewById(R.id.total_bill)).setText(String.format("₹ %s", NFUtils.getTotalPrice(sellerItemDetail.getFoodItemDetail())));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -118,11 +119,11 @@ public class OrderSummaryActivity extends BaseActivity {
             final String orderID = NFUtils.getOrderID(epochTime , user.getUserUid());
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setCreateTime(String.valueOf(epochTime));
-            orderDetail.setSellerItemId(foodItemDetailsList);
+            orderDetail.setFoodItems(sellerItemDetail.getFoodItemDetail());
             orderDetail.setOrderId(orderID);
             orderDetail.setUserPlacedBy(user.getUserUid());
             orderDetail.setOrderStatus(OrderProgress.OrderStatus.PENDING_CONFIRMATION.toString());
-            orderDetail.setUserPlacedTo(foodItemDetailsList.get(0).getSellerID());
+            orderDetail.setUserPlacedTo(sellerItemDetail.getSellerId());
 
             JSONObject jsonObject = new JSONObject(new Gson().toJson(orderDetail));
 

@@ -19,8 +19,9 @@ import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.Utils.NotificationUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.OrderProgress;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.FoodItem;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -70,6 +71,12 @@ public class OrderTrackSellerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_ordertrack);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -158,14 +165,15 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
-                    orderProgress.setId(result.getJSONObject("Result").getString("id"));
                     orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
                     buyerId = result.getJSONObject("Result").getString("userPlacedBy");
                     if (result.getJSONObject("Result").has("endTime")) {
                         orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
                     }
-                    List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItemDetails>>() {
+                    List<FoodItem> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItem>>() {
                     });
+                    orderProgress.setUserPlacedBy(objectMapper.readValue(result.getJSONObject("Result").getJSONObject("userPlacedBy").toString(), UserBaseInfo.class));
+                    ((TextView)findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed by %s (Flat: %s)",orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
                     mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
                     handler.post(runnable);
                     updateUI();

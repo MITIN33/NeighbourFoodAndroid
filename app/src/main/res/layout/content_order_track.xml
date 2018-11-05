@@ -9,46 +9,46 @@
     tools:context="com.start.neighbourfood.pages.OrderTrackBuyerActivity"
     tools:showIn="@layout/activity_order_track">
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/header"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:fontFamily="serif"
-                android:text="Track your order"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:fontFamily="serif"
+            android:text="Track your order"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/timer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/header"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/circle_bg"
-                android:gravity="center"
-                android:text="00:00"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/green"
-                android:textSize="30sp" />
+        <TextView
+            android:id="@+id/timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/circle_bg"
+            android:gravity="center"
+            android:text="00:00"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/green"
+            android:textSize="30sp" />
 
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@id/timer">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/timer"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
                 android:orientation="vertical">
@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/athiti_semibold"
                     android:text="Order Placed to Sucheta (Flat F6)"
-                    android:textSize="14dp"/>
+                    android:textSize="14dp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/ordered_buyer_Item_recycleView"
@@ -154,10 +154,10 @@
                         android:textStyle="bold" />
 
                 </LinearLayout>
-
             </LinearLayout>
+        </ScrollView>
 
 
-        </RelativeLayout>
-    </ScrollView>
+    </RelativeLayout>
+
 </android.support.v4.widget.SwipeRefreshLayout>

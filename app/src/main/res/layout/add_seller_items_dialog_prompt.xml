@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/popup"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:padding="10dp"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -82,10 +83,16 @@
             android:text="SERVED FOR"
             android:textSize="15sp" />
 
-        <NumberPicker
+        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
             android:id="@+id/numberPicker"
             android:layout_width="80dp"
-            android:layout_height="60dp" />
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:gravity="end"
+            app:backGroundColor="@color/white"
+            app:initialNumber="0"
+            app:textColor="@color/grey_500"
+            app:textSize="8sp" />
     </LinearLayout>
 
     <EditText

@@ -21,12 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -289,7 +289,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
         final EditText foodItemName = (EditText) promptsView
                 .findViewById(R.id.seller_food_item_name);
-        final NumberPicker numberPicker = (NumberPicker) promptsView
+        final ElegantNumberButton numberPicker = (ElegantNumberButton) promptsView
                 .findViewById(R.id.numberPicker);
         final EditText foodItemDesc = (EditText) promptsView
                 .findViewById(R.id.seller_food_item_desc);
@@ -298,14 +298,12 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         final RadioButton radioGroup = promptsView.findViewById(R.id.radio_veg);
 
         if (numberPicker != null) {
-            numberPicker.setMinValue(0);
-            numberPicker.setMaxValue(10);
-            numberPicker.setWrapSelectorWheel(true);
+            numberPicker.setRange(1, 10);
         }
 
         if (selectedItem != null) {
             foodItemName.setText(selectedItem.getItemName());
-            numberPicker.setValue(Integer.parseInt(selectedItem.getServedFor()));
+            numberPicker.setNumber(selectedItem.getServedFor());
             foodItemDesc.setText(selectedItem.getItemDesc());
             foodItemPrice.setText(selectedItem.getPrice());
         }
@@ -327,7 +325,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 Gson gson = new Gson();
                                 final FoodItemDetails foodItemDetails = new FoodItemDetails();
                                 foodItemDetails.setItemName(String.valueOf(foodItemName.getText()));
-                                foodItemDetails.setServedFor(String.valueOf(numberPicker.getValue()));
+                                foodItemDetails.setServedFor(String.valueOf(numberPicker.getNumber()));
                                 foodItemDetails.setSellerID(userBaseInfo.getUserUid());
                                 foodItemDetails.setPrice(String.valueOf(foodItemPrice.getText()));
                                 foodItemDetails.setFlatID(userBaseInfo.getFlatId());

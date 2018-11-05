@@ -1,17 +1,21 @@
 package com.start.neighbourfood.models;
 
 import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.FoodItem;
+
+import java.util.List;
 
 public class OrderProgress {
 
     private String message;
     private OrderStatus orderStatus;
-    private long startTime;
     private String orderId;
     private long endTime;
     private String orderType;
     private UserBaseInfo userPlacedTo;
     private UserBaseInfo userPlacedBy;
+    private long createTime;
+    private List<FoodItem> sellerItems;
 
     public String getMessage() {
         return message;
@@ -27,14 +31,6 @@ public class OrderProgress {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
-    }
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
     }
 
     public String getOrderId() {
@@ -75,6 +71,22 @@ public class OrderProgress {
 
     public void setUserPlacedBy(UserBaseInfo userPlacedBy) {
         this.userPlacedBy = userPlacedBy;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public List<FoodItem> getSellerItems() {
+        return sellerItems;
+    }
+
+    public void setSellerItems(List<FoodItem> sellerItems) {
+        this.sellerItems = sellerItems;
     }
 
 

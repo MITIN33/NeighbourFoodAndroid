@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
@@ -24,8 +23,6 @@ import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.OrderProgress;
-import com.start.neighbourfood.models.v1.UserBaseInfo;
-import com.start.neighbourfood.models.v1.response.FoodItem;
 import com.start.neighbourfood.services.Config;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -33,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 public class OrderTrackBuyerActivity extends BaseActivity {
 
@@ -50,7 +46,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             int Seconds, Minutes;
 
             long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
-            long updateTime = endTime - orderProgress.getStartTime();
+            long updateTime = endTime - orderProgress.getCreateTime();
 
 
             Seconds = (int) (updateTime / 1000);
@@ -179,7 +175,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     }
 
 
-    private void fetchOrderDetail(String orderID) {
+    private void fetchOrderDetail(final String orderID) {
         if (orderID == null) {
             return;
         }
@@ -189,15 +185,9 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             public void onTaskCompleted(JSONObject result) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
-                    orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
-                    if (result.getJSONObject("Result").has("endTime")) {
-                        orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
-                    }
-                    List<FoodItem> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItem>>() {
-                    });
-                    orderProgress.setUserPlacedTo(objectMapper.readValue(result.getJSONObject("Result").getJSONObject("userPlacedTo").toString(), UserBaseInfo.class));
-                    mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
+                    orderProgress = objectMapper.readValue(result.getJSONObject("Result").toString(), OrderProgress.class);
+                    orderProgress.setOrderId(orderID);
+                    mRecyclerView.setAdapter(new OrderItemsAdapter(orderProgress.getSellerItems()));
                     ((TextView)findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed to %s (Flat: %s)",orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
                     handler.post(runnable);
                     updateUI();

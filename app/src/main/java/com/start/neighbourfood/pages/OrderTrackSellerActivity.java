@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
@@ -20,15 +19,12 @@ import com.start.neighbourfood.Utils.NotificationUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.OrderProgress;
-import com.start.neighbourfood.models.v1.UserBaseInfo;
-import com.start.neighbourfood.models.v1.response.FoodItem;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 public class OrderTrackSellerActivity extends BaseActivity {
 
@@ -43,7 +39,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
             int Seconds, Minutes;
 
             long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
-            long updateTime = endTime - orderProgress.getStartTime();
+            long updateTime = endTime - orderProgress.getCreateTime();
 
             Seconds = (int) (updateTime / 1000);
 
@@ -61,7 +57,6 @@ public class OrderTrackSellerActivity extends BaseActivity {
     };
     private ImageView orderConfirmImg, foodPreparedImg;
     private TextView preparedFoodText, orderConfirmText;
-    private String buyerId;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String buyerTokenId;
     private RecyclerView mRecyclerView;
@@ -154,7 +149,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
         return OrderProgress.OrderStatus.COMPLETED.equals(orderProgress.getOrderStatus());
     }
 
-    private void fetchOrderDetail(String orderID) {
+    private void fetchOrderDetail(final String orderID) {
         if (orderID == null) {
             return;
         }
@@ -164,17 +159,13 @@ public class OrderTrackSellerActivity extends BaseActivity {
             public void onTaskCompleted(JSONObject result) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
-                    orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
-                    buyerId = result.getJSONObject("Result").getString("userPlacedBy");
-                    if (result.getJSONObject("Result").has("endTime")) {
-                        orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
-                    }
-                    List<FoodItem> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItem>>() {
-                    });
-                    orderProgress.setUserPlacedBy(objectMapper.readValue(result.getJSONObject("Result").getJSONObject("userPlacedBy").toString(), UserBaseInfo.class));
-                    ((TextView)findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed by %s (Flat: %s)",orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
-                    mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
+                    orderProgress = objectMapper.readValue(result.getJSONObject("Result").toString(), OrderProgress.class);
+                    orderProgress.setOrderId(orderID);
+                    ((TextView)findViewById(R.id.seller_track_buyerName)).setText(orderProgress.getUserPlacedBy().getfName());
+                    ((TextView)findViewById(R.id.seller_track_buyerFlatName)).setText(orderProgress.getUserPlacedBy().getFlatNumber());
+
+
+                    mRecyclerView.setAdapter(new OrderItemsAdapter(orderProgress.getSellerItems()));
                     handler.post(runnable);
                     updateUI();
                 } catch (JSONException | IOException e) {
@@ -208,7 +199,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
     public void sendRequestAcceptNotification() {
         showProgressDialog();
         if (buyerTokenId == null) {
-            ServiceManager.getInstance(getApplicationContext()).getUserNotification(buyerId, new TaskHandler() {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
                     try {
@@ -217,7 +208,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
                         ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARING.toString(), new TaskHandler() {
                             @Override
                             public void onTaskCompleted(JSONObject result) {
-                                NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                                //NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
                                 orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
                                 setUIForOrderConfirmation();
                             }
@@ -259,7 +250,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
     public void sendFoodPreparedNotification() {
         showProgressDialog();
         if (buyerTokenId == null) {
-            ServiceManager.getInstance(getApplicationContext()).getUserNotification(buyerId, new TaskHandler() {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
                 @Override
                 public void onTaskCompleted(JSONObject result) {
                     try {

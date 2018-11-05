@@ -66,7 +66,8 @@
                 android:layout_height="30dp"
                 android:layout_alignParentEnd="true"
                 android:gravity="end"
-                app:backGroundColor="@color/colorPrimary"
+                app:backGroundColor="@color/white"
+                app:textColor="@color/grey_500"
                 app:initialNumber="0"
                 app:textSize="8sp" />
         </LinearLayout>

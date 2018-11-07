@@ -1,6 +1,7 @@
 package com.start.neighbourfood.pages;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -93,7 +94,14 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        if (getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) {
+            setContentView(R.layout.activity_login_vertical);
+        }
+        else{
+            setContentView(R.layout.activity_login_horizontal);
+        }
+
         serviceManager = ServiceManager.getInstance(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();

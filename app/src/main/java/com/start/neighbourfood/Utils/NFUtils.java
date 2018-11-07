@@ -9,11 +9,11 @@ public class NFUtils {
 
 
     public static String constructOrderAcceptedMessage(){
-        return "Confirmed: have a new notification from";
+        return "Confirmed: Your request has been accepted by the provider";
     }
 
-    public static String constructFoodPreparedMessage(){
-        return "Food Prepared: have a new notification from";
+    public static String constructFoodPreparedMessage(String flatNumber){
+        return "Food Prepared: Your food is ready, you can go and collect from Flat-"+ flatNumber;
     }
 
     public static String getTotalPrice(List<FoodItem> foodItemDetailsList) {
@@ -41,5 +41,34 @@ public class NFUtils {
         if (message == null)
             return false;
         return message.startsWith("Food Prepared:");
+    }
+
+    public static String[] getBuyerDataForOrderPlaced(){
+        return new String[]{"Waiting for order\n   confirmation", "" , ""};
+    }
+
+    public static String[] getDataForOrderConfirmed(){
+        return new String[]{"Order accepeted", "Food being\n  prepared" , ""};
+    }
+
+    public static String[] getBuyerDataForFoodPrepared(){
+        return new String[]{"Order accepeted", "Food prepared" , "Go collect\n your food"};
+    }
+
+    public static String[] getDataForCollected(){
+        return new String[]{"Order accepeted", "Food prepared" , "Collected"};
+    }
+
+    //Seller List
+    public static String[] getSellerDataForOrderPlaced(){
+        return new String[]{"Accept the order", "" , ""};
+    }
+
+    public static String[] getSellerDataForFoodPrepared(){
+        return new String[]{"Order accepeted", "Food prepared" , "Go collect\n your food"};
+    }
+
+    public static String constructFoodCollectedMessage() {
+        return "Food was collected. Thanks for using NeighbourFood.";
     }
 }

@@ -12,11 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kofigyan.stateprogressbar.StateProgressBar;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
@@ -37,8 +37,6 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     private long startTime, endTime;
     private Handler handler;
     private OrderProgress orderProgress;
-    private ImageView orderConfirmImg, foodPreparedImg;
-    private TextView preparedFoodText, orderConfirmText;
     public Runnable runnable = new Runnable() {
 
         public void run() {
@@ -67,6 +65,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     private FoodItemsRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private TextView finalMsg;
+    private StateProgressBar stateProgressBar;
     //This is the handler that will manager to process the broadcast intent
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
@@ -78,12 +77,11 @@ public class OrderTrackBuyerActivity extends BaseActivity {
 
             if (NFUtils.isOrderAcceptanceNotification(message)) {
                 orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
-                setUIForOrderConfirmation();
             } else if (NFUtils.isFoodPrepared(message)) {
                 orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
                 orderProgress.setEndTime(System.currentTimeMillis());
-                setUIForFoodPrepared();
             }
+            updateUI(orderProgress.getOrderStatus());
             //do other stuff here
         }
     };
@@ -102,12 +100,10 @@ public class OrderTrackBuyerActivity extends BaseActivity {
                 finish();
             }
         });
-        orderConfirmImg = findViewById(R.id.confirm_img);
-        foodPreparedImg = findViewById(R.id.foodPrepared_img);
-        preparedFoodText = findViewById(R.id.foodPrepared_txt);
-        orderConfirmText = findViewById(R.id.confirm_text);
-        finalMsg = findViewById(R.id.final_msg_textView);
         handler = new Handler();
+        stateProgressBar = findViewById(R.id.your_state_progress_bar_id);
+        stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = findViewById(R.id.ordered_buyer_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -154,22 +150,6 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         registerReceiver(mMessageReceiver, new IntentFilter(Config.PUSH_NOTIFICATION));
     }
 
-    private void setUIForFoodPrepared() {
-        setUIForOrderConfirmation();
-        findViewById(R.id.finish_layout).setVisibility(View.VISIBLE);
-        foodPreparedImg.setImageResource(R.drawable.green_tick);
-        preparedFoodText.setText("Food prepared");
-    }
-
-    private void setUIForOrderConfirmation() {
-        orderConfirmImg.setImageResource(R.drawable.green_tick);
-        orderConfirmText.setText("Member accepted the food order");
-        findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
-        foodPreparedImg.setImageResource(R.drawable.wait);
-        finalMsg.setText(String.format("Go get your food from %s in flat #%s", orderProgress.getUserPlacedTo().getfName() , orderProgress.getUserPlacedTo().getFlatNumber()));
-        preparedFoodText.setText("Food is being prepared");
-    }
-
     private boolean mStopHandler() {
         return OrderProgress.OrderStatus.COMPLETED.equals(orderProgress.getOrderStatus());
     }
@@ -188,9 +168,9 @@ public class OrderTrackBuyerActivity extends BaseActivity {
                     orderProgress = objectMapper.readValue(result.getJSONObject("Result").toString(), OrderProgress.class);
                     orderProgress.setOrderId(orderID);
                     mRecyclerView.setAdapter(new OrderItemsAdapter(orderProgress.getSellerItems()));
-                    ((TextView)findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed to %s (Flat: %s)",orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
+                    ((TextView) findViewById(R.id.orderPlacedTo)).setText(String.format("Order Placed to %s (Flat: %s)", orderProgress.getUserPlacedTo().getfName(), orderProgress.getUserPlacedTo().getFlatNumber()));
                     handler.post(runnable);
-                    updateUI();
+                    updateUI(orderProgress.getOrderStatus());
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
@@ -206,15 +186,24 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         });
     }
 
-    private void updateUI() {
-        switch (orderProgress.getOrderStatus()) {
+    private void updateUI(OrderProgress.OrderStatus orderStatus) {
+        switch (orderStatus) {
             case PENDING_CONFIRMATION:
+                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
                 break;
             case PREPARING:
-                setUIForOrderConfirmation();
+                //setUIForOrderConfirmation();
+                stateProgressBar.setStateDescriptionData(NFUtils.getDataForOrderConfirmed());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
+                break;
+            case PREPARED:
+                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForFoodPrepared());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
                 break;
             case COMPLETED:
-                setUIForFoodPrepared();
+                stateProgressBar.setStateDescriptionData(NFUtils.getDataForCollected());
+                stateProgressBar.setAllStatesCompleted(true);
                 break;
         }
     }

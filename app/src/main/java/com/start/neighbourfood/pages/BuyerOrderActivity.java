@@ -1,6 +1,7 @@
 package com.start.neighbourfood.pages;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,7 @@ public class BuyerOrderActivity extends BaseActivity {
 
     private String userUid;
     private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +42,27 @@ public class BuyerOrderActivity extends BaseActivity {
             }
         });*/
         userUid = FirebaseAuth.getInstance().getUid();
-        fetchAllOrdersByUser();
+//        fetchAllOrdersByUser();
+        mSwipeRefreshLayout = findViewById(R.id.orderListSwipeRefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchAllOrdersByUser();
+            }
+        });
+
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchAllOrdersByUser();
+            }
+        });
     }
 
     private void fetchAllOrdersByUser() {
-        showProgressDialog();
+        //showProgressDialog();
+        mSwipeRefreshLayout.setRefreshing(true);
         ServiceManager.getInstance(this).fetchAllPastOrderForBuyer(userUid, new TaskHandler() {
             @Override
             public void onTaskCompleted(JSONObject result) {
@@ -75,7 +93,8 @@ public class BuyerOrderActivity extends BaseActivity {
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
-                hideProgressDialog();
+                //hideProgressDialog();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
 
             @Override

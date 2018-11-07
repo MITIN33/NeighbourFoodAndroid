@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp">
+
+    <LinearLayout
+        android:id="@+id/logo_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/athiti_semibold"
+            android:text="@string/app_title"
+            android:textSize="30dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/foodie" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <AutoCompleteTextView
+            android:id="@+id/editTextPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=" Mobile Number "
+            android:inputType="phone"
+            android:maxLength="13"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAlignment="center" />
+
+
+        <EditText
+            android:id="@+id/editTextCode"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+            android:cursorVisible="true"
+            android:hint=" OTP "
+            android:imeActionId="6"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionUnspecified"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/buttonGetVerificationCode"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="#f1f1f1"
+            android:fontFamily="serif"
+            android:text="Send Code"
+            android:textAllCaps="false"
+            android:textColor="@android:color/holo_green_dark" />
+
+
+        <Button
+            android:id="@+id/buttonSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:background="#fd7c7c"
+            android:fontFamily="serif"
+            android:text="@string/action_sign_in"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorBackgroundFloating" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="38dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/com_facebook_blue"
+            android:visibility="gone">
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/button_facebook_login"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_centerInParent="true"
+                android:fontFamily="serif"
+                android:textSize="14sp" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/copyright"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+</RelativeLayout>

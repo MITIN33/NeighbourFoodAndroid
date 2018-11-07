@@ -93,6 +93,7 @@ public class OrderProgress {
     public enum OrderStatus{
         PENDING_CONFIRMATION,
         PREPARING,
+        PREPARED,
         COMPLETED
     }
 }

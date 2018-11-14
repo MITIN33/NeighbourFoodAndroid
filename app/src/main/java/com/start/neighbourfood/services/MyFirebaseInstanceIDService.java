@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.start.neighbourfood.models.ServiceConstants;
 
 /**
  * Created by Ravi Tamada on 08/08/16.
@@ -39,7 +40,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private void storeRegIdInPref(String token) {
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("regId", token);
+        editor.putString(ServiceConstants.REGID, token);
         editor.commit();
     }
 }

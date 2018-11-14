@@ -232,10 +232,10 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         try {
-            saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-            saveStringInSharedPreference(ServiceConstants.userDetail, result.getJSONObject("Result").toString());
+            sharedPreferenceUtils.setValue(ServiceConstants.IS_SIGNED_KEY, FirebaseAuth.getInstance().getCurrentUser().getUid());
+            sharedPreferenceUtils.setValue(ServiceConstants.USER_INFO, result.getJSONObject("Result").toString());
             navigateToHome();
         } catch (Exception e) {
             LoginManager.getInstance().logOut();
@@ -244,7 +244,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
         hideProgressDialog();
         if (error.networkResponse.statusCode == 404) {
             navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());

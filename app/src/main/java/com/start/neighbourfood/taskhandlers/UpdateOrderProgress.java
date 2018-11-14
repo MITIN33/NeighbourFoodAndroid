@@ -1,4 +1,4 @@
-package com.start.neighbourfood.tasks;
+package com.start.neighbourfood.taskhandlers;
 
 import android.app.Activity;
 
@@ -14,12 +14,12 @@ public class UpdateOrderProgress implements TaskHandler{
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
 
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
 
     }
 }

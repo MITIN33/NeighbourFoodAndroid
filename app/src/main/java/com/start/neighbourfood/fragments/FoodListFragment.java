@@ -2,6 +2,7 @@ package com.start.neighbourfood.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
@@ -43,8 +45,6 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
 
     protected List<FoodItem> mDataset;
     private FoodItemsRecyclerViewAdapter mAdapter;
-    private Button goToCartButton;
-    private String flatNumber;
     private List<FoodItem> orderItems;
     private FoodItem selectedItem;
     private HashMap<FoodItem, String> orderQuantityMap;
@@ -62,7 +62,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         try {
             super.onCreateView(inflater,container,savedInstanceState);
             View rootView = inflater.inflate(R.layout.content_food_list, container, false);
@@ -93,7 +93,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
                 }
             }));
 
-            goToCartButton = rootView.findViewById(R.id.goToCart);
+            Button goToCartButton = rootView.findViewById(R.id.goToCart);
             goToCartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -108,7 +108,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
                             orderItems.add(foodItemDetails);
                         }
                     }
-                    if (flag == false) {
+                    if (!flag) {
                         Toast.makeText(getActivity(), "Please select some items to add.", Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -128,19 +128,18 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
 
     private void loadFoodItems() {
         showProgressDialog();
-        String sellerId = getArguments().getString("sellerId");
-        flatNumber = getArguments().getString("flatNumber");
+        String sellerId = getArguments() != null ? getArguments().getString("sellerId") : null;
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             sellerItemDetail = objectMapper.readValue(result.getJSONObject("Result").toString(), SellerItemDetail.class);
             mDataset = sellerItemDetail.getFoodItemDetail();
             sellerName.setText(String.format("Seller: %s %s", sellerItemDetail.getfName(), sellerItemDetail.getlName()));
-            flatName.setText("Flat: " + sellerItemDetail.getFlatNumber());
+            flatName.setText(String.format("Flat: %s", sellerItemDetail.getFlatNumber()));
             mAdapter.setmDataSet(mDataset);
             mAdapter.notifyDataSetChanged();
         } catch (IOException | JSONException e) {
@@ -150,7 +149,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
         hideProgressDialog();
     }
 
@@ -165,10 +164,10 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
         orderedItems.setSellerId(sellerItemDetail.getSellerId());
         orderedItems.setFoodItemDetail(orderItems);
 
-        saveFromSharedPreference("orderedItem", null);
+        NFApplication.getSharedPreferenceUtils().setValue("orderedItem", null);
         try {
             jsonInString = mapper.writeValueAsString(orderedItems);
-            saveFromSharedPreference("orderedItem", jsonInString);
+            NFApplication.getSharedPreferenceUtils().setValue("orderedItem", jsonInString);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

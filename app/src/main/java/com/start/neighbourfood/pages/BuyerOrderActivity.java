@@ -12,10 +12,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.Response.ResponseOrderHistory;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.TrackOrderAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
+import com.start.neighbourfood.response.ResponseOrderHistory;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -65,7 +65,7 @@ public class BuyerOrderActivity extends BaseActivity {
         mSwipeRefreshLayout.setRefreshing(true);
         ServiceManager.getInstance(this).fetchAllPastOrderForBuyer(userUid, new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
                     final List<ResponseOrderHistory> orderDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<ResponseOrderHistory>>() {
@@ -98,7 +98,7 @@ public class BuyerOrderActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
                 hideProgressDialog();
             }
         });

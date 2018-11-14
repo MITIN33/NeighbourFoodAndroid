@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
@@ -36,7 +37,6 @@ import java.util.Date;
 public class OrderSummaryActivity extends BaseActivity {
 
     private SellerItemDetail sellerItemDetail;
-    private Button placeOrderBtn;
     private UserBaseInfo user;
     private String sellerID;
     @Override
@@ -44,7 +44,7 @@ public class OrderSummaryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_summary);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        placeOrderBtn = findViewById(R.id.placeOrderBtn);
+        Button placeOrderBtn = findViewById(R.id.placeOrderBtn);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,13 +52,13 @@ public class OrderSummaryActivity extends BaseActivity {
                 finish();
             }
         });
-        user = getUserBaseInfo();
-        ((TextView)findViewById(R.id.flat_number)).setText(getFromSharedPreference("flatNumber"));
+        user = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
+        ((TextView)findViewById(R.id.flat_number)).setText(NFApplication.getSharedPreferenceUtils().getStringValue("flatNumber",null));
         RecyclerView mRecyclerView = findViewById(R.id.ordered_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        String list = getFromSharedPreference("orderedItem");
+        String list = NFApplication.getSharedPreferenceUtils().getStringValue("orderedItem", null);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -89,7 +89,7 @@ public class OrderSummaryActivity extends BaseActivity {
             return;
         ServiceManager.getInstance(getApplicationContext()).getUserNotification(sellerID, new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 try {
                     String targetToken = result.getJSONObject("Result").getString("data");
                     sendNotificationTo(targetToken, NFUtils.constructOrderAcceptedMessage());
@@ -99,7 +99,7 @@ public class OrderSummaryActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
 
             }
         });
@@ -128,16 +128,16 @@ public class OrderSummaryActivity extends BaseActivity {
 
             ServiceManager.getInstance(this).placeOrder(jsonObject, new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
                     Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
-                    i.putExtra(ServiceConstants.orderIdLabel,orderID);
+                    i.putExtra(ServiceConstants.ORDER_ID,orderID);
                     startActivity(i);
                     finish();
                     hideProgressDialog();
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
                     Toast.makeText(OrderSummaryActivity.this, "Failed to place order. Try Again !", Toast.LENGTH_SHORT).show();
                     hideProgressDialog();
                 }

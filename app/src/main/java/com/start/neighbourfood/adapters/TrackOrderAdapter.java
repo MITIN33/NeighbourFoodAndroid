@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.Response.ResponseOrderHistory;
+import com.start.neighbourfood.response.ResponseOrderHistory;
 
 import java.util.Date;
 import java.util.List;

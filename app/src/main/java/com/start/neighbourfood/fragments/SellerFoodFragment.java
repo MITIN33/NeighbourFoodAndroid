@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.SellerItemAdapter;
@@ -39,7 +40,6 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.RecyclerItemTouchHelper;
 import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.models.v1.request.FoodItemDetails;
-import com.start.neighbourfood.pages.BaseActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -171,7 +171,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
         ServiceManager.getInstance(getActivity()).fetchAllFoodItem(new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     List<FoodItem> arrayList = mapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItem>>() {
@@ -188,7 +188,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
 
             }
         });
@@ -226,7 +226,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
             ServiceManager.getInstance(getActivity()).removeSellerItem(id, new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
                     // showing snack bar with Undo option
                     Snackbar snackbar = Snackbar
                             .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
@@ -243,7 +243,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
 
                 }
             });
@@ -251,7 +251,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItemDetails>>() {
@@ -272,7 +272,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
 
     }
 
@@ -321,7 +321,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 // edit text
                                 // Save the data to the database from here
 
-                                UserBaseInfo userBaseInfo = ((BaseActivity) getActivity()).getUserBaseInfo();
+                                UserBaseInfo userBaseInfo = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
                                 Gson gson = new Gson();
                                 final FoodItemDetails foodItemDetails = new FoodItemDetails();
                                 foodItemDetails.setItemName(String.valueOf(foodItemName.getText()));
@@ -337,27 +337,27 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                     if (selectedItem == null) {
                                         ServiceManager.getInstance(getActivity()).addSellerItem(new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
-                                            public void onTaskCompleted(JSONObject result) {
+                                            public void onTaskCompleted(JSONObject request, JSONObject result) {
                                                 mDataset.add(foodItemDetails);
                                                 mAdapter.notifyDataSetChanged();
                                                 Toast.makeText(getContext(), foodItemName.getText() + " is added!", Toast.LENGTH_SHORT).show();
                                             }
 
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {
+                                            public void onErrorResponse(JSONObject request, VolleyError error) {
                                                 Log.e(TAG, error.getMessage());
                                             }
                                         });
                                     } else {
                                         ServiceManager.getInstance(getActivity()).updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
-                                            public void onTaskCompleted(JSONObject result) {
+                                            public void onTaskCompleted(JSONObject request, JSONObject result) {
                                                 mAdapter.notifyItemChanged(positin, foodItemDetails);
                                                 Toast.makeText(getContext(), foodItemName.getText() + " is updated!", Toast.LENGTH_SHORT).show();
                                             }
 
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {
+                                            public void onErrorResponse(JSONObject request, VolleyError error) {
                                                 Log.e("ADD_SELLER_ITEM", error.getMessage());
                                             }
                                         });

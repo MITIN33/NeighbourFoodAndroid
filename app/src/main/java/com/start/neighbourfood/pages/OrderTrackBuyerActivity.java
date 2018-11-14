@@ -23,6 +23,7 @@ import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.OrderProgress;
+import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.services.Config;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -72,7 +73,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
 
             // Extract data included in the Intent
-            String message = intent.getStringExtra("message");
+            String message = intent.getStringExtra(ServiceConstants.NOTIFICATION_MESSAGE);
 
 
             if (NFUtils.isOrderAcceptanceNotification(message)) {
@@ -162,7 +163,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         showProgressDialog();
         ServiceManager.getInstance(this).fetchOrderDetail(orderID, new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     orderProgress = objectMapper.readValue(result.getJSONObject("Result").toString(), OrderProgress.class);
@@ -179,7 +180,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
                 hideProgressDialog();
                 mSwipeRefreshLayout.setRefreshing(false);
             }

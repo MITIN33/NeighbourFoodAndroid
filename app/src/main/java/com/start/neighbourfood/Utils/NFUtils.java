@@ -12,6 +12,10 @@ public class NFUtils {
         return "Confirmed: Your request has been accepted by the provider";
     }
 
+    public static String sendNotificationToSeller(){
+        return "ORDER REQUEST: You have you new order request, please accept.";
+    }
+
     public static String constructFoodPreparedMessage(String flatNumber){
         return "Food Prepared: Your food is ready, you can go and collect from Flat-"+ flatNumber;
     }
@@ -35,6 +39,12 @@ public class NFUtils {
         if (message == null)
             return false;
         return message.startsWith("Confirmed:");
+    }
+
+    public static boolean isOrderCollectedNotification(String message){
+        if (message == null)
+            return false;
+        return message.startsWith("Collected:");
     }
 
     public static boolean isFoodPrepared(String message) {

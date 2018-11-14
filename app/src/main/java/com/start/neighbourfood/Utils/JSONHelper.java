@@ -17,7 +17,7 @@ public class JSONHelper {
     }
 
     public static JSONObject toJSONObject(Object object){
-        String jsonString = gson.toJson(object);
+        String jsonString = getInstance().toJson(object);
         try {
             return new JSONObject(jsonString);
         } catch (JSONException e) {

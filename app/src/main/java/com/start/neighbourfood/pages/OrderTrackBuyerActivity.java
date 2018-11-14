@@ -78,9 +78,13 @@ public class OrderTrackBuyerActivity extends BaseActivity {
 
             if (NFUtils.isOrderAcceptanceNotification(message)) {
                 orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
-            } else if (NFUtils.isFoodPrepared(message)) {
-                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+            }
+            else if (NFUtils.isFoodPrepared(message)) {
+                orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARED);
                 orderProgress.setEndTime(System.currentTimeMillis());
+            }
+            else if (NFUtils.isOrderCollectedNotification(message)) {
+                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
             }
             updateUI(orderProgress.getOrderStatus());
             //do other stuff here

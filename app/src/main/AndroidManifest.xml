@@ -84,7 +84,7 @@
                 android:value="com.start.neighbourfood.pages.BaseActivity" />
         </activity>
         <activity
-            android:name=".pages.BuyerOrderActivity"
+            android:name=".pages.OrderHistoryActivity"
             android:label="Order History" />
         <activity
             android:name=".pages.OrderStatusActivity"

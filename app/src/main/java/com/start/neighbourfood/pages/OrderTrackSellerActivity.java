@@ -79,7 +79,6 @@ public class OrderTrackSellerActivity extends BaseActivity {
         handler = new Handler();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         stateProgressBar = findViewById(R.id.seller_progress_bar_id);
-        stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
         stateProgressBar.setOnStateItemClickListener(new OnStateItemClickListener() {
             @Override
             public void onStateItemClick(StateProgressBar stateProgressBar, StateItem stateItem, int stateNumber, boolean isCurrentState) {
@@ -88,7 +87,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
                         updateRequestAccepted();
                         break;
                     case 2:
-                        updateFoodCompleted();
+                        updateFoodPrepared();
                         break;
                     case 3:
                         updateFoodCollected();
@@ -166,15 +165,17 @@ public class OrderTrackSellerActivity extends BaseActivity {
             case PENDING_CONFIRMATION:
                 stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
+                stateProgressBar.setAllStatesCompleted(false);
                 break;
             case PREPARING:
-                //setUIForOrderConfirmation();
                 stateProgressBar.setStateDescriptionData(NFUtils.getDataForOrderConfirmed());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
+                stateProgressBar.setAllStatesCompleted(false);
                 break;
             case PREPARED:
                 stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForFoodPrepared());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
+                stateProgressBar.setAllStatesCompleted(false);
                 break;
             case COMPLETED:
                 stateProgressBar.setStateDescriptionData(NFUtils.getDataForCollected());
@@ -234,7 +235,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
     }
 
 
-    public void updateFoodCompleted() {
+    public void updateFoodPrepared() {
         showProgressDialog();
         if (buyerTokenId == null) {
             ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
@@ -242,11 +243,11 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 public void onTaskCompleted(JSONObject request, JSONObject result) {
                     try {
                         buyerTokenId = result.getJSONObject("Result").getString("data");
-                        ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.COMPLETED.toString(), new TaskHandler() {
+                        ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARED.toString(), new TaskHandler() {
                             @Override
                             public void onTaskCompleted(JSONObject request, JSONObject result) {
                                 NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage(orderProgress.getUserPlacedTo().getFlatNumber()));
-                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARED);
                                 orderProgress.setEndTime(System.currentTimeMillis());
                                 updateUI(orderProgress.getOrderStatus());
                             }
@@ -272,7 +273,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 @Override
                 public void onTaskCompleted(JSONObject request, JSONObject result) {
                     NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage(orderProgress.getUserPlacedTo().getFlatNumber()));
-                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARED);
                     orderProgress.setEndTime(System.currentTimeMillis());
                     updateUI(orderProgress.getOrderStatus());
                 }

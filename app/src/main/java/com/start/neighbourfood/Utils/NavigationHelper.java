@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.pages.BuyerOrderActivity;
 import com.start.neighbourfood.pages.HomeActivity;
 import com.start.neighbourfood.pages.LoginActivity;
+import com.start.neighbourfood.pages.OrderHistoryActivity;
 import com.start.neighbourfood.pages.OrderTrackBuyerActivity;
 import com.start.neighbourfood.pages.OrderTrackSellerActivity;
 import com.start.neighbourfood.pages.SignupActivity;
@@ -32,7 +32,7 @@ public class NavigationHelper {
     }
 
     public void navigateToOrderHistory() {
-        Intent i = new Intent(activity, BuyerOrderActivity.class);
+        Intent i = new Intent(activity, OrderHistoryActivity.class);
         activity.startActivity(i);
     }
 

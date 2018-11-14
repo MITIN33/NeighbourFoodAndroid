@@ -70,20 +70,19 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     int count = 60;
     // Define the code block to be executed
 
-   // Start the initial runnable task by posting through the handler
+    // Start the initial runnable task by posting through the handler
     private Button buttonCode;
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
             // Do something here on the main thread
             //Log.d("Handlers", "Called on main thread");
-            buttonCode.setText(String.format("Wait(%s)",count--));
+            buttonCode.setText(String.format("Wait(%s)", count--));
 
             // Repeat this the same runnable code block again another 1 seconds
-            if(count > 0) {
+            if (count > 0) {
                 handler.postDelayed(runnableCode, 1000);
-            }
-            else {
+            } else {
                 count = 60;
                 buttonCode.setText("Resend");
                 buttonCode.setEnabled(true);
@@ -97,8 +96,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
         if (getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_PORTRAIT) {
             setContentView(R.layout.activity_login_vertical);
-        }
-        else{
+        } else {
             setContentView(R.layout.activity_login_horizontal);
         }
 
@@ -127,7 +125,6 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     sendVerificationCode();
                     handler.post(runnableCode);
                 }
-
 
 
             }
@@ -169,20 +166,15 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
             return;
         }
 
-        if (phone.length() < 10) {
-            editTextPhone.setError("Please enter a valid phone");
+        if (phone.length() != 10) {
+            editTextPhone.setError("Please enter a valid phone, without country code !");
             editTextPhone.requestFocus();
             return;
         }
 
-        if (!phone.startsWith("+")) {
-            if (phone.length() == 10 ) {
-                phone = "+91" + phone;
-            }
-            else {
-                phone = "+" + phone;
-            }
-        }
+
+        phone = "+91" + phone;
+
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phone,        // Phone number to verify

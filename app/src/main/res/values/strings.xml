@@ -138,4 +138,5 @@
     <string name="copyright">Copyright. All rights reserved 2018</string>
     <string name="app_title">NeighbourFood</string>
     <string name="title_activity_order_status">OrderStatusActivity</string>
+    <string name="emptry_list_message">No order placed or received.</string>
 </resources>

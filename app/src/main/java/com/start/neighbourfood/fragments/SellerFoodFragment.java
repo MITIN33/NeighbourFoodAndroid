@@ -167,41 +167,6 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         });
     }
 
-    /*private void fetchFoodItem(final View promptsView) {
-
-        ServiceManager.getInstance(getActivity()).fetchAllFoodItem(new TaskHandler() {
-            @Override
-            public void onTaskCompleted(JSONObject request, JSONObject result) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    List<FoodItem> arrayList = mapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItem>>() {
-                    });
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.select_dialog_item, getListFoodItem(arrayList));
-                    //Getting the instance of AutoCompleteTextView
-                    AutoCompleteTextView actv = promptsView.findViewById(R.id.seller_food_item_name);
-                    actv.setThreshold(1);//will start working from first character
-                    actv.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onErrorResponse(JSONObject request, VolleyError error) {
-
-            }
-        });
-    }
-
-    private List<String> getListFoodItem(List<FoodItem> foodItems) {
-        List<String> list = new ArrayList<>();
-        for (FoodItem item : foodItems) {
-            list.add(item.toString());
-        }
-        return list;
-    }
-*/
     private void loadFoodItems() {
         //showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();

@@ -88,7 +88,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void navigateToOrderHistory() {
-        Intent i = new Intent(getApplicationContext(), BuyerOrderActivity.class);
+        Intent i = new Intent(getApplicationContext(), OrderHistoryActivity.class);
         startActivity(i);
     }
 

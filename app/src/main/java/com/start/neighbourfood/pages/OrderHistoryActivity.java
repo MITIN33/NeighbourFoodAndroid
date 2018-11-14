@@ -24,7 +24,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-public class BuyerOrderActivity extends BaseActivity {
+public class OrderHistoryActivity extends BaseActivity {
 
     private String userUid;
     private RecyclerView mRecyclerView;
@@ -71,7 +71,7 @@ public class BuyerOrderActivity extends BaseActivity {
                     final List<ResponseOrderHistory> orderDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<ResponseOrderHistory>>() {
                     });
                     RecyclerView mRecyclerView = findViewById(R.id.buyerOrderList_recycleView);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(BuyerOrderActivity.this));
+                    mRecyclerView.setLayoutManager(new LinearLayoutManager(OrderHistoryActivity.this));
                     mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
                     mRecyclerView.setAdapter(new TrackOrderAdapter(orderDetails));
                     mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {

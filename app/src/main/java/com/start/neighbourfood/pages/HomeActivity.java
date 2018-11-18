@@ -179,7 +179,7 @@ public class HomeActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (sharedPreferenceUtils.getStringValue(ServiceConstants.USER_INFO, null) == null) {
+        if (user == null || sharedPreferenceUtils.getStringValue(ServiceConstants.USER_INFO, null) == null) {
             return;
         }
 

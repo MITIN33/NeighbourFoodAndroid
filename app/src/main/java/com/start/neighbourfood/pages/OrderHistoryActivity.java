@@ -41,6 +41,7 @@ public class OrderHistoryActivity extends BaseActivity {
                 finish();
             }
         });*/
+        findViewById(R.id.emptyMessage).setVisibility(View.GONE);
         userUid = FirebaseAuth.getInstance().getUid();
 //        fetchAllOrdersByUser();
         mSwipeRefreshLayout = findViewById(R.id.orderListSwipeRefresh);
@@ -50,7 +51,6 @@ public class OrderHistoryActivity extends BaseActivity {
                 fetchAllOrdersByUser();
             }
         });
-
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -74,6 +74,9 @@ public class OrderHistoryActivity extends BaseActivity {
                     mRecyclerView.setLayoutManager(new LinearLayoutManager(OrderHistoryActivity.this));
                     mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
                     mRecyclerView.setAdapter(new TrackOrderAdapter(orderDetails));
+                    if (orderDetails.size() == 0){
+                        findViewById(R.id.emptyMessage).setVisibility(View.VISIBLE);
+                    }
                     mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
                         @Override
                         public void onClick(View view, int position) {

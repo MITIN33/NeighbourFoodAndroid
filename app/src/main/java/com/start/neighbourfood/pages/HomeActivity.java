@@ -51,6 +51,7 @@ public class HomeActivity extends BaseActivity
     private ImageView imageView;
     private TextView userName;
     private int imageHash;
+    private View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,7 @@ public class HomeActivity extends BaseActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.getHeaderView(0);
+        headerView = navigationView.getHeaderView(0);
         userName = headerView.findViewById(R.id.header_username);
         imageView = headerView.findViewById(R.id.header_imageView);
         TextView emailView = headerView.findViewById(R.id.header_mail);
@@ -86,7 +87,7 @@ public class HomeActivity extends BaseActivity
         if (user.getPhotoUrl() != null) {
             new DownLoadImageTask(imageView).execute(user.getPhotoUrl());
         } else {
-            imageView.setImageResource(R.drawable.food_icon);
+            imageView.setImageResource(R.drawable.profile_default);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +190,9 @@ public class HomeActivity extends BaseActivity
             new DownLoadImageTask(imageView).execute(user.getPhotoUrl());
         }
 
+        if (userName == null){
+            userName = headerView.findViewById(R.id.header_username);
+        }
         userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
 
         if (isNetworkConnected()) {

@@ -97,20 +97,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                     android.R.color.holo_green_dark,
                     android.R.color.holo_orange_dark,
                     android.R.color.holo_blue_dark);
-            switchOne.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener() {
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-                                switchOne.setText("Available");
-                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.green_dark));
-                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(true), null);
-                            } else {
-                                switchOne.setText("Not Available");
-                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(false), null);
-                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_500));
-                            }
-                        }
-                    });
+
             coordinatorLayout = (CoordinatorLayout) rootView;
             mAdapter = new SellerItemAdapter(new View.OnClickListener() {
                 @Override
@@ -148,6 +135,21 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
             new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
 
+            switchOne.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (isChecked) {
+                                switchOne.setText("Available");
+                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.green_dark));
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(true), null);
+                            } else {
+                                switchOne.setText("Not Available");
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(false), null);
+                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_500));
+                            }
+                        }
+                    });
+
             setFloatingButtonAction(rootView);
             return rootView;
         } catch (Exception e) {
@@ -171,7 +173,6 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         //showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         ServiceManager.getInstance(getActivity()).fetchSellingItemsForFlat(sellerId, this);
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -226,19 +227,20 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mAdapter.notifyDataSetChanged();
             if (foodItemDetails.size() > 0) {
                 switchOne.setChecked(foodItemDetails.get(0).isAvailable());
-            }
-            else {
+            } else {
                 switchOne.setChecked(true);
             }
+
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         //hideProgressDialog();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onErrorResponse(JSONObject request, VolleyError error) {
-
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 

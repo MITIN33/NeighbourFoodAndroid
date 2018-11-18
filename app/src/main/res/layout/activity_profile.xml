@@ -19,7 +19,7 @@
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:scaleType="centerCrop"
-            android:src="@drawable/foodie" />
+            android:src="@drawable/profile_default" />
 
         <LinearLayout
             android:layout_width="match_parent"

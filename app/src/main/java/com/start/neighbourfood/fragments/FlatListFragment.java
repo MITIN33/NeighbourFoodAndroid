@@ -41,7 +41,7 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FlatListFragment extends BaseFragment implements TaskHandler, SwipeRefreshLayout.OnRefreshListener {
+public class FlatListFragment extends BaseFragment implements TaskHandler {
 
     private static final String TAG = FlatListFragment.class.getSimpleName();
     private List<HoodDetails> mDataset;
@@ -54,20 +54,20 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        fetchFlatInfo();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.content_flat_list, container, false);
+        setHasOptionsMenu(true);
         RecyclerView mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new FlatsInfoRecyclerViewAdapter(getActivity(), mDataset);
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container);
 
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchFlatInfo();
+            }
+        });
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
@@ -77,13 +77,13 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
          * Showing Swipe Refresh animation on activity create
          * As animation won't start on onCreate, post runnable is used
          */
-        /*mSwipeRefreshLayout.post(new Runnable() {
+        mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
                 fetchFlatInfo();
             }
-        });*/
+        });
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -188,11 +188,5 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         Log.e(TAG, "onErrorResponse: Unable to load", error);
         mSwipeRefreshLayout.setRefreshing(false);
         hideProgressDialog();
-    }
-
-    @Override
-    public void onRefresh() {
-        mSwipeRefreshLayout.setRefreshing(true);
-        fetchFlatInfo();
     }
 }

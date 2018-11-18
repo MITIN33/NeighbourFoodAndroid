@@ -90,7 +90,7 @@
             android:layout_alignParentEnd="true"
             android:gravity="end"
             app:backGroundColor="@color/white"
-            app:initialNumber="0"
+            app:initialNumber="1"
             app:textColor="@color/grey_500"
             app:textSize="8sp" />
     </LinearLayout>

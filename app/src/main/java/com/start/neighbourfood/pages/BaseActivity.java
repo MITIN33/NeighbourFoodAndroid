@@ -3,7 +3,6 @@ package com.start.neighbourfood.pages;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
@@ -12,38 +11,33 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.facebook.login.LoginManager;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Utils.SharedPreferenceUtils;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
-import com.start.neighbourfood.services.Config;
-
-import java.io.IOException;
+import com.start.neighbourfood.services.ServiceManager;
 
 public class BaseActivity extends AppCompatActivity {
 
-    SharedPreferences sharedPreferences;
+
+    public SharedPreferenceUtils sharedPreferenceUtils;
+
+    public ServiceManager serviceManager;
+
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getSharedPreferences(Config.SHARED_PREF, MODE_PRIVATE);
-    }
-
-    private SharedPreferences getLocalSharedPreference() {
-        if (sharedPreferences == null) {
-            sharedPreferences = getSharedPreferences("nfService", MODE_PRIVATE);
-        }
-        return sharedPreferences;
+        sharedPreferenceUtils = NFApplication.getSharedPreferenceUtils();
+        serviceManager = NFApplication.getServiceManager();
     }
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog = new ProgressDialog(BaseActivity.this);
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setCancelable(false);
             mProgressDialog.setCanceledOnTouchOutside(false);
@@ -56,6 +50,7 @@ public class BaseActivity extends AppCompatActivity {
     public void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 
@@ -79,6 +74,12 @@ public class BaseActivity extends AppCompatActivity {
         hideProgressDialog();
     }
 
+    public void navigateToProfilePage() {
+        Intent i = new Intent(this, ProfileActivity.class);
+        startActivity(i);
+    }
+
+
     public void navigateToHome() {
         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -87,21 +88,21 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void navigateToOrderHistory() {
-        Intent i = new Intent(getApplicationContext(), BuyerOrderActivity.class);
+        Intent i = new Intent(getApplicationContext(), OrderHistoryActivity.class);
         startActivity(i);
     }
 
     public void navigateToBuyerTrackOrder(String orderID, String flatNumber){
         Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
-        i.putExtra(ServiceConstants.orderIdLabel,orderID);
-        i.putExtra(ServiceConstants.orderFlatNumberLabel,flatNumber);
+        i.putExtra(ServiceConstants.ORDER_ID,orderID);
+        i.putExtra(ServiceConstants.FLAT_NUMBER,flatNumber);
         startActivity(i);
     }
 
     public void navigateToSellerTrackOrder(String orderID, String flatNumber){
         Intent i = new Intent(getApplicationContext(), OrderTrackSellerActivity.class);
-        i.putExtra(ServiceConstants.orderIdLabel,orderID);
-        i.putExtra(ServiceConstants.orderFlatNumberLabel,flatNumber);
+        i.putExtra(ServiceConstants.ORDER_ID,orderID);
+        i.putExtra(ServiceConstants.FLAT_NUMBER,flatNumber);
         startActivity(i);
     }
 
@@ -114,32 +115,12 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    public boolean saveStringInSharedPreference(String key, String value) {
-        try {
-            SharedPreferences.Editor editor = getLocalSharedPreference().edit();
-            editor.putString(key, value);
-            editor.commit();
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public String getFromSharedPreference(String key) {
-        try {
-            return getLocalSharedPreference().getString(key, null);
-        }
-        catch (Exception ex){
-            return null;
-        }
-    }
-
     public void signOut() {
         showProgressDialog();
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
-        saveStringInSharedPreference(ServiceConstants.signedInKey, null);
-        saveStringInSharedPreference("deviceRegistered", "false");
+        sharedPreferenceUtils.setValue(ServiceConstants.IS_SIGNED_KEY, null);
+        sharedPreferenceUtils.setValue(ServiceConstants.DEVICE_REGISTERED, "false");
         hideProgressDialog();
         navigateToLoginPage();
     }
@@ -148,19 +129,5 @@ public class BaseActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         return cm.getActiveNetworkInfo() != null;
-    }
-
-    public UserBaseInfo getUserBaseInfo() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            String result = getFromSharedPreference(ServiceConstants.userDetail);
-            if (result != null) {
-                return objectMapper.readValue(result, new TypeReference<UserBaseInfo>() {
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 }

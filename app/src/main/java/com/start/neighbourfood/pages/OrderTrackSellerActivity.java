@@ -8,18 +8,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kofigyan.stateprogressbar.StateProgressBar;
+import com.kofigyan.stateprogressbar.components.StateItem;
+import com.kofigyan.stateprogressbar.listeners.OnStateItemClickListener;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.Utils.NotificationUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.OrderProgress;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -27,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 public class OrderTrackSellerActivity extends BaseActivity {
 
@@ -42,7 +41,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
             int Seconds, Minutes;
 
             long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
-            long updateTime = endTime - orderProgress.getStartTime();
+            long updateTime = endTime - orderProgress.getCreateTime();
 
             Seconds = (int) (updateTime / 1000);
 
@@ -58,31 +57,44 @@ public class OrderTrackSellerActivity extends BaseActivity {
         }
 
     };
-    private ImageView orderConfirmImg, foodPreparedImg;
-    private TextView preparedFoodText, orderConfirmText;
-    private String buyerId;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private String buyerTokenId;
     private RecyclerView mRecyclerView;
+    private StateProgressBar stateProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_ordertrack);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-        //Customer code
         timer = findViewById(R.id.seller_timer);
-        orderConfirmImg = findViewById(R.id.confirm_img);
-        foodPreparedImg = findViewById(R.id.foodPrepared_img);
-        preparedFoodText = findViewById(R.id.foodPrepared_txt);
-        orderConfirmText = findViewById(R.id.confirm_text);
         handler = new Handler();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        stateProgressBar = findViewById(R.id.seller_progress_bar_id);
+        stateProgressBar.setOnStateItemClickListener(new OnStateItemClickListener() {
+            @Override
+            public void onStateItemClick(StateProgressBar stateProgressBar, StateItem stateItem, int stateNumber, boolean isCurrentState) {
+                switch (stateNumber){
+                    case 1:
+                        updateRequestAccepted();
+                        break;
+                    case 2:
+                        updateFoodPrepared();
+                        break;
+                    case 3:
+                        updateFoodCollected();
+                        break;
+                }
+            }
+        });
         mRecyclerView = findViewById(R.id.ordered_seller_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
@@ -111,64 +123,28 @@ public class OrderTrackSellerActivity extends BaseActivity {
             }
         });
 
-        orderConfirmImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendRequestAcceptNotification();
-            }
-        });
-
-        foodPreparedImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendFoodPreparedNotification();
-            }
-        });
-
-    }
-
-    private void setUIForFoodPrepared() {
-        setUIForOrderConfirmation();
-        findViewById(R.id.finish_layout).setVisibility(View.VISIBLE);
-        foodPreparedImg.setImageResource(R.drawable.green_tick);
-        preparedFoodText.setText("Food prepared");
-    }
-
-    private void setUIForOrderConfirmation() {
-        orderConfirmImg.setImageResource(R.drawable.green_tick);
-        findViewById(R.id.finish_layout).setVisibility(View.INVISIBLE);
-        orderConfirmText.setText("You accepted the order.");
-        findViewById(R.id.food_prepared_layout).setVisibility(View.VISIBLE);
-        foodPreparedImg.setImageResource(R.drawable.wait);
-        preparedFoodText.setText("Tap to confirm if the food is ready.");
     }
 
     private boolean mStopHandler() {
         return OrderProgress.OrderStatus.COMPLETED.equals(orderProgress.getOrderStatus());
     }
 
-    private void fetchOrderDetail(String orderID) {
+    private void fetchOrderDetail(final String orderID) {
         if (orderID == null) {
             return;
         }
         showProgressDialog();
         ServiceManager.getInstance(this).fetchOrderDetail(orderID, new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.valueOf(result.getJSONObject("Result").getString("orderStatus")));
-                    orderProgress.setId(result.getJSONObject("Result").getString("id"));
-                    orderProgress.setStartTime(Long.parseLong(result.getJSONObject("Result").getString("createTime")));
-                    buyerId = result.getJSONObject("Result").getString("userPlacedBy");
-                    if (result.getJSONObject("Result").has("endTime")) {
-                        orderProgress.setEndTime(Long.parseLong(result.getJSONObject("Result").getString("endTime")));
-                    }
-                    List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONObject("Result").getJSONArray("sellerItems").toString(), new TypeReference<List<FoodItemDetails>>() {
-                    });
-                    mRecyclerView.setAdapter(new OrderItemsAdapter(foodItemDetails));
+                    orderProgress = objectMapper.readValue(result.getJSONObject("Result").toString(), OrderProgress.class);
+                    orderProgress.setOrderId(orderID);
+                    ((TextView) findViewById(R.id.orderSellerPlacedTo)).setText(String.format("Order Placed by %s (Flat: %s)", orderProgress.getUserPlacedBy().getfName(), orderProgress.getUserPlacedBy().getFlatNumber()));
+                    mRecyclerView.setAdapter(new OrderItemsAdapter(orderProgress.getSellerItems()));
                     handler.post(runnable);
-                    updateUI();
+                    updateUI(orderProgress.getOrderStatus());
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
                 }
@@ -177,45 +153,56 @@ public class OrderTrackSellerActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
                 hideProgressDialog();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
 
-    private void updateUI() {
-        switch (orderProgress.getOrderStatus()) {
+    private void updateUI(OrderProgress.OrderStatus orderStatus) {
+        switch (orderStatus) {
             case PENDING_CONFIRMATION:
+                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
+                stateProgressBar.setAllStatesCompleted(false);
                 break;
             case PREPARING:
-                setUIForOrderConfirmation();
+                stateProgressBar.setStateDescriptionData(NFUtils.getDataForOrderConfirmed());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
+                stateProgressBar.setAllStatesCompleted(false);
+                break;
+            case PREPARED:
+                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForFoodPrepared());
+                stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
+                stateProgressBar.setAllStatesCompleted(false);
                 break;
             case COMPLETED:
-                setUIForFoodPrepared();
+                stateProgressBar.setStateDescriptionData(NFUtils.getDataForCollected());
+                stateProgressBar.setAllStatesCompleted(true);
                 break;
         }
     }
 
-    public void sendRequestAcceptNotification() {
+    public void updateRequestAccepted() {
         showProgressDialog();
         if (buyerTokenId == null) {
-            ServiceManager.getInstance(getApplicationContext()).getUserNotification(buyerId, new TaskHandler() {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
                     try {
                         buyerTokenId = result.getJSONObject("Result").getString("data");
 
                         ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARING.toString(), new TaskHandler() {
                             @Override
-                            public void onTaskCompleted(JSONObject result) {
-                                NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                            public void onTaskCompleted(JSONObject request, JSONObject result) {
+                                //NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
                                 orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
-                                setUIForOrderConfirmation();
+                                updateUI(orderProgress.getOrderStatus());
                             }
 
                             @Override
-                            public void onErrorResponse(VolleyError error) {
+                            public void onErrorResponse(JSONObject request, VolleyError error) {
 
                             }
                         });
@@ -226,21 +213,21 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
                     hideProgressDialog();
                 }
             });
         } else {
             ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARING.toString(), new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
-                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage(orderProgress.getOrderId()));
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
-                    setUIForOrderConfirmation();
+                    updateUI(orderProgress.getOrderStatus());
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
 
                 }
             });
@@ -248,25 +235,25 @@ public class OrderTrackSellerActivity extends BaseActivity {
     }
 
 
-    public void sendFoodPreparedNotification() {
+    public void updateFoodPrepared() {
         showProgressDialog();
         if (buyerTokenId == null) {
-            ServiceManager.getInstance(getApplicationContext()).getUserNotification(buyerId, new TaskHandler() {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
                     try {
                         buyerTokenId = result.getJSONObject("Result").getString("data");
-                        ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.COMPLETED.toString(), new TaskHandler() {
+                        ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARED.toString(), new TaskHandler() {
                             @Override
-                            public void onTaskCompleted(JSONObject result) {
-                                NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage());
-                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                            public void onTaskCompleted(JSONObject request, JSONObject result) {
+                                NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage(orderProgress.getUserPlacedTo().getFlatNumber()));
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARED);
                                 orderProgress.setEndTime(System.currentTimeMillis());
-                                setUIForFoodPrepared();
+                                updateUI(orderProgress.getOrderStatus());
                             }
 
                             @Override
-                            public void onErrorResponse(VolleyError error) {
+                            public void onErrorResponse(JSONObject request, VolleyError error) {
 
                             }
                         });
@@ -277,22 +264,75 @@ public class OrderTrackSellerActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+                    hideProgressDialog();
+                }
+            });
+        } else {
+            ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARED.toString(), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage(orderProgress.getUserPlacedTo().getFlatNumber()));
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARED);
+                    orderProgress.setEndTime(System.currentTimeMillis());
+                    updateUI(orderProgress.getOrderStatus());
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+
+                }
+            });
+            hideProgressDialog();
+        }
+    }
+
+
+    public void updateFoodCollected() {
+        showProgressDialog();
+        if (buyerTokenId == null) {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    try {
+                        buyerTokenId = result.getJSONObject("Result").getString("data");
+                        ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.COMPLETED.toString(), new TaskHandler() {
+                            @Override
+                            public void onTaskCompleted(JSONObject request, JSONObject result) {
+                                NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodCollectedMessage());
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
+                                orderProgress.setEndTime(System.currentTimeMillis());
+                                updateUI(orderProgress.getOrderStatus());
+                            }
+
+                            @Override
+                            public void onErrorResponse(JSONObject request, VolleyError error) {
+
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    hideProgressDialog();
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
                     hideProgressDialog();
                 }
             });
         } else {
             ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.COMPLETED.toString(), new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
-                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodPreparedMessage());
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructFoodCollectedMessage());
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.COMPLETED);
                     orderProgress.setEndTime(System.currentTimeMillis());
-                    setUIForFoodPrepared();
+                    updateUI(orderProgress.getOrderStatus());
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
 
                 }
             });

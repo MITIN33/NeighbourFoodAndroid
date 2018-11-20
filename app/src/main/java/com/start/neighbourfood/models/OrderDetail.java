@@ -1,5 +1,7 @@
 package com.start.neighbourfood.models;
 
+import com.start.neighbourfood.models.v1.response.FoodItem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +10,13 @@ public class OrderDetail {
     private String orderId;
     private String userPlacedBy;
     private String userPlacedTo;
-    private List<FoodItemDetails> sellerItems;
+    private List<FoodItem> foodItems;
     private int quantity;
     private String createTime;
     private String orderStatus;
 
     public OrderDetail() {
-        sellerItems = new ArrayList<>();
+        foodItems = new ArrayList<>();
     }
 
     public String getOrderId() {
@@ -23,14 +25,6 @@ public class OrderDetail {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public List<FoodItemDetails> getSellerItemId() {
-        return sellerItems;
-    }
-
-    public void setSellerItemId(List<FoodItemDetails> sellerItemId) {
-        this.sellerItems = sellerItemId;
     }
 
     public int getQuantity() {
@@ -71,5 +65,13 @@ public class OrderDetail {
 
     public void setUserPlacedTo(String userPlacedTo) {
         this.userPlacedTo = userPlacedTo;
+    }
+
+    public List<FoodItem> getFoodItems() {
+        return foodItems;
+    }
+
+    public void setFoodItems(List<FoodItem> foodItems) {
+        this.foodItems = foodItems;
     }
 }

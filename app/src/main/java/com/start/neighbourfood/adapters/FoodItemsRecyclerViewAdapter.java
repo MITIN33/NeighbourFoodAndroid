@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.start.neighbourfood.R;
-import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.v1.response.FoodItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "FoodItemsRecyclerViewAdapter";
 
-    private List<FoodItemDetails> mDataSet;
+    private List<FoodItem> mDataSet;
     private ElegantNumberButton.OnValueChangeListener mListener;
 
     // BEGIN_INCLUDE(recyclerViewSampleViewHolder)
@@ -54,7 +54,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         FoodItemRowViewHolder rowHolder = (FoodItemRowViewHolder) holder;
         rowHolder.getFoodNameView().setText(mDataSet.get(position).getItemName());
         rowHolder.getServingView().setText(mDataSet.get(position).getItemDesc());
-        rowHolder.getPriceView().setText(String.format("\u20B9 %s", mDataSet.get(position).getPrice()));
+        rowHolder.getPriceView().setText(String.format("\u20B9 %s", mDataSet.get(position).getPrice()) + " (Served for x" + mDataSet.get(position).getServedFor() + ")");
         rowHolder.getQtyButton().setOnValueChangeListener(new ElegantNumberButton.OnValueChangeListener() {
             @Override
             public void onValueChange(ElegantNumberButton view, int oldValue, int newValue) {
@@ -69,7 +69,7 @@ public class FoodItemsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return mDataSet.size();
     }
 
-    public void setmDataSet(List<FoodItemDetails> dataSet) {
+    public void setmDataSet(List<FoodItem> dataSet) {
         mDataSet = dataSet;
     }
 

@@ -1,4 +1,4 @@
-package com.start.neighbourfood.Response;
+package com.start.neighbourfood.response;
 
 public class ResponseOrderHistory {
 

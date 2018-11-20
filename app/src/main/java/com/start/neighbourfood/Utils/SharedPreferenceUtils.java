@@ -3,10 +3,10 @@ package com.start.neighbourfood.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.Config;
 
 import java.io.IOException;
@@ -90,6 +90,17 @@ public class SharedPreferenceUtils {
     }
 
     /**
+     * Stores boolean value in preference
+     *
+     * @param key   key of preference
+     * @param value value for that key
+     */
+    public void setValue(String key, Object value) {
+        Gson gson = new Gson();
+        setValue(key, gson.toJson(value));
+    }
+
+    /**
      * Retrieves String value from preference
      *
      * @param key          key of preference
@@ -152,9 +163,9 @@ public class SharedPreferenceUtils {
     public UserBaseInfo getUserBaseInfo(){
          ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String result = getStringValue(ServiceConstants.userDetail, null);
+            String result = getStringValue(ServiceConstants.USER_INFO, null);
             if (result != null) {
-                return objectMapper.readValue(result, new TypeReference<UserBaseInfo>() {});
+                return objectMapper.readValue(result, UserBaseInfo.class);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -2,7 +2,6 @@ package com.start.neighbourfood.pages;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,11 +17,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Utils.JSONHelper;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ApartmentsInfo;
-import com.start.neighbourfood.models.FlatsInfo;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.models.UserBaseInfo;
+import com.start.neighbourfood.models.v1.FlatInfo;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
@@ -34,9 +34,7 @@ import java.util.List;
 public class SignupActivity extends BaseActivity {
 
     private final String TAG = "SIGNIN_ACTIVITY";
-    private UserBaseInfo userBaseInfo;
     private ServiceManager serviceManager;
-    private JSONObject userObject;
     private Spinner spinner, flatNumber;
     private CheckBox checkBox;
 
@@ -46,13 +44,13 @@ public class SignupActivity extends BaseActivity {
         setContentView(R.layout.activity_signup);
         serviceManager = ServiceManager.getInstance(this);
         spinner = (Spinner) findViewById(R.id.apartment_dropdown_list);
-        flatNumber = findViewById(R.id.flat_number_fragment);
+        flatNumber = findViewById(R.id.flat_number_signup);
         checkBox = findViewById(R.id.signup_checkbox);
         // Create an ArrayAdapter using the string array and a default spinner layout
         fetchApartmentList();
 
         EditText editText = (EditText) findViewById(R.id.mobile_number);
-        String phone = (String) getIntent().getExtras().get("phoneNumber");
+        String phone = (String) getIntent().getExtras().get(ServiceConstants.PHONE_NUMBER);
         if (!TextUtils.isEmpty(phone)) {
             editText.setText(phone);
         } else {
@@ -79,7 +77,7 @@ public class SignupActivity extends BaseActivity {
                 EditText lName = ((EditText) findViewById(R.id.last_name));
                 EditText phoneNo = ((EditText) findViewById(R.id.mobile_number));
 
-                if (apartmentNo == -1 || TextUtils.isEmpty(flatNumber.getSelectedItem().toString())
+                if (apartmentNo == -1 || flatNumber.getSelectedItem() == null || TextUtils.isEmpty(flatNumber.getSelectedItem().toString())
                         || TextUtils.isEmpty(fName.getText())
                         || TextUtils.isEmpty(lName.getText())
                         || TextUtils.isEmpty(phoneNo.getText())
@@ -99,12 +97,12 @@ public class SignupActivity extends BaseActivity {
     private void fetchFlatsforApartments(String apartmentID) {
         ServiceManager.getInstance(this).fetchAllFlatsInApartment(apartmentID, new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
-                    List<FlatsInfo> list = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
+                    List<FlatInfo> list = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatInfo>>() {
                     });
-                    ArrayAdapter<FlatsInfo> adapter = new ArrayAdapter<FlatsInfo>(SignupActivity.this, android.R.layout.simple_spinner_item, list);
+                    ArrayAdapter<FlatInfo> adapter = new ArrayAdapter<FlatInfo>(SignupActivity.this, android.R.layout.simple_spinner_item, list);
                     // Specify the layout to use when the list of choices appears
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     // Apply the adapter to the spinner
@@ -116,7 +114,7 @@ public class SignupActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
                 hideProgressDialog();
             }
         });
@@ -124,9 +122,9 @@ public class SignupActivity extends BaseActivity {
 
     private void fetchApartmentList() {
         showProgressDialog();
-        ServiceManager.getInstance(this).fetchAllApartments(new TaskHandler() {
+        serviceManager.fetchAllApartments(new TaskHandler() {
             @Override
-            public void onTaskCompleted(JSONObject result) {
+            public void onTaskCompleted(JSONObject request, JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
                     List<ApartmentsInfo> list = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<ApartmentsInfo>>() {
@@ -143,7 +141,7 @@ public class SignupActivity extends BaseActivity {
             }
 
             @Override
-            public void onErrorResponse(VolleyError error) {
+            public void onErrorResponse(JSONObject request, VolleyError error) {
                 hideProgressDialog();
             }
         });
@@ -152,50 +150,38 @@ public class SignupActivity extends BaseActivity {
     private void addUserToDB() {
         showProgressDialog();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        userObject = new JSONObject();
+        UserBaseInfo userBaseInfo = new UserBaseInfo();
         try {
-            userObject.put("userUid", user.getUid());
-            userObject.put("apartmentID", (((ApartmentsInfo) spinner.getSelectedItem()).getApartmentID()));
-            userObject.put("flatID", (((FlatsInfo) flatNumber.getSelectedItem()).getFlatID()));
-            userObject.put("fname", ((EditText) findViewById(R.id.first_name)).getText());
-            userObject.put("lname", ((EditText) findViewById(R.id.last_name)).getText());
-            userObject.put("phoneNo", ((EditText) findViewById(R.id.mobile_number)).getText());
-            userObject.put("userName", user.getDisplayName());
-            userObject.put("rating","4.5");
-            serviceManager.createUser(userObject, new SignUpTaskHandler(user));
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-            hideProgressDialog();
+            userBaseInfo.setUserUid(user.getUid());
+            userBaseInfo.setApartmentId((((ApartmentsInfo) spinner.getSelectedItem()).getApartmentID()));
+            userBaseInfo.setFlatID(((FlatInfo) flatNumber.getSelectedItem()).getFlatID());
+            userBaseInfo.setfName(((EditText) findViewById(R.id.first_name)).getText().toString());
+            userBaseInfo.setlName(((EditText) findViewById(R.id.last_name)).getText().toString());
+            userBaseInfo.setPhoneNo(((EditText) findViewById(R.id.mobile_number)).getText().toString());
+            userBaseInfo.setUserName(user.getDisplayName());
+            userBaseInfo.setRating("4.5");
+            serviceManager.createUser(JSONHelper.toJSONObject(userBaseInfo), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    try {
+                        sharedPreferenceUtils.setValue(ServiceConstants.IS_SIGNED_KEY, request.getString("userUid"));
+                        sharedPreferenceUtils.setValue(ServiceConstants.USER_INFO, request.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    navigateToHome();
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+                    Toast.makeText(SignupActivity.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
+                    LoginManager.getInstance().logOut();
+                    hideProgressDialog();
+                }
+            });
         } catch (Exception e) {
             hideProgressDialog();
             e.printStackTrace();
-        }
-    }
-
-    private class SignUpTaskHandler implements TaskHandler {
-
-        private FirebaseUser mUser;
-
-        public SignUpTaskHandler(FirebaseUser user) {
-            mUser = user;
-        }
-
-        @Override
-        public void onTaskCompleted(JSONObject result) {
-            hideProgressDialog();
-            saveStringInSharedPreference(ServiceConstants.signedInKey, mUser.getUid());
-            saveStringInSharedPreference(ServiceConstants.userDetail, userObject.toString());
-            navigateToHome();
-        }
-
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            hideProgressDialog();
-            Toast.makeText(SignupActivity.this, "Something went wrong. Please try again later.", Toast.LENGTH_LONG);
-            if (mUser.getUid() != null) {
-                LoginManager.getInstance().logOut();
-            }
-            Log.e(TAG, "onErrorResponse: Response", error);
         }
     }
 }

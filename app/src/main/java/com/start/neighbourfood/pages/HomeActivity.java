@@ -2,10 +2,7 @@ package com.start.neighbourfood.pages;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -28,7 +25,6 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -38,35 +34,38 @@ import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.fragments.FlatListFragment;
 import com.start.neighbourfood.fragments.SellerFoodFragment;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
+import com.start.neighbourfood.tasks.DownLoadImageTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.URL;
 
 public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private final static String TAG = "HOME_ACTIVITY";
-    private FirebaseUser user;
+    private UserBaseInfo user;
 
     private static final int SELECT_PICTURE = 100;
+    private ImageView imageView;
+    private TextView userName;
+    private int imageHash;
+    private View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        user = sharedPreferenceUtils.getUserBaseInfo();
         // Check for login
-        if (user == null || getFromSharedPreference(ServiceConstants.signedInKey) == null) {
+        if (user == null || sharedPreferenceUtils.getStringValue(ServiceConstants.IS_SIGNED_KEY, null) == null) {
             navigateToLoginPage();
             return;
         }
 
-        registerDevice(user.getUid(), getFromSharedPreference("regId"));
+        registerDevice(user.getUserUid(), sharedPreferenceUtils.getStringValue(ServiceConstants.REGID, null));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -79,31 +78,33 @@ public class HomeActivity extends BaseActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        View headerView = navigationView.getHeaderView(0);
-        TextView userName = headerView.findViewById(R.id.header_username);
-        ImageView imageView = headerView.findViewById(R.id.header_imageView);
+        headerView = navigationView.getHeaderView(0);
+        userName = headerView.findViewById(R.id.header_username);
+        imageView = headerView.findViewById(R.id.header_imageView);
         TextView emailView = headerView.findViewById(R.id.header_mail);
 
-        userName.setText(user.getDisplayName());
+        userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
         if (user.getPhotoUrl() != null) {
-            new DownLoadImageTask(imageView).execute(user.getPhotoUrl().toString());
+            new DownLoadImageTask(imageView).execute(user.getPhotoUrl());
+        } else {
+            imageView.setImageResource(R.drawable.profile_default);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openImageChooser();
+                navigateToProfilePage();
             }
         });
 
-        emailView.setText(user.getEmail());
+        emailView.setText("+91 " + user.getPhoneNo());
 
 
     }
 
     private void registerDevice(String uid, String regId) {
-        String savedId = getFromSharedPreference("deviceRegistered");
-        if (regId != null && (savedId == null || "false".equals(getFromSharedPreference("deviceRegistered")))) {
+        String savedId = sharedPreferenceUtils.getStringValue(ServiceConstants.DEVICE_REGISTERED, null);
+        if (regId != null && (savedId == null || "false".equals(savedId))) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("userUid", uid);
@@ -114,12 +115,12 @@ public class HomeActivity extends BaseActivity
 
             ServiceManager.getInstance(getApplicationContext()).addUserTokenInfo(jsonObject, new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
-                    saveStringInSharedPreference("deviceRegistered", "true");
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    sharedPreferenceUtils.setValue(ServiceConstants.DEVICE_REGISTERED, "true");
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
                     Log.e(TAG, "Error Saving: " + error);
                 }
             });
@@ -153,6 +154,14 @@ public class HomeActivity extends BaseActivity
                 signOut();
             } else if (id == R.id.nav_share) {
 
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBodyText = "\nLet me recommend you this application\n\n";
+                shareBodyText += getString(R.string.play_store_link);
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject here");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBodyText);
+                startActivity(Intent.createChooser(sharingIntent, "Shearing Option"));
+
             } else if (id == R.id.seller_page) {
                 loadFragment(new SellerFoodFragment());
             }
@@ -172,9 +181,21 @@ public class HomeActivity extends BaseActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (getFromSharedPreference(ServiceConstants.userDetail) == null){
+        if (user == null || sharedPreferenceUtils.getStringValue(ServiceConstants.USER_INFO, null) == null) {
             return;
         }
+
+        if (user.getPhotoUrl() != null && user.getPhotoUrl().hashCode() != imageHash) {
+            user = sharedPreferenceUtils.getUserBaseInfo();
+            imageHash = user.getPhotoUrl().hashCode();
+            new DownLoadImageTask(imageView).execute(user.getPhotoUrl());
+        }
+
+        if (userName == null){
+            userName = headerView.findViewById(R.id.header_username);
+        }
+        userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
+
         if (isNetworkConnected()) {
             clearBackstack();
             loadFragment(new FlatListFragment());
@@ -189,14 +210,6 @@ public class HomeActivity extends BaseActivity
             getSupportFragmentManager().popBackStack();
         }
 
-    }
-
-    /* Choose an image from Gallery */
-    void openImageChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SELECT_PICTURE);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -231,24 +244,24 @@ public class HomeActivity extends BaseActivity
                                         .setPhotoUri(downloadUri)
                                         .build();
 
-                                user.updateProfile(profileUpdates)
+                                FirebaseAuth.getInstance().getCurrentUser().updateProfile(profileUpdates)
                                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                                             @Override
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 JSONObject jsonObject = new JSONObject();
                                                 try {
-                                                    jsonObject.put("photoUrl",downloadUri);
+                                                    jsonObject.put("photoUrl", downloadUri);
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
-                                                ServiceManager.getInstance(HomeActivity.this).updateProfilePhoto(user.getUid(), downloadUri.toString(), jsonObject,new TaskHandler() {
+                                                ServiceManager.getInstance(HomeActivity.this).updateUserInfo(user.getUserUid(), jsonObject, new TaskHandler() {
                                                     @Override
-                                                    public void onTaskCompleted(JSONObject result) {
+                                                    public void onTaskCompleted(JSONObject request, JSONObject result) {
 
                                                     }
 
                                                     @Override
-                                                    public void onErrorResponse(VolleyError error) {
+                                                    public void onErrorResponse(JSONObject request, VolleyError error) {
 
                                                     }
                                                 });
@@ -280,41 +293,5 @@ public class HomeActivity extends BaseActivity
         }
         cursor.close();
         return res;
-    }
-
-    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String... urls) {
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try {
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            } catch (Exception e) { // Catch the download exception
-                e.printStackTrace();
-            }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
     }
 }

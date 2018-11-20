@@ -2,17 +2,17 @@
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/seller_swipe_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:id="@+id/seller_swipe_layout"
     tools:context="com.start.neighbourfood.pages.OrderTrackSellerActivity"
     tools:showIn="@layout/activity_seller_ordertrack">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        >
 
         <TextView
             android:id="@+id/header"
@@ -26,124 +26,84 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/seller_timer"
+
+        <com.kofigyan.stateprogressbar.StateProgressBar
+            android:id="@+id/seller_progress_bar_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="20dp"
             android:layout_below="@+id/header"
-            android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:background="@drawable/circle_bg"
-            android:gravity="center"
-            android:text="00:00"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/green"
-            android:textSize="30sp" />
+            android:textAlignment="center"
+            app:spb_animateToCurrentProgressState="true"
+            app:spb_checkStateCompleted="true"
+            app:spb_currentStateDescriptionColor="#009688"
+            app:spb_currentStateNumber="two"
+            app:spb_justifyMultilineDescription="true"
+            app:spb_maxDescriptionLines="2"
+            app:spb_maxStateNumber="three"
+            app:spb_stateBackgroundColor="#BDBDBD"
+            app:spb_stateDescriptionColor="#808080"
+            app:spb_stateDescriptionSize="12dp"
+            app:spb_stateForegroundColor="#009688"
+            app:spb_stateNumberBackgroundColor="#808080"
+            app:spb_stateNumberForegroundColor="#eeeeee" />
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/seller_timer"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/ordered_seller_Item_recycleView"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_below="@id/icon_layout"
-                android:layout_marginTop="5dp"
-                tools:context="com.start.neighbourfood.fragments.FlatListFragment"
-                tools:listitem="@layout/order_summary_list">
-
-            </android.support.v7.widget.RecyclerView>
-
-            <RelativeLayout
-                android:id="@+id/waiting_confirm_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/confirm_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:text="Tap to accept the order."
-                    android:textSize="15sp" />
-
-                <ImageView
-                    android:id="@+id/confirm_img"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_toEndOf="@id/confirm_text"
-                    android:src="@drawable/wait" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/food_prepared_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:visibility="gone">
-
-
-                <TextView
-                    android:id="@+id/foodPrepared_txt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:text="Confirm if food is ready."
-                    android:textSize="15sp" />
-
-
-                <ImageView
-                    android:id="@+id/foodPrepared_img"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_toEndOf="@id/foodPrepared_txt"
-                    android:src="@drawable/wait" />
-
-            </RelativeLayout>
+            android:layout_below="@id/seller_progress_bar_id">
 
             <LinearLayout
-                android:id="@+id/finish_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/orderSellerPlacedTo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/capriola"
-                    android:text="Hurray !!"
-                    android:textColor="@color/green_dark"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
+                    android:fontFamily="@font/athiti_semibold"
+                    android:text="Order Placed to Sucheta (Flat F6)"
+                    android:textSize="14dp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/ordered_seller_Item_recycleView"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@id/icon_layout"
+                    android:layout_marginTop="5dp"
+                    tools:context="com.start.neighbourfood.fragments.FlatListFragment"
+                    tools:listitem="@layout/order_summary_list">
+
+                </android.support.v7.widget.RecyclerView>
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/capriola"
+                    android:id="@+id/seller_timer"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_below="@+id/header"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/circle_bg"
                     android:gravity="center"
-                    android:text="Food will be picked by the member."
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="00:00"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="@color/green"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="Total time"/>
 
             </LinearLayout>
 
-        </LinearLayout>
-
+        </ScrollView>
 
     </RelativeLayout>
 

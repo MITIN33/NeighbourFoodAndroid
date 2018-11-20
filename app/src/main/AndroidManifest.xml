@@ -4,24 +4,25 @@
     package="com.start.neighbourfood">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    -->
+    <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <application
-        android:name=".Utils.NfServiceApplication"
+        android:name=".NFApplication"
         android:allowBackup="true"
         android:icon="@drawable/foodie"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        tools:replace="android:icon"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:node="merge">
+        tools:node="merge"
+        tools:replace="android:icon"
+        tools:targetApi="n">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -59,7 +60,6 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.start.neighbourfood.pages.BaseActivity" />
-
         </activity>
 
         <!-- Firebase Notifications -->
@@ -83,7 +83,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.start.neighbourfood.pages.BaseActivity" />
         </activity>
-        <activity android:name=".pages.BuyerOrderActivity"></activity>
+        <activity
+            android:name=".pages.OrderHistoryActivity"
+            android:label="Order History" />
+        <activity
+            android:name=".pages.OrderStatusActivity"
+            android:label="@string/title_activity_order_status"
+            android:parentActivityName=".pages.BaseActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.start.neighbourfood.pages.BaseActivity" />
+        </activity>
+        <activity android:name=".pages.ProfileActivity"></activity>
     </application>
 
 </manifest>

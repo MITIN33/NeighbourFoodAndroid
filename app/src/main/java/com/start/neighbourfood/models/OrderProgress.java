@@ -1,14 +1,21 @@
 package com.start.neighbourfood.models;
 
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.FoodItem;
+
+import java.util.List;
+
 public class OrderProgress {
 
     private String message;
     private OrderStatus orderStatus;
-    private long startTime;
     private String orderId;
-    private String id;
     private long endTime;
     private String orderType;
+    private UserBaseInfo userPlacedTo;
+    private UserBaseInfo userPlacedBy;
+    private long createTime;
+    private List<FoodItem> sellerItems;
 
     public String getMessage() {
         return message;
@@ -26,28 +33,12 @@ public class OrderProgress {
         this.orderStatus = orderStatus;
     }
 
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
     public String getOrderId() {
         return orderId;
     }
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public long getEndTime() {
@@ -66,10 +57,43 @@ public class OrderProgress {
         this.orderType = orderType;
     }
 
+    public UserBaseInfo getUserPlacedTo() {
+        return userPlacedTo;
+    }
+
+    public void setUserPlacedTo(UserBaseInfo userPlacedTo) {
+        this.userPlacedTo = userPlacedTo;
+    }
+
+    public UserBaseInfo getUserPlacedBy() {
+        return userPlacedBy;
+    }
+
+    public void setUserPlacedBy(UserBaseInfo userPlacedBy) {
+        this.userPlacedBy = userPlacedBy;
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public List<FoodItem> getSellerItems() {
+        return sellerItems;
+    }
+
+    public void setSellerItems(List<FoodItem> sellerItems) {
+        this.sellerItems = sellerItems;
+    }
+
 
     public enum OrderStatus{
         PENDING_CONFIRMATION,
         PREPARING,
+        PREPARED,
         COMPLETED
     }
 }

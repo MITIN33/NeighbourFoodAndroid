@@ -55,4 +55,23 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">36sp</item>
     </style>
+
+
+    <!--Customs style-->
+    <style name="subtitle1" parent="AppTheme">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="subtitle2" parent="AppTheme">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="body1" parent="AppTheme">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="body2" parent="AppTheme">
+        <item name="android:textSize">14sp</item>
+    </style>
+
 </resources>

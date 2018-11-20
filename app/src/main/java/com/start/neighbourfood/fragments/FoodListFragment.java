@@ -2,6 +2,7 @@ package com.start.neighbourfood.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,18 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItemDetails;
+import com.start.neighbourfood.models.v1.response.FoodItem;
+import com.start.neighbourfood.models.v1.response.SellerItemDetail;
 import com.start.neighbourfood.pages.OrderSummaryActivity;
 import com.start.neighbourfood.services.ServiceManager;
 
@@ -40,13 +43,14 @@ import java.util.Map;
  */
 public class FoodListFragment extends BaseFragment implements TaskHandler, ElegantNumberButton.OnValueChangeListener {
 
-    protected List<FoodItemDetails> mDataset;
+    protected List<FoodItem> mDataset;
     private FoodItemsRecyclerViewAdapter mAdapter;
-    private Button goToCartButton;
-    private String flatNumber;
-    private List<FoodItemDetails> orderItems;
-    private FoodItemDetails selectedItem;
-    private HashMap<FoodItemDetails, String> orderQuantityMap;
+    private List<FoodItem> orderItems;
+    private FoodItem selectedItem;
+    private HashMap<FoodItem, String> orderQuantityMap;
+    private SellerItemDetail sellerItemDetail;
+    private TextView sellerName;
+    private TextView flatName;
 
     public FoodListFragment() {
     }
@@ -58,11 +62,13 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         try {
             super.onCreateView(inflater,container,savedInstanceState);
             View rootView = inflater.inflate(R.layout.content_food_list, container, false);
             RecyclerView mRecyclerView = rootView.findViewById(R.id.detail_food_items_recycleView);
+            flatName = rootView.findViewById(R.id.flatName);
+            sellerName = rootView.findViewById(R.id.sellerName);
             mAdapter = new FoodItemsRecyclerViewAdapter(this);
             orderQuantityMap = new HashMap<>();
             mRecyclerView.setAdapter(mAdapter);
@@ -87,22 +93,22 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
                 }
             }));
 
-            goToCartButton = rootView.findViewById(R.id.goToCart);
+            Button goToCartButton = rootView.findViewById(R.id.goToCart);
             goToCartButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(getActivity(), OrderSummaryActivity.class);
                     orderItems = new ArrayList<>();
                     boolean flag = false;
-                    for (Map.Entry<FoodItemDetails, String> entry : orderQuantityMap.entrySet()) {
+                    for (Map.Entry<FoodItem, String> entry : orderQuantityMap.entrySet()) {
                         if (Integer.parseInt(entry.getValue()) != 0) {
-                            FoodItemDetails foodItemDetails = entry.getKey();
+                            FoodItem foodItemDetails = entry.getKey();
                             foodItemDetails.setQuantity(entry.getValue());
                             flag = true;
                             orderItems.add(foodItemDetails);
                         }
                     }
-                    if (flag == false) {
+                    if (!flag) {
                         Toast.makeText(getActivity(), "Please select some items to add.", Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -122,19 +128,19 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
 
     private void loadFoodItems() {
         showProgressDialog();
-        String sellerId = getArguments().getString("sellerId");
-        flatNumber = getArguments().getString("flatNumber");
+        String sellerId = getArguments() != null ? getArguments().getString("sellerId") : null;
         ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItemDetails>>() {
-            });
-            mDataset = foodItemDetails;
-            mAdapter.setmDataSet(foodItemDetails);
+            sellerItemDetail = objectMapper.readValue(result.getJSONObject("Result").toString(), SellerItemDetail.class);
+            mDataset = sellerItemDetail.getFoodItemDetail();
+            sellerName.setText(String.format("Seller: %s %s", sellerItemDetail.getfName(), sellerItemDetail.getlName()));
+            flatName.setText(String.format("Flat: %s", sellerItemDetail.getFlatNumber()));
+            mAdapter.setmDataSet(mDataset);
             mAdapter.notifyDataSetChanged();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -143,18 +149,25 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
         hideProgressDialog();
     }
 
-    private void saveOrderItems(List<FoodItemDetails> orderItems) {
+    private void saveOrderItems(List<FoodItem> orderItems) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = null;
-        saveFromSharedPreference("orderedItem", null);
+
+        SellerItemDetail orderedItems = new SellerItemDetail();
+        orderedItems.setFlatNumber(sellerItemDetail.getFlatNumber());
+        orderedItems.setfName(sellerItemDetail.getfName());
+        orderedItems.setlName(sellerItemDetail.getlName());
+        orderedItems.setSellerId(sellerItemDetail.getSellerId());
+        orderedItems.setFoodItemDetail(orderItems);
+
+        NFApplication.getSharedPreferenceUtils().setValue("orderedItem", null);
         try {
-            jsonInString = mapper.writeValueAsString(orderItems);
-            saveFromSharedPreference("orderedItem", jsonInString);
-            saveFromSharedPreference("flatNumber", flatNumber);
+            jsonInString = mapper.writeValueAsString(orderedItems);
+            NFApplication.getSharedPreferenceUtils().setValue("orderedItem", jsonInString);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

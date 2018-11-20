@@ -89,46 +89,51 @@ public class ServiceManager {
      /
      /***********/
 
-    public void createUser(JSONObject userBaseInfo, final TaskHandler taskHandler) {
+    public void createUser(final JSONObject userBaseInfo, final TaskHandler taskHandler) {
 
         String url = getFullUrl(ServiceConstants.userApiPath);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, userBaseInfo, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
+                taskHandler.onTaskCompleted(userBaseInfo, response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
+                taskHandler.onErrorResponse(userBaseInfo, error);
             }
         });
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void updateProfilePhoto(String id, String photoUrl,JSONObject jsonObject,final TaskHandler taskHandler){
+    public void updateUserInfo(String id, final JSONObject jsonObject, final TaskHandler taskHandler){
         String url = getFullUrl(ServiceConstants.userApiPath) + "/" + id ;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
+                taskHandler.onTaskCompleted(jsonObject, response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
+                taskHandler.onErrorResponse(jsonObject, error);
             }
         });
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void fetchAvailableHoods(JSONObject userBaseInfo, final TaskHandler taskHandler) throws IllegalAccessException {
-        String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + getValue(userBaseInfo, "apartmentID") + "/user/" + getValue(userBaseInfo, "userUid");
+    public void fetchAvailableHoods(String userId, String apartmentId, final TaskHandler taskHandler) throws IllegalAccessException {
+         String url = getFullUrl(ServiceConstants.apartmentApiPath) + "/" + apartmentId + "/user/" + userId;
+        createRequest(Request.Method.GET, taskHandler, url, null);
+    }
+
+    public void fetchSellingItemsForFlat(String flatId, final TaskHandler taskHandler) {
+        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
         createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
     public void fetchFoodItemsForFlat(String flatId, final TaskHandler taskHandler) {
-        String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/details/" + flatId;
+        String url = getFullUrl(ServiceConstants.flatApiPAth) + "/seller/" + flatId;
         createRequest(Request.Method.GET, taskHandler, url, null);
     }
 
@@ -148,28 +153,28 @@ public class ServiceManager {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
+                taskHandler.onTaskCompleted(null ,response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
+                taskHandler.onErrorResponse(null, error);
             }
         });
         addToRequestQueue(jsonObjectRequest);
     }
 
-    public void updateSellerItem(String id, JSONObject sellerITem, final TaskHandler taskHandler) {
+    public void updateSellerItem(String id, final JSONObject sellerITem, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/" + id;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, sellerITem, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(response);
+                taskHandler.onTaskCompleted(sellerITem, response);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(error);
+                taskHandler.onErrorResponse(sellerITem, error);
             }
         });
         addToRequestQueue(jsonObjectRequest);
@@ -259,21 +264,21 @@ public class ServiceManager {
         return null;
     }
 
-    private void createRequest(int method, final TaskHandler taskHandler, String url, JSONObject jsonObject) {
+    private void createRequest(int method, final TaskHandler taskHandler, String url, final JSONObject jsonObject) {
 
         try {
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(method, url, jsonObject, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                    if(taskHandler != null) {
-                       taskHandler.onTaskCompleted(response);
+                       taskHandler.onTaskCompleted(jsonObject , response);
                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     if(taskHandler!= null) {
-                        taskHandler.onErrorResponse(error);
+                        taskHandler.onErrorResponse(jsonObject , error);
                     }
                 }
             });

@@ -6,9 +6,9 @@ import org.json.JSONObject;
 
 public interface TaskHandler {
 
-    void onTaskCompleted(JSONObject result);
+    void onTaskCompleted(JSONObject request, JSONObject result);
 
-    void onErrorResponse(VolleyError error);
+    void onErrorResponse(JSONObject request, VolleyError error);
 
 
 }

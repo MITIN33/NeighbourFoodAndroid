@@ -1,6 +1,7 @@
-package com.start.neighbourfood.models;
+package com.start.neighbourfood.models.v1.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FoodItemDetails {
@@ -13,7 +14,10 @@ public class FoodItemDetails {
     private String quantity;
     private String itemDesc;
     private String flatID;
+
+    @JsonProperty("isAvailable")
     private boolean isAvailable;
+
     private String sellerItemID;
     private boolean veg;
 

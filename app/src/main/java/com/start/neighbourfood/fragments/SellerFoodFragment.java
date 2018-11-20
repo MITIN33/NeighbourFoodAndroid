@@ -19,37 +19,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.SellerItemAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FoodItem;
-import com.start.neighbourfood.models.FoodItemDetails;
 import com.start.neighbourfood.models.RecyclerItemTouchHelper;
-import com.start.neighbourfood.models.UserBaseInfo;
-import com.start.neighbourfood.pages.BaseActivity;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.request.FoodItemDetails;
 import com.start.neighbourfood.services.ServiceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SellerFoodFragment extends BaseFragment implements TaskHandler, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
@@ -101,20 +97,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                     android.R.color.holo_green_dark,
                     android.R.color.holo_orange_dark,
                     android.R.color.holo_blue_dark);
-            switchOne.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener() {
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-                                switchOne.setText("Available");
-                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.green_dark));
-                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(true), null);
-                            } else {
-                                switchOne.setText("Not Available");
-                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(false), null);
-                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_500));
-                            }
-                        }
-                    });
+
             coordinatorLayout = (CoordinatorLayout) rootView;
             mAdapter = new SellerItemAdapter(new View.OnClickListener() {
                 @Override
@@ -152,6 +135,21 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
             new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView);
 
+            switchOne.setOnCheckedChangeListener(
+                    new CompoundButton.OnCheckedChangeListener() {
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (isChecked) {
+                                switchOne.setText("Available");
+                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.green_dark));
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(true), null);
+                            } else {
+                                switchOne.setText("Not Available");
+                                ServiceManager.getInstance(getActivity()).toggleAvailability(user.getUid(), String.valueOf(false), null);
+                                switchOne.setTextColor(ContextCompat.getColor(getContext(), R.color.grey_500));
+                            }
+                        }
+                    });
+
             setFloatingButtonAction(rootView);
             return rootView;
         } catch (Exception e) {
@@ -171,46 +169,10 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         });
     }
 
-    private void fetchFoodItem(final View promptsView) {
-
-        ServiceManager.getInstance(getActivity()).fetchAllFoodItem(new TaskHandler() {
-            @Override
-            public void onTaskCompleted(JSONObject result) {
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    List<FoodItem> arrayList = mapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItem>>() {
-                    });
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                            (getActivity(), android.R.layout.select_dialog_item, getListFoodItem(arrayList));
-                    //Getting the instance of AutoCompleteTextView
-                    AutoCompleteTextView actv = promptsView.findViewById(R.id.seller_food_item_name);
-                    actv.setThreshold(1);//will start working from first character
-                    actv.setAdapter(adapter);//setting the adapter data into the AutoCompleteTextView
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-    }
-
-    private List<String> getListFoodItem(List<FoodItem> foodItems) {
-        List<String> list = new ArrayList<>();
-        for (FoodItem item : foodItems) {
-            list.add(item.toString());
-        }
-        return list;
-    }
-
     private void loadFoodItems() {
         //showProgressDialog();
         String sellerId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        ServiceManager.getInstance(getActivity()).fetchFoodItemsForFlat(sellerId, this);
-        mSwipeRefreshLayout.setRefreshing(false);
+        ServiceManager.getInstance(getActivity()).fetchSellingItemsForFlat(sellerId, this);
     }
 
     @Override
@@ -230,7 +192,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
             ServiceManager.getInstance(getActivity()).removeSellerItem(id, new TaskHandler() {
                 @Override
-                public void onTaskCompleted(JSONObject result) {
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
                     // showing snack bar with Undo option
                     Snackbar snackbar = Snackbar
                             .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
@@ -247,7 +209,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                 }
 
                 @Override
-                public void onErrorResponse(VolleyError error) {
+                public void onErrorResponse(JSONObject request, VolleyError error) {
 
                 }
             });
@@ -255,7 +217,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             List<FoodItemDetails> foodItemDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FoodItemDetails>>() {
@@ -263,18 +225,22 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
             mDataset = foodItemDetails;
             mAdapter.setDataset(foodItemDetails);
             mAdapter.notifyDataSetChanged();
-            if (foodItemDetails.size()>0) {
+            if (foodItemDetails.size() > 0) {
                 switchOne.setChecked(foodItemDetails.get(0).isAvailable());
+            } else {
+                switchOne.setChecked(true);
             }
+
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         //hideProgressDialog();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
-
+    public void onErrorResponse(JSONObject request, VolleyError error) {
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -290,7 +256,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
 
         final EditText foodItemName = (EditText) promptsView
                 .findViewById(R.id.seller_food_item_name);
-        final NumberPicker numberPicker = (NumberPicker) promptsView
+        final ElegantNumberButton numberPicker = (ElegantNumberButton) promptsView
                 .findViewById(R.id.numberPicker);
         final EditText foodItemDesc = (EditText) promptsView
                 .findViewById(R.id.seller_food_item_desc);
@@ -299,19 +265,17 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
         final RadioButton radioGroup = promptsView.findViewById(R.id.radio_veg);
 
         if (numberPicker != null) {
-            numberPicker.setMinValue(0);
-            numberPicker.setMaxValue(10);
-            numberPicker.setWrapSelectorWheel(true);
+            numberPicker.setRange(1, 10);
         }
 
         if (selectedItem != null) {
             foodItemName.setText(selectedItem.getItemName());
-            numberPicker.setValue(Integer.parseInt(selectedItem.getServedFor()));
+            numberPicker.setNumber(selectedItem.getServedFor());
             foodItemDesc.setText(selectedItem.getItemDesc());
             foodItemPrice.setText(selectedItem.getPrice());
         }
 
-        fetchFoodItem(promptsView);
+        //fetchFoodItem(promptsView);
         String updateBtnText = selectedItem != null ? "Update" : "Add";
         // set dialog message
         alertDialogBuilder
@@ -324,14 +288,14 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                 // edit text
                                 // Save the data to the database from here
 
-                                UserBaseInfo userBaseInfo = ((BaseActivity) getActivity()).getUserBaseInfo();
+                                UserBaseInfo userBaseInfo = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
                                 Gson gson = new Gson();
                                 final FoodItemDetails foodItemDetails = new FoodItemDetails();
                                 foodItemDetails.setItemName(String.valueOf(foodItemName.getText()));
-                                foodItemDetails.setServedFor(String.valueOf(numberPicker.getValue()));
+                                foodItemDetails.setServedFor(String.valueOf(numberPicker.getNumber()));
                                 foodItemDetails.setSellerID(userBaseInfo.getUserUid());
                                 foodItemDetails.setPrice(String.valueOf(foodItemPrice.getText()));
-                                foodItemDetails.setFlatID(userBaseInfo.getFlatID());
+                                foodItemDetails.setFlatID(userBaseInfo.getFlatId());
                                 foodItemDetails.setItemDesc(String.valueOf(foodItemDesc.getText()));
                                 foodItemDetails.setVeg(radioGroup.isChecked());
                                 foodItemDetails.setAvailable(true);
@@ -340,27 +304,27 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                     if (selectedItem == null) {
                                         ServiceManager.getInstance(getActivity()).addSellerItem(new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
-                                            public void onTaskCompleted(JSONObject result) {
+                                            public void onTaskCompleted(JSONObject request, JSONObject result) {
                                                 mDataset.add(foodItemDetails);
                                                 mAdapter.notifyDataSetChanged();
                                                 Toast.makeText(getContext(), foodItemName.getText() + " is added!", Toast.LENGTH_SHORT).show();
                                             }
 
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {
+                                            public void onErrorResponse(JSONObject request, VolleyError error) {
                                                 Log.e(TAG, error.getMessage());
                                             }
                                         });
                                     } else {
                                         ServiceManager.getInstance(getActivity()).updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
-                                            public void onTaskCompleted(JSONObject result) {
+                                            public void onTaskCompleted(JSONObject request, JSONObject result) {
                                                 mAdapter.notifyItemChanged(positin, foodItemDetails);
                                                 Toast.makeText(getContext(), foodItemName.getText() + " is updated!", Toast.LENGTH_SHORT).show();
                                             }
 
                                             @Override
-                                            public void onErrorResponse(VolleyError error) {
+                                            public void onErrorResponse(JSONObject request, VolleyError error) {
                                                 Log.e("ADD_SELLER_ITEM", error.getMessage());
                                             }
                                         });

@@ -6,19 +6,20 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_launcher_home"
             android:title="Home" />
         <item
             android:id="@+id/nav_trackOrder"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_launcher_history"
             android:title="Orders" />
         <item
             android:id="@+id/seller_page"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_launcher_list"
             android:title="Selling Items" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
+            android:visible="false"
             android:title="Settings" />
     </group>
 
@@ -30,7 +31,7 @@
                 android:title="Share" />
             <item
                 android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_launcher_logout"
                 android:title="Logout" />
         </menu>
     </item>

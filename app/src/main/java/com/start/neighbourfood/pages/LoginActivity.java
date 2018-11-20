@@ -1,6 +1,7 @@
 package com.start.neighbourfood.pages;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -69,20 +70,19 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     int count = 60;
     // Define the code block to be executed
 
-   // Start the initial runnable task by posting through the handler
+    // Start the initial runnable task by posting through the handler
     private Button buttonCode;
     private Runnable runnableCode = new Runnable() {
         @Override
         public void run() {
             // Do something here on the main thread
             //Log.d("Handlers", "Called on main thread");
-            buttonCode.setText(String.format("Wait(%s)",count--));
+            buttonCode.setText(String.format("Wait(%s)", count--));
 
             // Repeat this the same runnable code block again another 1 seconds
-            if(count > 0) {
+            if (count > 0) {
                 handler.postDelayed(runnableCode, 1000);
-            }
-            else {
+            } else {
                 count = 60;
                 buttonCode.setText("Resend");
                 buttonCode.setEnabled(true);
@@ -93,7 +93,13 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        if (getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT) {
+            setContentView(R.layout.activity_login_vertical);
+        } else {
+            setContentView(R.layout.activity_login_horizontal);
+        }
+
         serviceManager = ServiceManager.getInstance(getApplicationContext());
         mCallbackManager = CallbackManager.Factory.create();
         mAuth = FirebaseAuth.getInstance();
@@ -119,7 +125,6 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     sendVerificationCode();
                     handler.post(runnableCode);
                 }
-
 
 
             }
@@ -161,20 +166,15 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
             return;
         }
 
-        if (phone.length() < 10) {
-            editTextPhone.setError("Please enter a valid phone");
+        if (phone.length() != 10) {
+            editTextPhone.setError("Please enter a valid phone, without country code !");
             editTextPhone.requestFocus();
             return;
         }
 
-        if (!phone.startsWith("+")) {
-            if (phone.length() == 10 ) {
-                phone = "+91" + phone;
-            }
-            else {
-                phone = "+" + phone;
-            }
-        }
+
+        phone = "+91" + phone;
+
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phone,        // Phone number to verify
@@ -224,10 +224,10 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         try {
-            saveStringInSharedPreference(ServiceConstants.signedInKey, FirebaseAuth.getInstance().getCurrentUser().getUid());
-            saveStringInSharedPreference(ServiceConstants.userDetail, result.getJSONObject("Result").toString());
+            sharedPreferenceUtils.setValue(ServiceConstants.IS_SIGNED_KEY, FirebaseAuth.getInstance().getCurrentUser().getUid());
+            sharedPreferenceUtils.setValue(ServiceConstants.USER_INFO, result.getJSONObject("Result").toString());
             navigateToHome();
         } catch (Exception e) {
             LoginManager.getInstance().logOut();
@@ -236,7 +236,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
         hideProgressDialog();
         if (error.networkResponse.statusCode == 404) {
             navigateToSignUpPage(TextUtils.isEmpty(editTextPhone.getText().toString()) ? FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() : editTextPhone.getText().toString());

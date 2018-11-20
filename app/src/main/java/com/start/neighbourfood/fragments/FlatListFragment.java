@@ -21,18 +21,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.volley.VolleyError;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.RecyclerTouchListener;
 import com.start.neighbourfood.adapters.FlatsInfoRecyclerViewAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
-import com.start.neighbourfood.models.FlatsInfo;
-import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.pages.BaseActivity;
-import com.start.neighbourfood.services.ServiceManager;
+import com.start.neighbourfood.models.v1.UserBaseInfo;
+import com.start.neighbourfood.models.v1.response.HoodDetails;
+import com.start.neighbourfood.models.v1.response.HoodListResponse;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -43,12 +41,11 @@ import java.util.List;
  * Demonstrates the use of {@link RecyclerView} with a {@link LinearLayoutManager} and a
  * {@link GridLayoutManager}.
  */
-public class FlatListFragment extends BaseFragment implements TaskHandler, SwipeRefreshLayout.OnRefreshListener {
+public class FlatListFragment extends BaseFragment implements TaskHandler {
 
     private static final String TAG = FlatListFragment.class.getSimpleName();
-    private List<FlatsInfo> mDataset;
+    private List<HoodDetails> mDataset;
     public FlatsInfoRecyclerViewAdapter mAdapter;
-    private SearchView searchView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
@@ -57,20 +54,20 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-        fetchFlatinfo();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.content_flat_list, container, false);
+        setHasOptionsMenu(true);
         RecyclerView mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mAdapter = new FlatsInfoRecyclerViewAdapter(getActivity(), mDataset);
         mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_container);
 
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                fetchFlatInfo();
+            }
+        });
         mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
@@ -80,13 +77,13 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
          * Showing Swipe Refresh animation on activity create
          * As animation won't start on onCreate, post runnable is used
          */
-        /*mSwipeRefreshLayout.post(new Runnable() {
+        mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
-                fetchFlatinfo();
+                fetchFlatInfo();
             }
-        });*/
+        });
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -95,7 +92,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                FlatsInfo flats = mDataset.get(position);
+                HoodDetails flats = mDataset.get(position);
                 loadFoodItemsForFlat(flats.getSellerId(), flats.getFlatNumber());
             }
 
@@ -107,15 +104,14 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         return rootView;
     }
 
-    private void fetchFlatinfo() {
-        showProgressDialog();
+    private void fetchFlatInfo() {
+        //showProgressDialog();
         try {
-            String userString =  ((BaseActivity) getActivity()).getFromSharedPreference(ServiceConstants.userDetail);
-            if(userString != null) {
-                JSONObject userBaseInfo = new JSONObject(userString);
-                ServiceManager.getInstance(getActivity()).fetchAvailableHoods(userBaseInfo, this);
+            UserBaseInfo userBaseInfo = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
+            if (userBaseInfo != null) {
+                NFApplication.getServiceManager().fetchAvailableHoods(userBaseInfo.getUserUid(), userBaseInfo.getApartmentId(), this);
             }
-        } catch (IllegalAccessException | JSONException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -126,8 +122,12 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         FoodListFragment fragment = new FoodListFragment();
-        Slide exitSlide = new Slide(){{setSlideEdge(Gravity.LEFT);}};
-        Slide enterSlide = new Slide(){{setSlideEdge(Gravity.RIGHT);}};
+        Slide exitSlide = new Slide() {{
+            setSlideEdge(Gravity.LEFT);
+        }};
+        Slide enterSlide = new Slide() {{
+            setSlideEdge(Gravity.RIGHT);
+        }};
         fragment.setEnterTransition(enterSlide);
         fragment.setExitTransition(exitSlide);
         Bundle args = new Bundle();
@@ -144,7 +144,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.home, menu);
         SearchManager searchManager = (SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.action_search)
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getActivity().getComponentName()));
@@ -169,33 +169,24 @@ public class FlatListFragment extends BaseFragment implements TaskHandler, Swipe
     }
 
     @Override
-    public void onTaskCompleted(JSONObject result) {
+    public void onTaskCompleted(JSONObject request, JSONObject result) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            List<FlatsInfo> flatsInfos = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<FlatsInfo>>() {
-            });
-            mDataset = flatsInfos;
-            mAdapter.setDataSet(flatsInfos);
+            HoodListResponse flatsInfos = objectMapper.readValue(result.toString(),HoodListResponse.class);
+            mDataset = flatsInfos.getResult();
+            mAdapter.setDataSet(mDataset);
             mAdapter.notifyDataSetChanged();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        hideProgressDialog();
+        //hideProgressDialog();
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void onErrorResponse(VolleyError error) {
+    public void onErrorResponse(JSONObject request, VolleyError error) {
         Log.e(TAG, "onErrorResponse: Unable to load", error);
         mSwipeRefreshLayout.setRefreshing(false);
-        hideProgressDialog();
-    }
-
-    @Override
-    public void onRefresh() {
-        mSwipeRefreshLayout.setRefreshing(true);
-        fetchFlatinfo();
+        //hideProgressDialog();
     }
 }

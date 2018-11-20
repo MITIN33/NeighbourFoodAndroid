@@ -156,7 +156,8 @@ public class HomeActivity extends BaseActivity
 
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBodyText = "Check it out. Your message goes here";
+                String shareBodyText = "\nLet me recommend you this application\n\n";
+                shareBodyText += getString(R.string.play_store_link);
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject here");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBodyText);
                 startActivity(Intent.createChooser(sharingIntent, "Shearing Option"));

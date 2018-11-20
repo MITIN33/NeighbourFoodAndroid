@@ -92,7 +92,7 @@ public class OrderSummaryActivity extends BaseActivity {
             public void onTaskCompleted(JSONObject request, JSONObject result) {
                 try {
                     String targetToken = result.getJSONObject("Result").getString("data");
-                    sendNotificationTo(targetToken, NFUtils.sendNotificationToSeller());
+                    sendNotificationTo(targetToken, NFUtils.sendNotificationToSeller(user.getfName(), user.getFlatNumber()));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

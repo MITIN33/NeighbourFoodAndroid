@@ -11,6 +11,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.facebook.login.LoginManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,7 +24,6 @@ import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.v1.FlatInfo;
 import com.start.neighbourfood.models.v1.UserBaseInfo;
 import com.start.neighbourfood.services.ServiceManager;
-import com.start.neighbourfood.taskhandlers.SignInTaskHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -160,7 +160,25 @@ public class SignupActivity extends BaseActivity {
             userBaseInfo.setPhoneNo(((EditText) findViewById(R.id.mobile_number)).getText().toString());
             userBaseInfo.setUserName(user.getDisplayName());
             userBaseInfo.setRating("4.5");
-            serviceManager.createUser(JSONHelper.toJSONObject(userBaseInfo), new SignInTaskHandler(this));
+            serviceManager.createUser(JSONHelper.toJSONObject(userBaseInfo), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    try {
+                        sharedPreferenceUtils.setValue(ServiceConstants.IS_SIGNED_KEY, request.getString("userUid"));
+                        sharedPreferenceUtils.setValue(ServiceConstants.USER_INFO, request.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    navigateToHome();
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+                    Toast.makeText(SignupActivity.this, "Something went wrong. Please try again later.", Toast.LENGTH_SHORT).show();
+                    LoginManager.getInstance().logOut();
+                    hideProgressDialog();
+                }
+            });
         } catch (Exception e) {
             hideProgressDialog();
             e.printStackTrace();

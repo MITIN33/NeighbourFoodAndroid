@@ -221,7 +221,7 @@ public class OrderTrackSellerActivity extends BaseActivity {
             ServiceManager.getInstance(OrderTrackSellerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.PREPARING.toString(), new TaskHandler() {
                 @Override
                 public void onTaskCompleted(JSONObject request, JSONObject result) {
-                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage());
+                    NotificationUtils.sendNotificationTo(OrderTrackSellerActivity.this, buyerTokenId, NFUtils.constructOrderAcceptedMessage(orderProgress.getOrderId()));
                     orderProgress.setOrderStatus(OrderProgress.OrderStatus.PREPARING);
                     updateUI(orderProgress.getOrderStatus());
                 }

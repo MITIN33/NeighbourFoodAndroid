@@ -6,8 +6,8 @@ android {
         applicationId "com.neighbourfood.start.neighbourfood"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.002"
+        versionCode 4
+        versionName "1.004"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -40,6 +40,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.1'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.1'
     testImplementation 'junit:junit:4.12'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.android.volley:volley:1.1.1'

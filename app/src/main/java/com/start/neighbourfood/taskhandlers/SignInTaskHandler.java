@@ -9,6 +9,7 @@ import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.Utils.SharedPreferenceUtils;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.ServiceConstants;
+import com.start.neighbourfood.pages.BaseActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,13 +33,13 @@ public class SignInTaskHandler implements TaskHandler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //navigateToHome();
+        ((BaseActivity)activity).hideProgressDialog();
     }
 
     @Override
     public void onErrorResponse(JSONObject request, VolleyError error) {
-        //hideProgressDialog();
-        Toast.makeText(activity, "Something went wrong. Please try again later.", Toast.LENGTH_LONG);
+        Toast.makeText(activity, "Something went wrong. Please try again later.", Toast.LENGTH_LONG).show();
         LoginManager.getInstance().logOut();
+        ((BaseActivity)activity).hideProgressDialog();
     }
 }

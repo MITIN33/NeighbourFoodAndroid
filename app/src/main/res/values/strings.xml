@@ -139,4 +139,5 @@
     <string name="app_title">NeighbourFood</string>
     <string name="title_activity_order_status">OrderStatusActivity</string>
     <string name="emptry_list_message">No order placed or received.</string>
+    <string name="play_store_link">https://play.google.com/store/apps/details?id=com.neighbourfood.start.neighbourfood</string>
 </resources>

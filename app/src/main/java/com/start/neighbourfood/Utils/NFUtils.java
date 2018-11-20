@@ -8,16 +8,20 @@ public class NFUtils {
 
 
 
-    public static String constructOrderAcceptedMessage(){
-        return "Confirmed: Your request has been accepted by the provider";
+    public static String constructOrderAcceptedMessage(String orderId){
+        return String.format("Confirmed: Your order (#%s) has been accepted by the provider", orderId);
     }
 
-    public static String sendNotificationToSeller(){
-        return "ORDER REQUEST: You have you new order request, please accept.";
+    public static String sendNotificationToSeller(String buyerName, String flatNumber){
+        return String.format("ORDER REQUEST: You have you new order request from %s, (#%s)please accept.", buyerName, flatNumber);
     }
 
     public static String constructFoodPreparedMessage(String flatNumber){
         return "Food Prepared: Your food is ready, you can go and collect from Flat-"+ flatNumber;
+    }
+
+    public static String constructFoodCollectedMessage() {
+        return "Food was collected. Thanks for using NeighbourFood.";
     }
 
     public static String getTotalPrice(List<FoodItem> foodItemDetailsList) {
@@ -78,7 +82,4 @@ public class NFUtils {
         return new String[]{"Order accepeted", "Food prepared" , "Go collect\n your food"};
     }
 
-    public static String constructFoodCollectedMessage() {
-        return "Food was collected. Thanks for using NeighbourFood.";
-    }
 }

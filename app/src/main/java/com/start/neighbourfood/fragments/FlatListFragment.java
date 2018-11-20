@@ -105,7 +105,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
     }
 
     private void fetchFlatInfo() {
-        showProgressDialog();
+        //showProgressDialog();
         try {
             UserBaseInfo userBaseInfo = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
             if (userBaseInfo != null) {
@@ -179,7 +179,7 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        hideProgressDialog();
+        //hideProgressDialog();
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
@@ -187,6 +187,6 @@ public class FlatListFragment extends BaseFragment implements TaskHandler {
     public void onErrorResponse(JSONObject request, VolleyError error) {
         Log.e(TAG, "onErrorResponse: Unable to load", error);
         mSwipeRefreshLayout.setRefreshing(false);
-        hideProgressDialog();
+        //hideProgressDialog();
     }
 }

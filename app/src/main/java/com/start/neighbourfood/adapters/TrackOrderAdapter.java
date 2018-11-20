@@ -35,14 +35,16 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
     @Override
     public void onBindViewHolder(@NonNull TrackOrderItemHolder trackOrderItemHolder, int i) {
         ResponseOrderHistory orderDetail = dataset.get(i);
-        java.text.SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy-hh:mm a", Locale.getDefault());
+        java.text.SimpleDateFormat simpleDateFormat1 = new java.text.SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+        java.text.SimpleDateFormat simpleDateFormat2 = new java.text.SimpleDateFormat("hh:mm a", Locale.getDefault());
         trackOrderItemHolder.orderStatus.setText(orderDetail.getOrderStatus());
-        trackOrderItemHolder.dateTime.setText(String.valueOf(simpleDateFormat.format(new Date(Long.parseLong(orderDetail.getCreateTime())))));
+        trackOrderItemHolder.dateTime.setText(String.valueOf(simpleDateFormat1.format(new Date(Long.parseLong(orderDetail.getCreateTime())))));
         trackOrderItemHolder.flatName.setText(String.format("(%s)", orderDetail.getFlatNumber()));
         trackOrderItemHolder.userName.setText(orderDetail.getSellerName());
         trackOrderItemHolder.bill.setText(String.format("₹ %s", orderDetail.getTotalBill()));
         trackOrderItemHolder.orderType.setText(String.format("ORDER: %s", orderDetail.getOrderType()));
-        if (orderDetail.getOrderType().equals("ACCEPTED")){
+        trackOrderItemHolder.txtTime.setText(simpleDateFormat2.format(new Date(Long.parseLong(orderDetail.getCreateTime()))));
+        if (orderDetail.getOrderType().equals("RECIEVED")){
             trackOrderItemHolder.orderType.setTextColor(Color.MAGENTA);
         }
         else    {
@@ -56,7 +58,7 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
     }
 
     public class TrackOrderItemHolder extends RecyclerView.ViewHolder {
-        public TextView userName, flatName, bill, orderStatus, dateTime, orderType;
+        public TextView userName, flatName, bill, orderStatus, dateTime, orderType, txtTime;
 
         public TrackOrderItemHolder(View view) {
             super(view);
@@ -66,6 +68,7 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
             dateTime= view.findViewById(R.id.txtDate);
             orderStatus = view.findViewById(R.id.txtStatus2);
             orderType = view.findViewById(R.id.orderType);
+            txtTime= view.findViewById(R.id.txtTime);
         }
     }
 

@@ -34,7 +34,7 @@ public class OrderItemsAdapter extends RecyclerView.Adapter<OrderItemsAdapter.Or
     public void onBindViewHolder(@NonNull OrderListViewHolder viewHolder, int i) {
         OrderListViewHolder orderListViewHolder = viewHolder;
         FoodItem foodItemDetail = foodItemDetails.get(i);
-        orderListViewHolder.description.setText("2 delicious samosa served with green chatni.");
+        orderListViewHolder.description.setText(foodItemDetail.getItemDesc());
         orderListViewHolder.itemPrice.setText(String.format("\u20B9 %s", foodItemDetail.getPrice()));
         orderListViewHolder.itemName.setText(foodItemDetail.getItemName());
         orderListViewHolder.quantity.setText(String.format("x%s", foodItemDetail.getQuantity()));

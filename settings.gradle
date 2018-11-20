@@ -1,1 +1,1 @@
-include ':app', ':nfservice'
+include ':app', ':nfservice', ':stateprogressbar'

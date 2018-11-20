@@ -113,6 +113,7 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
                         return;
                     }
                     saveOrderItems(orderItems);
+                    clearBackstack();
                     getActivity().startActivity(i);
                     //getActivity().finish();
                 }
@@ -125,6 +126,16 @@ public class FoodListFragment extends BaseFragment implements TaskHandler, Elega
         }
         return null;
     }
+
+
+    public void clearBackstack() {
+
+        for (int i = 0; i < getActivity().getSupportFragmentManager().getBackStackEntryCount(); ++i) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+
+    }
+
 
     private void loadFoodItems() {
         showProgressDialog();

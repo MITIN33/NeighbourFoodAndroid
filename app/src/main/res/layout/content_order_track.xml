@@ -45,8 +45,9 @@
             app:spb_maxStateNumber="three"
             app:spb_stateBackgroundColor="#BDBDBD"
             app:spb_stateDescriptionColor="#808080"
-            app:spb_stateDescriptionSize="12dp"
+            app:spb_stateDescriptionSize="15dp"
             app:spb_stateForegroundColor="#009688"
+            app:spb_stateSize="30dp"
             app:spb_stateNumberBackgroundColor="#808080"
             app:spb_stateNumberForegroundColor="#eeeeee" />
 

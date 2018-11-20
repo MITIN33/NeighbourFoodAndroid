@@ -82,6 +82,9 @@ public class OrderTrackSellerActivity extends BaseActivity {
         stateProgressBar.setOnStateItemClickListener(new OnStateItemClickListener() {
             @Override
             public void onStateItemClick(StateProgressBar stateProgressBar, StateItem stateItem, int stateNumber, boolean isCurrentState) {
+                if (orderProgress.getOrderStatus() == OrderProgress.OrderStatus.COMPLETED){
+                    return;
+                }
                 switch (stateNumber){
                     case 1:
                         updateRequestAccepted();
@@ -163,17 +166,17 @@ public class OrderTrackSellerActivity extends BaseActivity {
     private void updateUI(OrderProgress.OrderStatus orderStatus) {
         switch (orderStatus) {
             case PENDING_CONFIRMATION:
-                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
+                stateProgressBar.setStateDescriptionData(NFUtils.getSellerDataForOrderPlaced());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.ONE);
                 stateProgressBar.setAllStatesCompleted(false);
                 break;
             case PREPARING:
-                stateProgressBar.setStateDescriptionData(NFUtils.getDataForOrderConfirmed());
+                stateProgressBar.setStateDescriptionData(NFUtils.getSellerDataForFoodPrepared());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.TWO);
                 stateProgressBar.setAllStatesCompleted(false);
                 break;
             case PREPARED:
-                stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForFoodPrepared());
+                stateProgressBar.setStateDescriptionData(NFUtils.getSellerDataForFoodCollect());
                 stateProgressBar.setCurrentStateNumber(StateProgressBar.StateNumber.THREE);
                 stateProgressBar.setAllStatesCompleted(false);
                 break;

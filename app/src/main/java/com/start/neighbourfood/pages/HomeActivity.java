@@ -99,6 +99,12 @@ public class HomeActivity extends BaseActivity
 
         emailView.setText("+91 " + user.getPhoneNo());
 
+        if (isNetworkConnected()) {
+            clearBackstack();
+            loadFragment(new FlatListFragment());
+        } else {
+            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -185,8 +191,9 @@ public class HomeActivity extends BaseActivity
             return;
         }
 
+        user = sharedPreferenceUtils.getUserBaseInfo();
+
         if (user.getPhotoUrl() != null && user.getPhotoUrl().hashCode() != imageHash) {
-            user = sharedPreferenceUtils.getUserBaseInfo();
             imageHash = user.getPhotoUrl().hashCode();
             new DownLoadImageTask(imageView).execute(user.getPhotoUrl());
         }
@@ -195,13 +202,6 @@ public class HomeActivity extends BaseActivity
             userName = headerView.findViewById(R.id.header_username);
         }
         userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
-
-        if (isNetworkConnected()) {
-            clearBackstack();
-            loadFragment(new FlatListFragment());
-        } else {
-            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
-        }
     }
 
     public void clearBackstack() {

@@ -75,11 +75,15 @@ public class NFUtils {
 
     //Seller List
     public static String[] getSellerDataForOrderPlaced(){
-        return new String[]{"Accept the order", "" , ""};
+        return new String[]{"Tap to Accept\n   the order", "" , ""};
+    }
+
+    public static String[] getSellerDataForFoodCollect(){
+        return new String[]{"Order accepeted", "Food prepared" , "Tap when food\n  is collected"};
     }
 
     public static String[] getSellerDataForFoodPrepared(){
-        return new String[]{"Order accepeted", "Food prepared" , "Go collect\n your food"};
+        return new String[]{"Order accepeted", "Tap when food \n    is ready" , ""};
     }
 
 }

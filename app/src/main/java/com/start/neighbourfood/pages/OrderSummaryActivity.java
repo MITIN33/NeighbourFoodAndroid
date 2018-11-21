@@ -1,6 +1,7 @@
 package com.start.neighbourfood.pages;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Utils.ImageHelper;
 import com.start.neighbourfood.Utils.NFUtils;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
@@ -39,6 +41,7 @@ public class OrderSummaryActivity extends BaseActivity {
     private SellerItemDetail sellerItemDetail;
     private UserBaseInfo user;
     private String sellerID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +49,7 @@ public class OrderSummaryActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         Button placeOrderBtn = findViewById(R.id.placeOrderBtn);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -53,7 +57,7 @@ public class OrderSummaryActivity extends BaseActivity {
             }
         });
         user = NFApplication.getSharedPreferenceUtils().getUserBaseInfo();
-        ((TextView)findViewById(R.id.flat_number)).setText(NFApplication.getSharedPreferenceUtils().getStringValue("flatNumber",null));
+        ((TextView) findViewById(R.id.flat_number)).setText(NFApplication.getSharedPreferenceUtils().getStringValue("flatNumber", null));
         RecyclerView mRecyclerView = findViewById(R.id.ordered_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
@@ -66,9 +70,15 @@ public class OrderSummaryActivity extends BaseActivity {
             sellerID = sellerItemDetail.getSellerId();
             OrderItemsAdapter adapter = new OrderItemsAdapter(sellerItemDetail.getFoodItemDetail());
             mRecyclerView.setAdapter(adapter);
-            ((TextView)findViewById(R.id.userName)).setText(sellerItemDetail.getfName());
-            ((TextView)findViewById(R.id.flat_number)).setText("Flat #" +sellerItemDetail.getFlatNumber());
-            ((ImageView)findViewById(R.id.hoodIcon)).setImageResource(R.drawable.food_icon);
+            ((TextView) findViewById(R.id.userName)).setText(sellerItemDetail.getfName());
+            ((TextView) findViewById(R.id.flat_number)).setText("Flat #" + sellerItemDetail.getFlatNumber());
+            ImageView imageView = ((ImageView) findViewById(R.id.hoodIcon));
+            Bitmap bitmap = ImageHelper.loadImageFromStorage(NFApplication.getSharedPreferenceUtils().getStringValue(sellerID, null), getProfileImageName(sellerID));
+            if (bitmap == null) {
+                imageView.setImageResource(R.drawable.food_icon);
+            } else {
+                imageView.setImageBitmap(bitmap);
+            }
             ((TextView) findViewById(R.id.total_bill)).setText(String.format("₹ %s", NFUtils.getTotalPrice(sellerItemDetail.getFoodItemDetail())));
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,7 +125,7 @@ public class OrderSummaryActivity extends BaseActivity {
         showProgressDialog();
         long epochTime = date.getTime();
         try {
-            final String orderID = NFUtils.getOrderID(epochTime , user.getUserUid());
+            final String orderID = NFUtils.getOrderID(epochTime, user.getUserUid());
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setCreateTime(String.valueOf(epochTime));
             orderDetail.setFoodItems(sellerItemDetail.getFoodItemDetail());
@@ -130,7 +140,7 @@ public class OrderSummaryActivity extends BaseActivity {
                 @Override
                 public void onTaskCompleted(JSONObject request, JSONObject result) {
                     Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
-                    i.putExtra(ServiceConstants.ORDER_ID,orderID);
+                    i.putExtra(ServiceConstants.ORDER_ID, orderID);
                     startActivity(i);
                     finish();
                     hideProgressDialog();

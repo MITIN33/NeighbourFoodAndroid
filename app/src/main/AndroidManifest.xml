@@ -85,6 +85,7 @@
         </activity>
         <activity
             android:name=".pages.OrderHistoryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="Order History" />
         <activity
             android:name=".pages.OrderStatusActivity"

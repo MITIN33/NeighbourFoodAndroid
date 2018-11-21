@@ -130,4 +130,8 @@ public class BaseActivity extends AppCompatActivity {
 
         return cm.getActiveNetworkInfo() != null;
     }
+
+    public String getProfileImageName(String userID){
+        return userID+ ".jpg";
+    }
 }

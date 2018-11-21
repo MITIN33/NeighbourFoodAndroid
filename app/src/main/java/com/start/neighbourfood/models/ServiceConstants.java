@@ -20,5 +20,5 @@ public class ServiceConstants {
     public static final String DEVICE_REGISTERED = "deviceRegistered";
     public static final String NOTIFICATION_MESSAGE = "notificationMessage";
     public static final String PHONE_NUMBER = "phoneNumber";
-
+    public static final String IMAGE_DIRECTORY= "imageDir";
 }

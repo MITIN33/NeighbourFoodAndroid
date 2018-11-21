@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/athiti_semibold"
                     android:text="Order Placed to Sucheta (Flat F6)"
-                    android:textSize="14dp" />
+                    android:textSize="16dp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/ordered_seller_Item_recycleView"

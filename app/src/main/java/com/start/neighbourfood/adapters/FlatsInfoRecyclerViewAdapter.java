@@ -3,8 +3,7 @@ package com.start.neighbourfood.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -18,11 +17,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.R;
+import com.start.neighbourfood.Utils.ImageHelper;
+import com.start.neighbourfood.models.ServiceConstants;
 import com.start.neighbourfood.models.v1.response.HoodDetails;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,41 +61,70 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        RowViewHolder rowHolder = (RowViewHolder) holder;
-        HoodDetails flatsInfo = flatlistfiltered.get(position);
-        String flatText = "Served by Flat: "+flatsInfo.getFlatNumber();
+        final RowViewHolder rowHolder = (RowViewHolder) holder;
+        final HoodDetails flatsInfo = flatlistfiltered.get(position);
+        String flatText = "Served by Flat: " + flatsInfo.getFlatNumber();
         rowHolder.flatNumber.setText(flatText);
         rowHolder.rating.setText(flatsInfo.getRating() == null ? "4/5" : flatsInfo.getRating());
         rowHolder.userName.setText(flatsInfo.getSellerName());
-        if(flatsInfo.getPhotoUrl() == null){
+
+        Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                rowHolder.imageView.setImageBitmap(bitmap);
+                String path = ImageHelper.saveToInternalStorage(bitmap, ServiceConstants.IMAGE_DIRECTORY, flatsInfo.getSellerId() + ".jpg");
+                NFApplication.getSharedPreferenceUtils().setValue(flatsInfo.getSellerId(), path);
+            }
+
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        rowHolder.imageView.setTag(target);
+        if (flatsInfo.getPhotoUrl() == null) {
             rowHolder.imageView.setImageResource(R.drawable.food_icon);
-        }else {
-            Picasso.get().load(flatsInfo.getPhotoUrl()).into(rowHolder.imageView);
-            //new DownLoadImageTask(rowHolder.imageView).execute(flatsInfo.getPhotoUrl());
+        } else {
+
+            String path = NFApplication.getSharedPreferenceUtils().getStringValue(flatsInfo.getSellerId(), null);
+            Bitmap bitmap = ImageHelper.loadImageFromStorage(path, flatsInfo.getSellerId() + ".jpg");
+            if (bitmap == null) {
+                Picasso.get().load(flatsInfo.getPhotoUrl()).into(target);
+            }
+            else {
+                rowHolder.imageView.setImageBitmap(bitmap);
+            }
         }
 
         List<String> list = new ArrayList<>();
-        int k =0;
-        for (int i = 0; i < Math.min(3,flatsInfo.getFoodItems().size()); i++) {
+        int k = 0;
+        for (int i = 0; i < Math.min(3, flatsInfo.getFoodItems().size()); i++) {
             list.add(flatsInfo.getFoodItems().get(i));
         }
 
+
+
         final ArrayAdapter<String> arrayAdapter =
-                new ArrayAdapter<String>(context, R.layout.nf_list_item, list){
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent){
-                /// Get the Item from ListView
-                View view = super.getView(position, convertView, parent);
+                new ArrayAdapter<String>(context, R.layout.nf_list_item, list) {
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        /// Get the Item from ListView
+                        View view = super.getView(position, convertView, parent);
 
-                TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
 
-                // Set the text size 25 dip for ListView each item
-                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,15);
+                        // Set the text size 25 dip for ListView each item
+                        tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
 
-                // Return the view
-                return view;
-            }
-        };
+                        // Return the view
+                        return view;
+                    }
+                };
 
         rowHolder.foodListView.setAdapter(arrayAdapter);
 
@@ -106,7 +136,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         return flatlistfiltered.size();
     }
 
-    public void setDataSet(List<HoodDetails> dataset){
+    public void setDataSet(List<HoodDetails> dataset) {
         mDataSet = dataset;
         flatlistfiltered = dataset;
     }
@@ -140,7 +170,7 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
                     for (HoodDetails item : mDataSet) {
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (item.getSellerName().toLowerCase().contains(charString.toLowerCase())) {
+                        if (containsFood(item.getFoodItems(),charString)) {
                             filteredList.add(item);
                         }
                     }
@@ -161,39 +191,15 @@ public class FlatsInfoRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         };
     }
 
-    private class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-        public DownLoadImageTask(ImageView imageView) {
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String... urls) {
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try {
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            } catch (Exception e) { // Catch the download exception
-                e.printStackTrace();
+    private boolean containsFood(List<String> list, String key) {
+        int flag = 0;
+        for (String item :
+                list) {
+            if (item.toLowerCase().contains(key.toLowerCase())) {
+                flag = 1;
+                break;
             }
-            return logo;
         }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result) {
-            imageView.setImageBitmap(result);
-        }
+        return flag == 1;
     }
 }

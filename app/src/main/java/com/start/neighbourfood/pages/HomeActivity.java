@@ -52,6 +52,7 @@ public class HomeActivity extends BaseActivity
     private TextView userName;
     private int imageHash;
     private View headerView;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +66,11 @@ public class HomeActivity extends BaseActivity
             return;
         }
 
+        if ("com.neighbourfood.start.neighbourfood".equals(getIntent().getExtras().get("collapse_key"))){
+            Intent intent  = new Intent(this,OrderHistoryActivity.class);
+            startActivity(intent);
+        }
+
         registerDevice(user.getUserUid(), sharedPreferenceUtils.getStringValue(ServiceConstants.REGID, null));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -76,7 +82,7 @@ public class HomeActivity extends BaseActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         headerView = navigationView.getHeaderView(0);
         userName = headerView.findViewById(R.id.header_username);
@@ -101,6 +107,7 @@ public class HomeActivity extends BaseActivity
 
         if (isNetworkConnected()) {
             clearBackstack();
+
             loadFragment(new FlatListFragment());
         } else {
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
@@ -202,6 +209,7 @@ public class HomeActivity extends BaseActivity
             userName = headerView.findViewById(R.id.header_username);
         }
         userName.setText(String.format("%s %s", user.getfName(), user.getlName()));
+        navigationView.getMenu().getItem(0).setChecked(true);
     }
 
     public void clearBackstack() {

@@ -10,7 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.start.neighbourfood.Utils.NotificationUtils;
 import com.start.neighbourfood.models.ServiceConstants;
-import com.start.neighbourfood.pages.HomeActivity;
+import com.start.neighbourfood.pages.OrderHistoryActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +87,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 notificationUtils.playNotificationSound();
             } else {
                 // app is in background, show the notification in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                Intent resultIntent = new Intent(getApplicationContext(), OrderHistoryActivity.class);
                 resultIntent.putExtra(ServiceConstants.NOTIFICATION_MESSAGE, message);
 
                 // check for image attachment

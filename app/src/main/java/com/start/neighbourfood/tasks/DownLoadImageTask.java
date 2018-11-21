@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 public class DownLoadImageTask extends AsyncTask<String, Void, Bitmap> {
-    ImageView imageView;
+    private ImageView imageView;
 
     public DownLoadImageTask(ImageView imageView) {
         this.imageView = imageView;

@@ -30,6 +30,7 @@ public class OrderHistoryActivity extends BaseActivity {
     private String userUid;
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private List<ResponseOrderHistory> orderDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,6 @@ public class OrderHistoryActivity extends BaseActivity {
         });
         findViewById(R.id.emptyMessage).setVisibility(View.GONE);
         userUid = FirebaseAuth.getInstance().getUid();
-//        fetchAllOrdersByUser();
         mSwipeRefreshLayout = findViewById(R.id.orderListSwipeRefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -54,47 +54,49 @@ public class OrderHistoryActivity extends BaseActivity {
                 fetchAllOrdersByUser();
             }
         });
-        mSwipeRefreshLayout.post(new Runnable() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mRecyclerView = findViewById(R.id.buyerOrderList_recycleView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(OrderHistoryActivity.this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(OrderHistoryActivity.this, mRecyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-                fetchAllOrdersByUser();
+            public void onClick(View view, int position) {
+                if ("PLACED".equals(orderDetails.get(position).getOrderType())) {
+                    navigateToBuyerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
+                } else {
+                    navigateToSellerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
+                }
             }
-        });
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+    }
+
+    @Override
+    protected void onResume() {
+        fetchAllOrdersByUser();
+        super.onResume();
     }
 
     private void fetchAllOrdersByUser() {
         //showProgressDialog();
         mSwipeRefreshLayout.setRefreshing(true);
+        boolean flag = true;
         ServiceManager.getInstance(this).fetchAllPastOrderForBuyer(userUid, new TaskHandler() {
             @Override
             public void onTaskCompleted(JSONObject request, JSONObject result) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
-                    final List<ResponseOrderHistory> orderDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<ResponseOrderHistory>>() {
+                    orderDetails = objectMapper.readValue(result.getJSONArray("Result").toString(), new TypeReference<List<ResponseOrderHistory>>() {
                     });
-                    RecyclerView mRecyclerView = findViewById(R.id.buyerOrderList_recycleView);
-                    mRecyclerView.setLayoutManager(new LinearLayoutManager(OrderHistoryActivity.this));
-                    mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
                     mRecyclerView.setAdapter(new TrackOrderAdapter(orderDetails));
-                    if (orderDetails.size() == 0){
+                    if (orderDetails.size() == 0) {
                         findViewById(R.id.emptyMessage).setVisibility(View.VISIBLE);
                     }
-                    mRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerView, new RecyclerTouchListener.ClickListener() {
-                        @Override
-                        public void onClick(View view, int position) {
-                            if("PLACED".equals(orderDetails.get(position).getOrderType())) {
-                                navigateToBuyerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
-                            }else{
-                                navigateToSellerTrackOrder(orderDetails.get(position).getOrderId(), orderDetails.get(position).getFlatNumber());
-                            }
-                        }
 
-                        @Override
-                        public void onLongClick(View view, int position) {
-
-                        }
-                    }));
 
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();

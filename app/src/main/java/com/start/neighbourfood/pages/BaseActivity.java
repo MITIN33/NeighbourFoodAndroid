@@ -92,6 +92,11 @@ public class BaseActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void navigateToActivity(Class clazz) {
+        Intent i = new Intent(getApplicationContext(), clazz);
+        startActivity(i);
+    }
+
     public void navigateToBuyerTrackOrder(String orderID, String flatNumber){
         Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
         i.putExtra(ServiceConstants.ORDER_ID,orderID);

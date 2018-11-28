@@ -94,6 +94,7 @@ public class OrderProgress {
         PENDING_CONFIRMATION,
         PREPARING,
         PREPARED,
-        COMPLETED
+        COMPLETED,
+        CANCELLED
     }
 }

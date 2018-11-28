@@ -88,7 +88,6 @@ public class OrderSummaryActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 placeOrder();
-                sendNotification(sellerID);
             }
         });
 
@@ -141,6 +140,7 @@ public class OrderSummaryActivity extends BaseActivity {
                 public void onTaskCompleted(JSONObject request, JSONObject result) {
                     Intent i = new Intent(getApplicationContext(), OrderTrackBuyerActivity.class);
                     i.putExtra(ServiceConstants.ORDER_ID, orderID);
+                    sendNotification(sellerID);
                     startActivity(i);
                     finish();
                     hideProgressDialog();
@@ -148,7 +148,16 @@ public class OrderSummaryActivity extends BaseActivity {
 
                 @Override
                 public void onErrorResponse(JSONObject request, VolleyError error) {
-                    Toast.makeText(OrderSummaryActivity.this, "Failed to place order. Try Again !", Toast.LENGTH_SHORT).show();
+                    String message = new String(error.networkResponse.data);
+                    if (message != null){
+                        try {
+                            JSONObject jsonObject1 = new JSONObject(message);
+                            message = jsonObject1.getString("ErrorMessage");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Toast.makeText(OrderSummaryActivity.this, message == null ? "Failed to place order !" : message, Toast.LENGTH_SHORT).show();
                     hideProgressDialog();
                 }
             });

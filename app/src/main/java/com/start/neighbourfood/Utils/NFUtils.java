@@ -12,6 +12,10 @@ public class NFUtils {
         return String.format("Confirmed: Your order (#%s) has been accepted by the provider", orderId);
     }
 
+    public static String constrctOrderCancelled(String orderId){
+        return String.format("Cancelled: Your order (#%s) has been cancelled by the user", orderId);
+    }
+
     public static String sendNotificationToSeller(String buyerName, String flatNumber){
         return String.format("ORDER REQUEST: You have you new order request from %s, (#%s)please accept.", buyerName, flatNumber);
     }
@@ -84,6 +88,10 @@ public class NFUtils {
 
     public static String[] getSellerDataForFoodPrepared(){
         return new String[]{"Order accepeted", "Tap when food \n    is ready" , ""};
+    }
+
+    public static String[] getSellerDataForCancelled(){
+        return new String[]{"", "Order Cancelled" , ""};
     }
 
 }

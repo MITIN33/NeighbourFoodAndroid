@@ -11,6 +11,9 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kofigyan.stateprogressbar.StateProgressBar;
 import com.start.neighbourfood.R;
 import com.start.neighbourfood.Utils.NFUtils;
+import com.start.neighbourfood.Utils.NotificationUtils;
 import com.start.neighbourfood.adapters.FoodItemsRecyclerViewAdapter;
 import com.start.neighbourfood.adapters.OrderItemsAdapter;
 import com.start.neighbourfood.auth.TaskHandler;
@@ -43,7 +47,13 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         public void run() {
 
             int Seconds, Minutes;
+            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
+                timer.setText("CANCEL ORDER");
+            }
 
+            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.CANCELLED){
+                timer.setText("Cancelled");
+            }
             long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
             long updateTime = endTime - orderProgress.getCreateTime();
 
@@ -55,7 +65,13 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             Seconds = Seconds % 60;
 
             timer.setText(String.format("%02d:%02d", Minutes, Seconds));
+            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
+                timer.setText("CANCEL ORDER");
+            }
 
+            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.CANCELLED){
+                timer.setText("Cancelled");
+            }
             if (!mStopHandler()) {
                 handler.postDelayed(this, 1000);
             }
@@ -90,13 +106,35 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             //do other stuff here
         }
     };
+    private String buyerTokenId;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.track, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_help:
+                navigateToActivity(HelpActivity.class);
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_track);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        timer = findViewById(R.id.timer);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -105,6 +143,7 @@ public class OrderTrackBuyerActivity extends BaseActivity {
                 finish();
             }
         });
+        timer = findViewById(R.id.timer);
         handler = new Handler();
         stateProgressBar = findViewById(R.id.your_state_progress_bar_id);
         stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
@@ -113,6 +152,14 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         mRecyclerView = findViewById(R.id.ordered_buyer_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        timer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (orderProgress != null && orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
+                    updateCancelRequest();
+                }
+            }
+        });
 
         mSwipeRefreshLayout = findViewById(R.id.order_buyer_swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -210,6 +257,61 @@ public class OrderTrackBuyerActivity extends BaseActivity {
                 stateProgressBar.setStateDescriptionData(NFUtils.getDataForCollected());
                 stateProgressBar.setAllStatesCompleted(true);
                 break;
+            case CANCELLED:
+                stateProgressBar.setStateDescriptionData(NFUtils.getSellerDataForCancelled());
+                stateProgressBar.setAllStatesCompleted(true);
+                timer.setText("--:--");
+                break;
+        }
+    }
+
+    public void updateCancelRequest() {
+        showProgressDialog();
+        if (buyerTokenId == null) {
+            ServiceManager.getInstance(getApplicationContext()).getUserNotification(orderProgress.getUserPlacedBy().getUserUid(), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    try {
+                        buyerTokenId = result.getJSONObject("Result").getString("data");
+
+                        ServiceManager.getInstance(OrderTrackBuyerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.CANCELLED.toString(), new TaskHandler() {
+                            @Override
+                            public void onTaskCompleted(JSONObject request, JSONObject result) {
+                                NotificationUtils.sendNotificationTo(OrderTrackBuyerActivity.this, buyerTokenId, NFUtils.constrctOrderCancelled(orderProgress.getOrderId()));
+                                orderProgress.setOrderStatus(OrderProgress.OrderStatus.CANCELLED);
+                                updateUI(orderProgress.getOrderStatus());
+                            }
+
+                            @Override
+                            public void onErrorResponse(JSONObject request, VolleyError error) {
+
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    hideProgressDialog();
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+                    hideProgressDialog();
+                }
+            });
+        } else {
+            ServiceManager.getInstance(OrderTrackBuyerActivity.this).updateOrderStatus(orderProgress.getOrderId(), OrderProgress.OrderStatus.CANCELLED.toString(), new TaskHandler() {
+                @Override
+                public void onTaskCompleted(JSONObject request, JSONObject result) {
+                    NotificationUtils.sendNotificationTo(OrderTrackBuyerActivity.this, buyerTokenId, NFUtils.constrctOrderCancelled(orderProgress.getOrderId()));
+                    orderProgress.setOrderStatus(OrderProgress.OrderStatus.CANCELLED);
+                    updateUI(orderProgress.getOrderStatus());
+                }
+
+                @Override
+                public void onErrorResponse(JSONObject request, VolleyError error) {
+
+                }
+            });
         }
     }
 }

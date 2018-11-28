@@ -160,7 +160,7 @@ public class HomeActivity extends BaseActivity
             if (id == R.id.nav_settings) {
 
             } else if (id == R.id.nav_trackOrder) {
-                navigateToOrderHistory();
+                navigateToActivity(OrderHistoryActivity.class);
             } else if (id == R.id.nav_home) {
                 loadFragment(new FlatListFragment());
             } else if (id == R.id.nav_logout) {
@@ -173,7 +173,7 @@ public class HomeActivity extends BaseActivity
                 shareBodyText += getString(R.string.play_store_link);
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject here");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBodyText);
-                startActivity(Intent.createChooser(sharingIntent, "Shearing Option"));
+                startActivity(Intent.createChooser(sharingIntent, "Sharing Option"));
 
             } else if (id == R.id.seller_page) {
                 loadFragment(new SellerFoodFragment());

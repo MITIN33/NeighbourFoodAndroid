@@ -44,7 +44,7 @@ public class TrackOrderAdapter extends RecyclerView.Adapter<TrackOrderAdapter.Tr
         trackOrderItemHolder.bill.setText(String.format("₹ %s", orderDetail.getTotalBill()));
         trackOrderItemHolder.orderType.setText(String.format("ORDER: %s", orderDetail.getOrderType()));
         trackOrderItemHolder.txtTime.setText(simpleDateFormat2.format(new Date(Long.parseLong(orderDetail.getCreateTime()))));
-        if (orderDetail.getOrderType().equals("RECIEVED")){
+        if (orderDetail.getOrderType().equals("RECEIVED")){
             trackOrderItemHolder.orderType.setTextColor(Color.MAGENTA);
         }
         else    {

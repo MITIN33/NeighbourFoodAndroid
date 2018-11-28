@@ -75,7 +75,7 @@
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/ordered_seller_Item_recycleView"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="200dp"
                     android:layout_below="@id/icon_layout"
                     android:layout_marginTop="5dp"
                     tools:context="com.start.neighbourfood.fragments.FlatListFragment"
@@ -92,7 +92,7 @@
                     android:layout_marginTop="20dp"
                     android:background="@drawable/circle_bg"
                     android:gravity="center"
-                    android:text="00:00"
+                    android:text="Cancel Order"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@color/green"
                     android:textSize="15sp" />

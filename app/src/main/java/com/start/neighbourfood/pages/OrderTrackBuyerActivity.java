@@ -2,11 +2,13 @@ package com.start.neighbourfood.pages;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,18 +44,12 @@ public class OrderTrackBuyerActivity extends BaseActivity {
     private long startTime, endTime;
     private Handler handler;
     private OrderProgress orderProgress;
+    private TextView labelTimer;
     public Runnable runnable = new Runnable() {
 
         public void run() {
 
             int Seconds, Minutes;
-            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
-                timer.setText("CANCEL ORDER");
-            }
-
-            if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.CANCELLED){
-                timer.setText("Cancelled");
-            }
             long endTime = orderProgress.getOrderStatus().equals(OrderProgress.OrderStatus.COMPLETED) ? orderProgress.getEndTime() : System.currentTimeMillis();
             long updateTime = endTime - orderProgress.getCreateTime();
 
@@ -65,12 +61,18 @@ public class OrderTrackBuyerActivity extends BaseActivity {
             Seconds = Seconds % 60;
 
             timer.setText(String.format("%02d:%02d", Minutes, Seconds));
+            labelTimer.setText("Total time");
             if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
                 timer.setText("CANCEL ORDER");
+                labelTimer.setText("Order will be cancelled automatically after 2 min, if user do not accept the order");
+                if(Minutes >= 2){
+                    updateCancelRequest();
+                }
             }
 
             if (orderProgress!=null &&  orderProgress.getOrderStatus() == OrderProgress.OrderStatus.CANCELLED){
                 timer.setText("Cancelled");
+                return;
             }
             if (!mStopHandler()) {
                 handler.postDelayed(this, 1000);
@@ -147,16 +149,32 @@ public class OrderTrackBuyerActivity extends BaseActivity {
         handler = new Handler();
         stateProgressBar = findViewById(R.id.your_state_progress_bar_id);
         stateProgressBar.setStateDescriptionData(NFUtils.getBuyerDataForOrderPlaced());
-
+        labelTimer = findViewById(R.id.label_timer);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = findViewById(R.id.ordered_buyer_Item_recycleView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(OrderTrackBuyerActivity.this)
+                .setTitle("Cancel Order")
+                .setMessage("Are you sure you want to cancel order?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                        updateCancelRequest();
+                    }})
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
         timer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (orderProgress != null && orderProgress.getOrderStatus() == OrderProgress.OrderStatus.PENDING_CONFIRMATION){
-                    updateCancelRequest();
+                    alertDialog.show();
                 }
             }
         });

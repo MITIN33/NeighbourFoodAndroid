@@ -90,6 +90,7 @@
                     android:layout_height="100dp"
                     android:layout_centerHorizontal="true"
                     android:background="@drawable/circle_bg"
+                    android:layout_marginTop="10px"
                     android:gravity="center"
                     android:text="00:00"
                     android:textAppearance="?android:attr/textAppearanceLarge"
@@ -98,8 +99,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/label_timer"
                     android:padding="10dp"
-                    android:text="Total time"/>
+                    android:text="Order will be cancelled automatically after 2 min, if user do not accept the order"
+                    android:textAlignment="center"/>
             </LinearLayout>
 
         </ScrollView>

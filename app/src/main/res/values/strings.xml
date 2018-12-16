@@ -141,4 +141,5 @@
     <string name="emptry_list_message">No order placed or received.</string>
     <string name="play_store_link">https://play.google.com/store/apps/details?id=com.neighbourfood.start.neighbourfood</string>
     <string name="action_help">help</string>
+    <string name="help_text">For any query or feedback please contact on below provided detail.</string>
 </resources>

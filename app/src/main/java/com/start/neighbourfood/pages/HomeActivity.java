@@ -161,7 +161,11 @@ public class HomeActivity extends BaseActivity
 
             } else if (id == R.id.nav_trackOrder) {
                 navigateToActivity(OrderHistoryActivity.class);
-            } else if (id == R.id.nav_home) {
+            }
+            else if (id == R.id.help) {
+                navigateToActivity(HelpActivity.class);
+            }
+            else if (id == R.id.nav_home) {
                 loadFragment(new FlatListFragment());
             } else if (id == R.id.nav_logout) {
                 signOut();

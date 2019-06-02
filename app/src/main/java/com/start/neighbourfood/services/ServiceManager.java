@@ -15,6 +15,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.start.neighbourfood.BuildConfig;
+import com.start.neighbourfood.NFApplication;
 import com.start.neighbourfood.auth.TaskHandler;
 import com.start.neighbourfood.models.NfMessageNotification;
 import com.start.neighbourfood.models.ServiceConstants;
@@ -92,18 +93,7 @@ public class ServiceManager {
     public void createUser(final JSONObject userBaseInfo, final TaskHandler taskHandler) {
 
         String url = getFullUrl(ServiceConstants.userApiPath);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, userBaseInfo, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(userBaseInfo, response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(userBaseInfo, error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createRequest(Request.Method.PUT, taskHandler, url, userBaseInfo);
     }
 
     public void updateUserInfo(String id, final JSONObject jsonObject, final TaskHandler taskHandler){
@@ -150,34 +140,13 @@ public class ServiceManager {
 
     public void removeSellerItem(String sellerITemID, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/" + sellerITemID;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(null ,response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(null, error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createRequest(Request.Method.DELETE, taskHandler, url, null);
     }
 
     public void updateSellerItem(String id, final JSONObject sellerITem, final TaskHandler taskHandler) {
         String url = getFullUrl(ServiceConstants.selleritemApiPath) + "/" + id;
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, sellerITem, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                taskHandler.onTaskCompleted(sellerITem, response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                taskHandler.onErrorResponse(sellerITem, error);
-            }
-        });
-        addToRequestQueue(jsonObjectRequest);
+        createRequest(Request.Method.PUT, taskHandler, url, sellerITem);
+
     }
 
     public void fetchAllApartments(final TaskHandler taskHandler) {
@@ -281,7 +250,19 @@ public class ServiceManager {
                         taskHandler.onErrorResponse(jsonObject , error);
                     }
                 }
-            });
+            }) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> header = new HashMap<>();
+                    header.put("Authorization", "Bearer " + NFApplication.getSharedPreferenceUtils().getStringValue(ServiceConstants.authToken, null));
+                    return header;
+                }
+
+                @Override
+                public String getBodyContentType() {
+                    return "application/json";
+                }
+            };
             addToRequestQueue(jsonObjectRequest);
         } catch (Exception ex) {
             Log.i(TAG, String.format("Error in network call. Exception :%s", ex.getMessage()));

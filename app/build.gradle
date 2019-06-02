@@ -6,8 +6,8 @@ android {
         applicationId "com.neighbourfood.start.neighbourfood"
         minSdkVersion 23
         targetSdkVersion 28
-        versionCode 4
-        versionName "1.004"
+        versionCode 5
+        versionName "1.005"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -52,7 +52,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
-    implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
+    implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

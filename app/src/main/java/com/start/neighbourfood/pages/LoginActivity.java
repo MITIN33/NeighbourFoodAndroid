@@ -31,6 +31,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.start.neighbourfood.R;
@@ -210,8 +211,23 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            serviceManager.fetchUserfromUid(user.getUid(), LoginActivity.this);
+                            final FirebaseUser mUser = mAuth.getCurrentUser();
+                            mUser.getIdToken(true)
+                                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                                            if (task.isSuccessful()) {
+                                                sharedPreferenceUtils.setValue(ServiceConstants.authToken, task.getResult().getToken());
+                                                sharedPreferenceUtils.setValue(ServiceConstants.authTokenExpirationTime, task.getResult().getExpirationTimestamp());
+                                                serviceManager.fetchUserfromUid(mUser.getUid(), LoginActivity.this);
+                                            } else {
+                                                hideProgressDialog();
+                                                navigateToLoginPage();
+                                                Toast.makeText(LoginActivity.this, "Unable to fetch auth token", Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        }
+                                    });
+
                         } else {
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 Toast.makeText(LoginActivity.this,
@@ -288,6 +304,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
             // for instance if the the phone number format is not valid.
             Log.w(TAG, "onVerificationFailed", e);
             hideProgressDialog();
+            Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             if (e instanceof FirebaseAuthInvalidCredentialsException) {
                 // Invalid request
                 // ...
@@ -302,8 +319,7 @@ public class LoginActivity extends BaseActivity implements TaskHandler {
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
             findViewById(R.id.buttonGetVerificationCode).setEnabled(false);
-            Toast.makeText(getApplicationContext(),
-                    "Code Sent ", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Code Sent ", Toast.LENGTH_SHORT).show();
             codeSent = s;
         }
     };

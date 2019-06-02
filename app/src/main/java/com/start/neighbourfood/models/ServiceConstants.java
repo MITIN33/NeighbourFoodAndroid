@@ -21,4 +21,6 @@ public class ServiceConstants {
     public static final String NOTIFICATION_MESSAGE = "notificationMessage";
     public static final String PHONE_NUMBER = "phoneNumber";
 
+    public static final String authToken = "authToken";
+    public static final String authTokenExpirationTime = "expirationTime";
 }

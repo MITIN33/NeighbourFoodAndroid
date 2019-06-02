@@ -316,7 +316,7 @@ public class SellerFoodFragment extends BaseFragment implements TaskHandler, Rec
                                             }
                                         });
                                     } else {
-                                        ServiceManager.getInstance(getActivity()).updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
+                                        NFApplication.getServiceManager().updateSellerItem(selectedItem.getSellerItemID(), new JSONObject(gson.toJson(foodItemDetails)), new TaskHandler() {
                                             @Override
                                             public void onTaskCompleted(JSONObject request, JSONObject result) {
                                                 mAdapter.notifyItemChanged(positin, foodItemDetails);

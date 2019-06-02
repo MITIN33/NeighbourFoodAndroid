@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -60,11 +61,31 @@ public class HomeActivity extends BaseActivity
 
         user = sharedPreferenceUtils.getUserBaseInfo();
         // Check for login
-        if (user == null || sharedPreferenceUtils.getStringValue(ServiceConstants.IS_SIGNED_KEY, null) == null) {
+        if (user == null || sharedPreferenceUtils.getStringValue(ServiceConstants.IS_SIGNED_KEY, null) == null
+                || sharedPreferenceUtils.getStringValue(ServiceConstants.authToken, null) == null) {
             navigateToLoginPage();
             return;
         }
 
+        if (System.currentTimeMillis() >= sharedPreferenceUtils.getLongValue(ServiceConstants.authTokenExpirationTime, 0)) {
+
+            FirebaseAuth.getInstance().getCurrentUser().getIdToken(true)
+                    .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                        public void onComplete(@NonNull Task<GetTokenResult> task) {
+                            if (task.isSuccessful()) {
+                                String idToken = task.getResult().getToken();
+                                sharedPreferenceUtils.setValue(ServiceConstants.authToken, idToken);
+                                sharedPreferenceUtils.setValue(ServiceConstants.authTokenExpirationTime, task.getResult().getExpirationTimestamp());
+
+                            } else {
+                                hideProgressDialog();
+                                navigateToLoginPage();
+                                Toast.makeText(HomeActivity.this, "Unable to fetch auth token", Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        }
+                    });
+        }
         registerDevice(user.getUserUid(), sharedPreferenceUtils.getStringValue(ServiceConstants.REGID, null));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
